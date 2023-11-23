@@ -125,3 +125,29 @@ the order of info goes
 
 ![](../Images/Pasted%20image%2020231122171313.png)
 
+## Working with Files and Directories
+
+Creating files and directories with `touch` and `mkdir`:
+
+![](../Images/Pasted%20image%2020231122180138.png)
+
+Create multiple child directories in one command, `mkdir -p filepath` and then look at the whole structure using `tree`:
+
+![](../Images/Pasted%20image%2020231122180523.png)
+
+Copy a file to another directory: 
+
+![](../Images/Pasted%20image%2020231122190151.png)
+
+![](../Images/Pasted%20image%2020231122190201.png)
+
+Getting the last modified file with `ls -lt`:
+
+![](../Images/Pasted%20image%2020231122192058.png)
+
+Getting the inode number of files with `ls -i`
+
+![](../Images/Pasted%20image%2020231122192123.png)
+
+
+
