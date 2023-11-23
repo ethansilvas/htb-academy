@@ -149,5 +149,9 @@ Getting the inode number of files with `ls -i`
 
 ![](../Images/Pasted%20image%2020231122192123.png)
 
+## Editing Files
+
+can create a new file with `nano notes.txt`
+
 
 
