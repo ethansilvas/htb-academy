@@ -153,5 +153,39 @@ Getting the inode number of files with `ls -i`
 
 can create a new file with `nano notes.txt`
 
+## Find Files and Directories 
 
+`which` = returns the path to the file or link that should be executed 
+
+determine if programs like curl, netcat, wget, python, gcc are available on the OS 
+
+ex: `which python`
+
+![](../Images/Pasted%20image%2020231124162331.png)
+
+`find` = finds files and folders, but also filters the results 
+
+`find <location> <options>`
+
+![](../Images/Pasted%20image%2020231124164348.png)
+
+`locate` = quicker way to search through system; uses a local database that has all info about existing files and folders, which find does not
+
+update database with `sudo updatedb`
+
+![](../Images/Pasted%20image%2020231124164549.png)
+
+does not have as many filter options as find 
+
+What is the name of the config file that has been created after 2020-03-03 and is smaller than 28k but larger than 25k:
+
+![](../Images/Pasted%20image%2020231124165853.png)
+
+How many files exist on the system that have the .bak extension? 
+
+![](../Images/Pasted%20image%2020231124170111.png)
+
+Locate the full path of the xxd binary:
+
+![](../Images/Pasted%20image%2020231124170205.png)
 
