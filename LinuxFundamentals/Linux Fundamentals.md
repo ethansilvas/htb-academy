@@ -189,3 +189,71 @@ Locate the full path of the xxd binary:
 
 ![](../Images/Pasted%20image%2020231124170205.png)
 
+## File Descriptors and Redirections 
+
+file descriptor = indicator of connection maintained by the kernel to perform IO operations 
+file handle in windows
+
+1. Data stream for input = STDIN - 0
+2. Data stream for output = STDOUT - 1
+3. Data stream for output with errors = STDERR - 2
+
+Running cat: 
+
+![](../Images/Pasted%20image%2020231124172901.png)
+
+first line is input = STDIN - FD 0
+second line is output = STDOUT - FD 1
+
+STDERR with find: 
+
+![](../Images/Pasted%20image%2020231124173008.png)
+
+only `/etc/shadow` is STDOUT - FD 1, all the others are STDERR - FD 2
+
+can redirect FD 2 to /dev/null so that all errors go to the null device which discards all data 
+
+`2>/dev/null`:
+
+![](../Images/Pasted%20image%2020231124173211.png)
+
+Can redirect to file with any output: 
+
+![](../Images/Pasted%20image%2020231124173345.png)
+
+or can specify with `1>results.txt`:
+
+![](../Images/Pasted%20image%2020231124173513.png)
+
+Take STDIN - FD 0 with < 
+
+can take in input to `cat` with <: 
+
+![](../Images/Pasted%20image%2020231124173632.png)
+
+Redirecting output with > will create new file or overwrite existing file without confirmation
+
+to append to a file use >>
+
+![](../Images/Pasted%20image%2020231124173826.png)
+
+With << can add standard input through stream 
+
+Using the EOF function can read streaming input into cat and direct to a file stream.txt
+
+![](../Images/Pasted%20image%2020231124174819.png)
+
+Redirect with | to be used in other programs 
+
+Use find to find all files with .conf in /etc/ and redirect STDERR to /dev/null, then grep search for all lines with "systemd":
+
+![](../Images/Pasted%20image%2020231124175618.png)
+
+Can then chain more pipes: 
+
+![](../Images/Pasted%20image%2020231124175656.png)
+
+How many files have the .log extension? 
+
+![](../Images/Pasted%20image%2020231124175835.png)
+
