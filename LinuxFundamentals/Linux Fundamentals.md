@@ -450,3 +450,31 @@ setting sticky bit on directory:
 
 T = all other users that don't have x permissions (can't see contents of folder)
 t = x permissions have been set
+
+## User Management 
+
+sudo - execute command as different user 
+su - requests appropriate user creds via PAM and switches to that user ID, shell is then executed
+useradd - create new user or update default new user info 
+userdel - deletes user account and related files 
+usermod - modifies user account
+addgroup - adds a group to system 
+delgroup - removes group from system 
+passwd - changes user password 
+
+Add a user with useradd: 
+
+![](../Images/Pasted%20image%2020231126145843.png)
+
+Lock an account with usermod: 
+
+![](../Images/Pasted%20image%2020231126145822.png)
+
+Change password with passwd: 
+
+![](../Images/Pasted%20image%2020231126145904.png)
+
+Run a command as a different user with su: 
+
+![](../Images/Pasted%20image%2020231126150011.png)
+
