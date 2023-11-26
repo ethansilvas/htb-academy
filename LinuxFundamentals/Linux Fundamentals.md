@@ -257,3 +257,110 @@ How many files have the .log extension?
 
 ![](../Images/Pasted%20image%2020231124175835.png)
 
+## Filter Contents
+
+`more` and `less` can be used to read files 
+
+they are **pagers** that let you scroll through file in an interactive view 
+
+`more /etc/passwd`:
+
+![](../Images/Pasted%20image%2020231125175453.png)
+
+`less /etc/passwd`:
+
+![](../Images/Pasted%20image%2020231125175551.png)
+
+less has more features and doesn't display output after using
+
+`sort` can be used to sort output either alphabetically or numerically: 
+
+![](../Images/Pasted%20image%2020231125175901.png)
+
+`grep` can filter results like searching for which accounts have bash as default terminal: 
+
+![](../Images/Pasted%20image%2020231125180148.png)
+
+using `grep -v` will exclude any results that we want: 
+
+![](../Images/Pasted%20image%2020231125180834.png)
+
+this will exclude any results with false or nologin 
+
+`cut` will remove specific delimiters 
+`-d` = basically what to "split" on
+`-f` = which index to take 
+
+`-d":" -f1` = split on colon and take the first word (not 0 index):
+
+![](../Images/Pasted%20image%2020231125182345.png)
+
+`tr` can replace characters in a line with characters that we define 
+
+`tr ":" " "`:
+
+![](../Images/Pasted%20image%2020231125182456.png)
+
+`column` displays results in tabular form with `-t`:
+
+![](../Images/Pasted%20image%2020231125182658.png)
+
+`awk` sorts results and grab info that we want
+
+`awk '{print $1, $NF}'` = displays the first and last result on the line 
+
+![](../Images/Pasted%20image%2020231125182931.png)
+
+`sed` can replace text with regex
+
+`s/` for substituting 
+`/g` to replace all matches 
+
+`sed s/bin/HTB/g`
+
+![](../Images/Pasted%20image%2020231125183509.png)
+
+`wc` for word count with `-l` to count lines:
+
+![](../Images/Pasted%20image%2020231125183606.png)
+
+Find the line with the username cryolite:
+
+![](../Images/Pasted%20image%2020231125183913.png)
+
+Get all the usernames:
+
+![](../Images/Pasted%20image%2020231125184006.png)
+
+Get the usernames and the UID:
+
+![](../Images/Pasted%20image%2020231125184344.png)
+
+Get the username cryolite and the UID:
+
+![](../Images/Pasted%20image%2020231125184529.png)
+
+Get the username cryolite and the UID separated by a comma:
+
+![](../Images/Pasted%20image%2020231125185034.png)
+
+Get the username cryolite, the UID, and the set shell separated by comma:
+
+![](../Images/Pasted%20image%2020231125185210.png)
+
+All usernames with the UID and set shells separated by comma: 
+
+![](../Images/Pasted%20image%2020231125185253.png)
+
+All usernames with the UID and set shells separated by comma and exclude any that have nologin and false:
+
+![](../Images/Pasted%20image%2020231125185414.png)
+
+All usernames with UID and set shells separated by comma and exclude any with nologin and count all the lines of the filtered output: 
+
+![](../Images/Pasted%20image%2020231125185559.png)
+
+Get how many services are listening on the target host system without counting localhost and only getting IPv4 connections: 
+
+![](../Images/Pasted%20image%2020231125190709.png)
+
