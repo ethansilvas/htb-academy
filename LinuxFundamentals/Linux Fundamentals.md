@@ -406,3 +406,44 @@ Search for all lines that end with yes:
 
 ![](../Images/Pasted%20image%2020231125220439.png)
 
+## Permission Management 
+
+execute permissions = permission to navigate to directory 
+do not allow a user to execute or modify any files or contents in direcotry 
+
+execute permissions for files = run files 
+
+write = create, delete, rename 
+
+apply read to all users: 
+
+![](../Images/Pasted%20image%2020231125221843.png)
+
+`chown` to change the owner and/or the group assignments of a file or directory 
+
+change both owner and group to root:
+
+![](../Images/Pasted%20image%2020231125222144.png)
+
+SUID = Set user ID 
+SGID = Set group ID 
+allow users to run programs with the rights of another user 
+ex: admin use to give their users special rights for certain apps or files 
+'s' instead of 'x'
+
+set SUID on file: 
+
+![](../Images/Pasted%20image%2020231125223106.png)
+
+**sticky bits** are a type of file permission in linux that can be set on directories 
+extra layer of security for deletion and renaming of files within a directory 
+typically used on directories shared by multiple users 
+
+ex: admin can set sticky bit of directory to ensure that only owner of file, owner of directory, or the root user can delete or rename files within the directory 
+
+setting sticky bit on directory: 
+
+![](../Images/Pasted%20image%2020231125223032.png)
+
+T = all other users that don't have x permissions (can't see contents of folder)
+t = x permissions have been set
