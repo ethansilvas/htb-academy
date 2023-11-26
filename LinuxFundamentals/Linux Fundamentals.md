@@ -431,6 +431,9 @@ allow users to run programs with the rights of another user
 ex: admin use to give their users special rights for certain apps or files 
 's' instead of 'x'
 
+S = execute bit is not set
+s = execute bit is set
+
 set SUID on file: 
 
 ![](../Images/Pasted%20image%2020231125223106.png)
