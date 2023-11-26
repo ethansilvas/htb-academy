@@ -364,3 +364,45 @@ Get how many services are listening on the target host system without counting l
 
 ![](../Images/Pasted%20image%2020231125190709.png)
 
+## Regular Expressions 
+
+grouping operators: 
+
+`(a)` = group parts of a regex 
+`[a-z]` = define character classes; list of characters to search for 
+`{1, 10}` = define quantifiers; number or range indicating how often a previous pattern should be repeated
+`|` = OR 
+`.*` = AND
+
+OR operator with grep: 
+
+`grep -E "(my|false)" /etc/passwd`
+
+AND operator: 
+
+`grep -E "(my.*false)" /etc/passwd`
+
+Show all lines in /etc/ssh/sshd_config that do not contain the # character:
+
+![](../Images/Pasted%20image%2020231125215208.png)
+
+Search for all lines that contain a word that starts with Permit:
+
+![](../Images/Pasted%20image%2020231125215730.png)
+
+Search for all lines that contain a word ending with Authentication: 
+
+![](../Images/Pasted%20image%2020231125215930.png)
+
+Search for all lines containing the word Key:
+
+![](../Images/Pasted%20image%2020231125220011.png)
+
+Search for all lines beginning with Password and containing yes:
+
+![](../Images/Pasted%20image%2020231125220213.png)
+
+Search for all lines that end with yes:
+
+![](../Images/Pasted%20image%2020231125220439.png)
+
