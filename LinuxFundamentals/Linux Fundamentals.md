@@ -478,3 +478,64 @@ Run a command as a different user with su:
 
 ![](../Images/Pasted%20image%2020231126150011.png)
 
+## Package Management 
+
+packages = archives that contain binaries of software, config files, info about dependencies and keep track of updates and upgrades 
+
+- Package downloading 
+- Dependency resolution 
+- standard binary package format 
+- common installation and config locations 
+- additional system-related configuration and functionality 
+- quality control 
+
+software must be available as package 
+
+created, offered, and maintained centrally under Linux distributions, software is integrated directly into the system and directories are distributed throughout the system 
+
+will be able to detect when packages are required for proper functioning of the package that has not yet been installed 
+
+if installed software has been deleted, package management system retakes the package's info, modifies it based on its configuration and deletes the files 
+
+package management systems:
+- dpkg - debian packages 
+- apt - cli for the package management system
+- aptitude - alternative to apt
+- snap - snap packages; latest apps and utils for cloud, servers, desktops, and IoT 
+- gem - front-end to RubyGems; ruby package manager
+- pip - python
+- git - distributed revision control system
+
+### APT 
+
+debian based linux uses APT 
+
+package = archive file containing .deb files 
+
+dpkg = install programs associated with .deb file 
+
+APT makes it easier to deal with dependencies, as compared to downloading standalone .deb files 
+
+most linux distros utilize the most stable or main repo for package repos 
+
+can view the contents of `/etc/apt/sources.list` to see the list of repositories being used 
+
+parotOS = `/etc/apt/sources.list.d/parrot.list`
+
+APT cache = provide info about packages installed on our system offline 
+
+`apt-cache search impacket` = find all Impacket related packages:
+
+![](../Images/Pasted%20image%2020231126172112.png)
+
+list all installed packages with `apt list --installed`: 
+
+![](../Images/Pasted%20image%2020231126172234.png)
+
+can search for missing packages and install them: 
+
+![](../Images/Pasted%20image%2020231126172336.png)
+
+-y will auto say yes to all prompts
+
+## Git 
