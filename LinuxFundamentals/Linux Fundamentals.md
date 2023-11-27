@@ -539,3 +539,22 @@ can search for missing packages and install them:
 -y will auto say yes to all prompts
 
 ## Git 
+
+making a directory and then cloning into it:
+
+![](../Images/Pasted%20image%2020231126173247.png)
+
+### DPKG
+
+we can download the programs and the tools from the repositories separately 
+
+use `wget` to download strace for ubuntu:
+
+![](../Images/Pasted%20image%2020231126173404.png)
+
+now can use both apt and dpkg to install it
+
+using dpkg to install the previously downloaded strace debian file: 
+
+![](../Images/Pasted%20image%2020231126173624.png)
+
