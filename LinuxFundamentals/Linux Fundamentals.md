@@ -736,3 +736,7 @@ use systemctl to start the service and enable the autostart:
 
 ![](../Images/Pasted%20image%2020231127220245.png)
 
+service is now viewable:
+
+![](../Images/Pasted%20image%2020231127220640.png)
+
