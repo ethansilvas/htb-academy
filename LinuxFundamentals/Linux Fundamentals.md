@@ -558,3 +558,128 @@ using dpkg to install the previously downloaded strace debian file:
 
 ![](../Images/Pasted%20image%2020231126173624.png)
 
+## Service and Process Management 
+
+two types of services:
+- internal = services required at system startup 
+- services installed by user = includes all server services 
+
+run in the background without user interaction = daemons 
+
+daemons identified by 'd' at the end of the program name
+
+sshd or systemd 
+
+most linux distros use systemd 
+
+systemd = init process started first (process ID 1)
+monitors and takes care of the orderly starting and stopping of other services 
+
+`/proc/` = can view all processes and their assigned PID 
+
+PPID = parent process ID 
+
+`systemctl` and `update-rc.d` = manage SysV init script links 
+
+### Systemctl
+
+start OpenSSH:
+
+![](../Images/Pasted%20image%2020231127202355.png)
+
+check status: 
+
+![](../Images/Pasted%20image%2020231127202612.png)
+
+add OpenSSH to the SysV script so that it runs after startup:
+
+![](../Images/Pasted%20image%2020231127203402.png)
+
+can then use process status or `ps` to check the status of it: 
+
+![](../Images/Pasted%20image%2020231127203453.png)
+
+can also use systemctl to list all services:
+
+![](../Images/Pasted%20image%2020231127203722.png)
+
+if services don't start because of error you can see the logs with journalctl: 
+
+![](../Images/Pasted%20image%2020231127203800.png)
+
+### Kill a process
+
+processes can be: 
+- running
+- waiting (for an event or system resource)
+- stopped 
+- zombie (stopped but still has an entry in the process table)
+
+processes can be controlled with: 
+- kill 
+- pkill 
+- pgrep
+- killall
+
+to interact with a process you have to send a signal to it, you can view all signals with: 
+
+![](../Images/Pasted%20image%2020231127204440.png)
+
+most commonly used signals are: 
+- 1 SIGHUP = sent to process when terminal that controls it is closed 
+- 2 SIGINT = sent when user presses CTRL+C in the controlling terminal to interrupt it 
+- 3 SIGQUIT = when user presses CTRL+D to quit 
+- 9 SIGKILL = immediately kill a process with no clean-up operations
+- 15 SIGTERM = program termination
+- 19 SIGSTOP = stop the program, can't be handled anymore
+- 20 SIGTSTP = when user presses CTRL+Z to request for a service to suspend, can handle after
+
+killing a ping process: 
+
+![](../Images/Pasted%20image%2020231127205255.png)
+
+### Background a process
+
+sometimes need to put scan or process we just started in background to continue using the current session to interact with the system or start other processes
+
+can do this with CTRL+Z
+
+can view all of the background processes with `jobs`:
+
+![](../Images/Pasted%20image%2020231127205702.png)
+
+suspended processes will not be executed further but we can keep it running in the background with `bg`:
+
+![](../Images/Pasted%20image%2020231127210042.png)
+
+`fg` = brings process to the foreground: 
+
+![](../Images/Pasted%20image%2020231127210316.png)
+
+putting an `&` at the end of command will automatically run the process in the background: 
+
+![](../Images/Pasted%20image%2020231127210528.png)
+
+### Execute multiple commands
+
+three ways to run several commands: 
+- ;
+- &&
+- |
+
+`;` will separate commands and executes commands ignoring each other:
+
+![](../Images/Pasted%20image%2020231127211509.png)
+
+![](../Images/Pasted%20image%2020231127211542.png)
+
+`&&` = will not run after errors:
+
+![](../Images/Pasted%20image%2020231127211627.png)
+
+`|` will depend on no errors and depend on the results of the previous command
+
+List all units of services and find a specific one: 
+
+![](../Images/Pasted%20image%2020231127212111.png)
+
