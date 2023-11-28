@@ -740,3 +740,18 @@ service is now viewable:
 
 ![](../Images/Pasted%20image%2020231127220640.png)
 
+### Cron
+
+can also schedule and automate processes; allows users to execute tasks at a specific time or within specific intervals 
+
+to setup cron daemon, need to store the tasks in a file called `crontab` and tell the daemon when to run the tasks 
+
+create file with `crontab -e`
+
+### Systemd vs Cron
+
+systemd you need to create a timer and services script that tells the OS when to run the tasks 
+
+Cron you need to create a crontab file that tells the cron daemon when to run the tasks
+
+use `systemctl show` to view specific services
