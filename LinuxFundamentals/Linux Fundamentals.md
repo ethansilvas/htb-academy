@@ -683,3 +683,56 @@ List all units of services and find a specific one:
 
 ![](../Images/Pasted%20image%2020231127212111.png)
 
+## Task Scheduling
+
+task scheduling = schedule and automate tasks in linux 
+
+run tasks at specific times or within specific frequencies without having to start them manually 
+
+examples:
+* auto update software
+* running scripts
+* cleaning databases
+* automating backups 
+
+### Systemd
+
+used to start processes and scripts at a specific time 
+
+can also specify events and triggers that will trigger a specific task 
+
+1. create a timer
+2. create a service 
+3. activate the timer
+
+Create a timer with mkdir:
+
+![](../Images/Pasted%20image%2020231127215704.png)
+
+timer scripts needs:
+- Unit = description for the timer
+- Timer = when to start the timer and when to activate it 
+- Install = where to install the timer 
+
+![](../Images/Pasted%20image%2020231127215557.png)
+
+OnBootSec = how to run on boot
+OnUnitActiveSec = change how often to run the script
+
+Create a service file:
+
+![](../Images/Pasted%20image%2020231127215825.png)
+
+![](../Images/Pasted%20image%2020231127220037.png)
+
+multi-user.target= the unit system that is activated when starting a normal multi-user mode
+defines the services that should be started on a normal system startup
+
+then let systemd read the folders again to include the changes:
+
+![](../Images/Pasted%20image%2020231127220156.png)
+
+use systemctl to start the service and enable the autostart:
+
+![](../Images/Pasted%20image%2020231127220245.png)
+
