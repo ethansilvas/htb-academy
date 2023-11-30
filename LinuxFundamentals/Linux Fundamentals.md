@@ -984,3 +984,84 @@ then create a crontab that runs the script every hour at the 0th minute:
 
 `0 * * * * /path/to/RSYNC_Backup.sh`
 
+## File System Management
+
+complex process that involves organizing and maintaining data stored on a disk or other storage device 
+
+linux supports many types of file systems
+
+linux file system based on unix file system  
+hierarchical composed of various components    
+**inode table** = basis for the entire file system; table of info and metadata for each file and directory
+
+files can be stored as regular files or directories 
+
+regular files = stored in root directory  
+directories = store collection of files  
+
+symbolic links = references to other files or directories 
+
+`ls -il`
+
+`-i` = inode; 
+
+### Disks and drives
+
+managing physical storage like HDD, SSD, and removable storage
+
+fdisk = main tool for disk management  
+create, delete, and manage partitions on a drive  
+also give info on partition  
+
+each partition can be formatted with a specific file system
+
+common partitioning tools: 
+- fdisk
+- gpart
+- GParted
+
+![](../Images/Pasted%20image%2020231129213927.png)
+
+mounting = each logical partition or drive needs to be assigned to a specific directory on Linux  
+attaching a drive to a dir, making it accessible to the file system hierarchy
+
+`mount` to mount file systems  
+`/etc/fstab` = define the default file systems that are mounted at boot time
+
+![](../Images/Pasted%20image%2020231129215931.png)
+
+swap mount point = partition or file used as swap space; crucial for system stability and performance  
+when system runs out of ram it can move less frequently used data from ram to swap space
+
+`mount` can be used to see all mounted file systems: 
+
+![](../Images/Pasted%20image%2020231129220133.png)
+
+can mount a USB drive with: 
+
+`sudo mount /dev/sdb1 /mnt/usb`
+
+then unmount: 
+
+`sudo umount /mnt/usb`
+
+unmounting can't be done without proper permissions and you cant unmount a file system that is in use by a running process
+
+can use `lsof` to list the open files on the file system:
+
+`lsof | grep username`
+
+can also add an entry to `/etc/fstab` to auto unmount a file system on shut down with noauto:
+
+`/dev/sdb1 /mnt/usb ext4 rw,noauto,user 0 0 `
+
+### SWAP
+
+swap space can be created either during installation of OS or by using `mkswap` and `swapon` 
+
+`mkswap` = set up linux swap area on a device or in a file
+`swapon` = activate a swap area
+
+important that swap space has dedicated partition or file, and is encrypted
+
+also used for hibernation = save state to disk and then power off instead of shut down
