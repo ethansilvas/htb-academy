@@ -755,3 +755,74 @@ systemd you need to create a timer and services script that tells the OS when to
 Cron you need to create a crontab file that tells the cron daemon when to run the tasks
 
 use `systemctl show` to view specific services
+
+## Network Services 
+
+### SSH 
+
+secure transmission of data and commands over a network 
+
+manage remote systems and securely access remote systems for commands or file transfers
+
+installing OpenSSH: 
+
+![](../Images/Pasted%20image%2020231129153612.png)
+
+check if the server is running: 
+
+![](../Images/Pasted%20image%2020231129153656.png)
+
+using `ssh host@IP` you can securely access remote systems when performing network audit
+
+configure and customize openssh with `/etc/ssh/sshd_config`
+
+### NFS 
+
+network file system = network protocol to store and manage files on remote systems as if they were stored on the local system 
+
+multiple servers 
+- NFS-UTILS ubuntu
+- NFS-Ganesha solaris
+- OpenNFS redhat
+
+used to share and manage resources efficiently, real-time file transfer, and support for multiple users accessing data simultaneously 
+
+can use like FTP 
+
+install nfs: 
+
+![](../Images/Pasted%20image%2020231129154846.png)
+
+check if server is running: 
+
+![](../Images/Pasted%20image%2020231129154914.png)
+
+configure NFS with `/etc/exports` = which directories should be shared and the access rights for users/systems 
+
+![](../Images/Pasted%20image%2020231129160538.png)
+
+- rw = read write
+- ro = read only
+- no_root_squash = prevent root user on client from having only normal user rights
+- root_squash = root user on client only has rights of normal user 
+- sync = sync transfer of data to ensure changes are only transferred after they have been saved
+- async = transfers data async which makes it faster but can lead to inconsistencies if changes have not been fully committed 
+
+can add a NFS share folder with:
+
+```
+mkdir nfs_sharing
+echo '/home/user/nfs_sharing' hostname(rw,sync,no_root_squash)' >> /etc/exports
+cat /etc/exports | grep -v "#"
+```
+
+after creating the share it needs to be mounted: 
+
+```
+mkdir ~/target_nfs
+mount 10.129.12.17:/home/test/dev_scripts ~/target_nfs
+tree ~/target_nfs
+```
+
+now the contents of the dev_scripts directory on the NFS server will be accessible at ~/target_nfs on the local machine
+
