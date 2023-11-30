@@ -903,3 +903,84 @@ can enable encryption, tunneling, traffic shaping, etc
 to connect to an openvpn server we use the`.ovpn` file from the server and save it to our system:
 
 `sudo openvpn --config internal.ovpn`
+
+## Working with web services 
+
+cURL allows transfer files from the shell over HTTP, HTTPS, FTP, SFTP, FTPS, or SCP
+
+`curl <url>`
+
+wget = alterternative to cURL; download files from FTP or HTTP servers from terminal 
+
+will store the content downloaded locally instead of output
+
+`wget <url>`
+
+python 3 is another option for data transfer
+
+`python3 -m http.server`
+
+## Backup and Restore 
+
+backing up an ubuntu system: 
+- Rsync
+- Deja Dup
+- Duplicity
+
+rsync = quick and secure back up files and folders to remote location  
+transferring large data over network because it only transmits changed parts of a file  
+
+duplicity = graphical backup tool that gives comprehensive data protection and secure backups  
+uses rsync as backend and offers to encrypt backup copies and store them on remote media like FTP servers, cloud storage devices like S3
+
+deja dup = graphical backup tool that simplifies backup, also uses rsync as backend 
+
+important to encrypt backups with: 
+- GnuPG
+- eCryptfs
+- LUKS
+
+### Rsync 
+
+backup local directory to backup server:
+
+`rsync -av /path/to/local user@backup_server:/path/to/backup`
+
+`-a` = preserve original file attributes (permissions, timestamps, etc.)
+`-v` = verbose 
+
+`rsync -avz --backup --backup-dir=/path/to/backup/folder --delete /path/to/mydir user@backup_server:/path/to/backup`
+
+`-z` = enable compression
+`--backup` = incremental backups in backup folder
+`--delete` = removes files from the remote host no longer present in source dir
+
+restore local directory from backup: 
+
+`rsync -av user@remote_host:/path/to/backup /path/to/dir`
+
+encrypting rsync with ssh and other security measures it makes much more difficult for unauthorized access 
+
+`rsync -avz -e ssh /path/to/dir user@backup_server:/path/to/backup`
+
+this will make it so the data transfer between our local dir and the backup dir will be encrypted over ssh
+
+### Auto synchronization
+
+can use cron to schedule syncs between the two systems at regular intervals
+
+first create a new script RSYNC_Backup.sh: 
+
+```
+#!/bin/bash
+rsync -avz -e ssh /path/to/dir user@backup_server:/path/to/backup
+```
+
+make sure that the script has the correct permissions and ownership:
+
+`chmod +x RSYNC_Backup.sh` 
+
+then create a crontab that runs the script every hour at the 0th minute: 
+
+`0 * * * * /path/to/RSYNC_Backup.sh`
+
