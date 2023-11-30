@@ -882,3 +882,24 @@ can also host a specific directory:
 
 can also specify port with `-p`
 
+### VPN 
+
+let us connect to a network as if we were directly in it 
+
+popular VPN servers for linux
+- OpenVPN
+- L2TP/IPsec
+- PPTP
+- SSTP
+- SoftEther
+
+can also be used as a pen tester to connect to internal networks 
+
+install with `sudo apt install openvpn -y`
+
+customize with the `/etc/openvpn/server.conf` file  
+can enable encryption, tunneling, traffic shaping, etc
+
+to connect to an openvpn server we use the`.ovpn` file from the server and save it to our system:
+
+`sudo openvpn --config internal.ovpn`
