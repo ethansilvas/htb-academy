@@ -826,3 +826,59 @@ tree ~/target_nfs
 
 now the contents of the dev_scripts directory on the NFS server will be accessible at ~/target_nfs on the local machine
 
+### Web Servers 
+
+provide data and docs or other applications and functions over the internet 
+
+HTTP to send data to clients such as web browsers and receive requests from them 
+
+popular web servers are: 
+- apache
+- nginx 
+- ligttpd
+- caddy
+
+can be used to perform file transfers or phishing attacks by hosting a copy of the target page on our own server then attempting to steal user creds
+
+install apache web server:
+
+![](../Images/Pasted%20image%2020231129163601.png)
+
+specify which folders can be accessed with `/etc/apache2/apache2.conf` 
+
+```
+<Directory /var/www/html>  
+	Options Indexes FollowSymLinks  
+	AllowOverride All  
+	Require all granted  
+</directory>
+```
+
+- users can use the indexes and FollowSymLinks options
+- changes in the directory can be overridden with AllowOverride All 
+- require all granted grants all users access to this directory 
+
+with these options we could put files in /var/www/html folder and use wget or curl or other applications to download these files on the target system from the web server
+
+`.htaccess` file can be used to customize individual settings at the directory level  
+can create this in the directory needed  
+directory level settings such as access controls  
+
+can add modules like mod_rewrite, mod_security, or mod_ssl to enhance security 
+
+### Python web server
+
+alternative to apache
+
+can be used to host a single folder with a single command to transfer files to another system
+
+after installing python you can start the web server on the TCP 8000 port and host the current directory:
+
+![](../Images/Pasted%20image%2020231129164657.png)
+
+can also host a specific directory: 
+
+![](../Images/Pasted%20image%2020231129165949.png)
+
+can also specify port with `-p`
+
