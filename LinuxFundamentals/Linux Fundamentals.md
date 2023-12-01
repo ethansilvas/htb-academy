@@ -1065,3 +1065,237 @@ swap space can be created either during installation of OS or by using `mkswap` 
 important that swap space has dedicated partition or file, and is encrypted
 
 also used for hibernation = save state to disk and then power off instead of shut down
+
+## Containerization
+
+packaging and running apps in isolated environments: container, VM, serverless env 
+
+container tech for linux: 
+- Docker 
+- Docker Compose 
+- Linux Containers 
+
+create, deploy, and manage apps 
+
+also good for running multiple apps at once for scalability and portability
+
+good to ensure apps are managed and deployed efficiently and securely 
+
+### Dockers 
+
+docker = open source platform for auto deployment of apps as self-contained units called containers
+
+uses layered filesystems and resource isolation features
+
+create, deploy, and manage apps 
+
+script to install docker: 
+
+```bash
+#!/bin/bash
+
+# Preparation
+sudo apt update -y
+sudo apt install ca-certificates curl gnupg lsb-release -y
+sudo mkdir -m 0755 -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Install Docker Engine
+sudo apt update -y
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+
+# Add user htb-student to the Docker group
+sudo usermod -aG docker htb-student
+echo '[!] You need to log out and log back in for the group changes to take effect.'
+
+# Test Docker installation
+docker run hello-world
+```
+
+docker engine and docker images are needed to run a container, can get these from docker hub 
+
+docker hub = repos or libraries of docker images 
+
+creating a docker image is done with a **dockerfile** = contains all instructions the docker engine needs to create the container 
+
+docker containers can be used as file hosting server when transferring files to target systems  
+therefore we need to make dockerfile based on ubuntu with Apache and SSH  
+can then use scp to transfer files to docker image and apache lets you host files that target system can download 
+
+example dockerfile:
+
+```
+# use latest ubuntu as base image
+FROM ubuntu:22.04
+
+# update package repo and install required packages  
+RUN apt-get update && \  
+	apt-get install -y \  
+		apache2 \  
+		openssh-server \  
+		&& \  
+	rm -rf  /var/lib/apt/lists/*
+
+# Create new user called student
+RUN useradd -m docker-user && \
+	echo "docker-user:password" | chpasswd
+
+# give the htb-student user full access to the apache and ssh services 
+RUN chown -R docker-user:docker-user /var/www/html && \
+	chown -R docker-user:docker-user /var/run/apache2 && \
+	chown -R docker-user:docker-user /var/log/apache2 && \
+	chown -R docker-user:docker-user /var/lock/apache2 && \
+	usermod -aG sudo docker-user && \
+
+# expose the required ports
+EXPOSE 22 80
+
+CMD service ssh start && /usr/sbin/apache2ctl -D FOREGROUND
+```
+
+with the new dockerfile we need to convert it to an image with `build`
+
+build will execute the steps from the dockerfile and store the image in the local docker engine 
+
+`docker build -t FS_docker` 
+
+`-t `= give container a tag 
+
+after creation it can be executed through docker engine 
+
+container = running process of an image
+
+start the container: 
+
+`docker run -p <host port>:<docker port> -d <docker container name>`
+
+`docker run -p 8022:22 -p 8080:80 -d FS_docker`
+
+map the host ports 8022 and 8080 to 22 and 80, then we can access the SSH and HTTP services inside the container using the specified host ports
+
+### Docker management 
+
+common docker management commands: 
+- docker ps = list all running containers
+- docker stop = stop container
+- docker start = start stopped container
+- docker restart = restart running container 
+- docker rm = remove a container
+- docker rmi = remove a docker image
+- docker logs = view the logs of the container
+
+any changes made to existing image are not permanent, need to create new image that inherits from the original and includes the desired changes 
+
+done by creating a new dockerfile that starts with `FROM` statement that specifies the base image, then adds necessary commands to add necessary changes 
+
+containers are immutable - any changes made during runtime are lost when the container is stopped 
+
+container orchestration tools: 
+- Docker Compose 
+- Kubernetes   
+manage and scale containers in a production env
+
+### Linux containers
+
+linux containers = LXC = virtualization tech that allows multiple isolated linux systems to run on a single host 
+
+resource isolation features such as cgroups and namespaces to provide lightweight virtualization solution
+
+tools and APIs to manage and configure containers 
+
+differences between LXC and docker: 
+- approach
+- image building
+- portability 
+- ease of use 
+- security
+
+lxc = virtualization tech that uses resource isolation features of linux kernel to provide isolated env 
+
+built by creating a root filesystem and installing the required packages and configurations 
+
+lxc containers are tied to host system and may not be easily portable 
+
+security features may not be as robust as docker 
+
+docker is application centric platform that builds on lxc
+
+dockerfiles are portable 
+
+installing lxc:
+
+`sudo apt-get install lxc lxc-utils -y`
+
+create an lxc container: 
+
+`sudo lxc-create -n linuxcontainer -t ubuntu`
+
+management commands:
+- `lxc-ls` = list all containers
+- `lxc-stop -n <container>` = stop a running container
+- `lxc-start -n <container>` = start a stopped container
+- `lxc-restart -n <container>` = restart a running container 
+- `lxc-config -n <container> -s storage` = manage container storage
+- `lxc-config -n <container> -s network` = manage container network settings
+- `lxc-config -n <container> -s security` = manage container security settings
+- `lxc-attach -n <container>` = connect to a container
+- `lxc-attach -n <container> -f /path/to/share` = connect container and share a specific directory or file
+
+linux containers help when we need to test app or systems with dependencies or configs that are hard to reproduce on our machines
+
+standalone executable package containing all dependencies and configs needed to run a specific software or system
+
+can quickly use containers to create isolated env specific to testing needs
+
+can also use to test exploits or malware in a controlled environment 
+
+security measures: 
+- restricting access to the container
+- limiting resources 
+- isolating the container from the host 
+- enforcing mandatory access control
+- keeping the container up to date 
+
+lxc containers can be accessed using SSH, console, etc. 
+
+need to disable unnecessary services, use secure protocols, and enforce strong authentication mechanisms 
+
+can use **cgroups** to limit the amount of CPU, memory, or disk space that a container can use because the container still uses the same kernel as the host machine
+
+### Securing LXC 
+
+can create a new config file in `/usr/share/lxc/config/<container>.conf` 
+
+`sudo vim /usr/share/lxc/config/linuxcontainer.conf`
+
+then add the lines: 
+
+```
+lxc.cgroup.cpu.shares = 512
+lxc.cgroup.memory.limit_in_bytes = 512m
+```
+
+.shares = determines CPU time a container can use in relation to other containers on the system  
+default = 1024
+
+.limit_in_bytes = set max amount of memory a container can use 
+
+need to restart to apply changes: 
+
+`sudo systemctl restart lxc.service`
+
+lxc use **namespaces** to provide isolated env 
+
+namespaces = feature of linux kernel that allows for creating isolated env by abstracting system resources
+
+each container given unique PID number space isolated from hosts PIDs  
+also has its own network interfaces, routing tables, firewall rules  
+any network-related activity withing container is cordoned off from the host system's network 
+
+containers come with own root file system (mnt) 
+
+important to remember that containers don't provide complete security 
+
+
+
