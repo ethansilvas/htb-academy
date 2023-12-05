@@ -1362,5 +1362,61 @@ need to then restart networking service to ensure changes are applied:
 
 ![](../Images/Pasted%20image%2020231205150648.png)
 
+### Network Access Control 
+
+NAC = security system to ensure only authorized and compliant devices are granted access to the network 
+
+DAC = resources have owners with the responsibility of defining access permissions  
+users and groups who own resource decide who has access and what actions they can perform 
+
+MAC = determine resource access based on resource's security level and user's security level or process requesting access  
+access only granted if security clearance is greater than or equal to required  
+
+Role-BAC = users have roles and each role is granted access permissions that determine what actions they can perform  
+more flexible and scalable than DAC 
+
+### Troubleshooting
+
+identifying, analyzing, and implementing solutions to resolve problems 
+
+connection problems, slow network speeds, and network errors 
+
+- Ping
+- Traceroute
+- netstat
+- tcpdump
+- wireshark 
+- nmap
+
+`ping` = test connectivity between two devices; send ICMP packets and display the response times: 
+
+![](../Images/Pasted%20image%2020231205152309.png)
+
+`traceroute` = traces the route packets take to reach a remote host; sends packets with increasing TTL values to a remote host:
+
+![](../Images/Pasted%20image%2020231205152516.png)
+
+`netstat` = shows all active network connections and their ports 
+
+most common network issues: 
+- network connectivity issues
+- dns resolution issues
+- packet loss
+- network performance issues
+
+### Hardening
+
+SELinux = MAC system built into the linux kernel  
+enforcing policy that defines the access controls for each process and file on the system  
+
+AppArmor = MAC system with similar level of control to SELinux, but works differently  
+implemented as a Linux Security Module (LSM) and uses app profiles to define the resources the application can access  
+easier to use but may not have same level of fine-grained control 
+
+TCP wrappers = host-based network access control mechanism to restrict access to network services based on the IP of the client system  
+intercept incoming network requests and comparing IP address of client to the access control rules  
+limit access to network services to unauthorized systems  
+
+### Setting up 
 
 
