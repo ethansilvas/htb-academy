@@ -1297,5 +1297,70 @@ containers come with own root file system (mnt)
 
 important to remember that containers don't provide complete security 
 
+## Network Configuration
+
+network config tasks: 
+- config network interfaces
+- assigning IP addresses 
+- config network devices such as routers and switches 
+- setting up network protocols 
+
+NAC:
+- DAC
+- MAC
+- RBAC
+
+need to understand NAC enforcement techniques and how to configure linux network devices for NAC 
+
+SELinux policies, AppArmor profiles, and using TCP wrappers to control access 
+
+network monitoring tools: 
+- syslog
+- rsyslog
+- ss
+- lsof
+- ELK stack
+
+### Configuring Network Interfaces 
+
+configure local network interfaces with ifconfig and ip 
+
+ifconfig deprecated for newer ip command 
+
+`ip addr` similar to basic `ifconfig` command: 
+
+![](../Images/Pasted%20image%2020231205141032.png)
+
+setting up a network interface: 
+
+![](../Images/Pasted%20image%2020231205141116.png)
+
+can add an ip address to a network interface with: 
+
+`sudo ifconfig eth0 192.19.1.0`
+
+can also assign a netmask: 
+
+![](../Images/Pasted%20image%2020231205141426.png)
+![](../Images/Pasted%20image%2020231205141447.png)
+
+default gateway = IP address of the router that will be used to send traffic to destinations outside local network 
+
+can add default gateway with route add: 
+
+`sudo route add default gw 192.168.1.1 eth0`
+
+need to configure DNS servers so that devices can communicate with other devices and access websites/online resources 
+
+`/etc/resolv.conf` = use to update DNS server configuration; file with system's DNS info 
+
+edits to this file do not persist across reboots, so need to ensure that they do with `/etc/network/interfaces`:
+
+![](../Images/Pasted%20image%2020231205150520.png)
+
+need to then restart networking service to ensure changes are applied:
+
+![](../Images/Pasted%20image%2020231205150648.png)
+
 
 
