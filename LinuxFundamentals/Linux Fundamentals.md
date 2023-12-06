@@ -1541,6 +1541,78 @@ list the sessions:
 
 ![](../Images/Pasted%20image%2020231205195718.png)
 
+## Linux Security
+
+keep OS and installed packages up to date: 
+
+`apt update && apt dist-upgrade`
+
+firewall rules - if not appropriately set on the network level, can use linux firewall or `iptables` to restrict traffic in/out of the host
+
+ssh - config should be set up to disallow password login and disallow the root user from being able to log in via ssh  
+avoid logging into and admining the system as root  
+if user needs to run command as root, then that command should be specified in the `sudoers` configuration instead of giving them full sudo rights  
+`fail2ban` = counts the number of failed login attempts, if the user has reached max number then host will be handled as configured
+
+audit for privilege escalation: 
+- out of date kernel
+- user permission issues
+- world writable files
+- misconfigured cron jobs
+- misconfigured services 
+
+SELinux and AppArmor for best locking down linux systems
+
+snort, chkrootkit, rkhunter, lynis for linux security
+
+other security settings: 
+- removing or disabling all unnecessary services or software
+- removing all services that rely on unencrypted authentication mechanisms
+- ensure NTP is enabled and Syslog is running
+- ensure each user has their own account
+- enforce use of strong passwords
+- set up password aging and restrict use of reused passwords 
+- lock user accounts after login failures 
+- disable all unwanted SUID/SGID binaries 
+
+### TCP Wrappers
+
+control which services are allowed access to the system 
+
+restrict access based on the hostname or IP address of the user requesting the service
+
+1. client attempts to connect to a service 
+2. system consults the rules defined in the TCP wrappers config 
+3. determine Ip address of the client
+4. if IP address matches criteria then grants access to the service 
+5. if not match then the connection will be denied 
+
+`/etc/hosts.allow`
+`/etc.hosts.deny`
+
+allow: 
+
+```
+sshd : 10.129.14.0/24
+
+ftpd : 10.129.14.10
+
+telnetd : .inlanefreight.local
+```
+
+deny: 
+
+```
+ALL : .inlanefreight.com
+
+sshd : 10.129.22.22
+
+ftpd : 10.129.22.0/24
+```
+
+**order of the rules matters** 
+
+can only control access to services and not ports; not a replacement for firewall rules
 
 
 
