@@ -1472,6 +1472,75 @@ since X11 is completely unencrypted, an entirely open X server lets anyone on th
 
 tools like `xwd` and `xgrabsc` take advantage of this so pen testers can read users' keystrokes, obtain screenshots, move the mouse cursor and send keystrokes from the server over the network 
 
+### XDMCP 
+
+X display manager control protocol XDMCP = used by X display manager for communication through UDP 177 between X terminals and unix/linux computers 
+
+used to manage remote X window sessions on other machines and often used by admins to provide access to remote desktops 
+
+not secure and should not be used in high security environments  
+possible to route an entire GUI such as KDE or Gnome to a corresponding client 
+
+for a linux system to act as an XDMCP server, an X system with a GUI must be installed on the server 
+
+vulnerable to MitM attack where attacker impersonates one of the parties to gain access to the server 
+
+### VNC 
+
+Virtual network computing = remote desktop sharing system based on RFB protocol 
+
+view and interact with a desktop environment over a network connection
+
+generally considered to be secure  
+encrypt data in transit and requires authentication
+
+two different concepts for VNC servers
+- usual server offers the actual screen of the host computer for user support
+- allows user to login to virtual sessions similar to the terminal server concept 
+
+similar uses to TeamViewer and RDP 
+
+VNC traditionally listens on TCP port 5900  
+display 0 here
+
+other displays can be offered through 590(x) where x is the display number 
+
+VNC connection tools: 
+- TigerVNC
+- TightVNC
+- RealVNC
+- UltraVNC
+
+ultravnc and realvnc are often used for better encryption and higher security
+
+install TigerVNC:
+
+![](../Images/Pasted%20image%2020231205194746.png)
+
+then need to create `xstartup` and `config` files   
+`xstartup` = determines how the VNC session is created in connection with the display manager  
+`config` = determines its settings
+
+setup startup file: 
+
+![](../Images/Pasted%20image%2020231205195242.png)
+
+setup config:
+
+![](../Images/Pasted%20image%2020231205195323.png)
+
+give execute permissions to the file:
+
+![](../Images/Pasted%20image%2020231205195457.png)
+
+start the VNC server
+
+![](../Images/Pasted%20image%2020231205195558.png)
+
+list the sessions: 
+
+![](../Images/Pasted%20image%2020231205195718.png)
+
 
 
 
