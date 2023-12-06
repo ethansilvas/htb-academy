@@ -1417,6 +1417,63 @@ TCP wrappers = host-based network access control mechanism to restrict access to
 intercept incoming network requests and comparing IP address of client to the access control rules  
 limit access to network services to unauthorized systems  
 
-### Setting up 
+## Remote Desktop Protocols in Linux
+
+graphical remote access to a system 
+
+- troubleshooting
+- software or system upgrading
+- remote sysadmin
+
+most common protocols are RDP for windows and VNC for linux
+
+### XServer
+
+xserver = user-side part of the X Window System Network Protocol (X11/X)
+
+X11 = fixed system that consists of a collection of protocols and apps that let us call application windows on displays in a graphical interface 
+
+x11 predominant on unix but x servers also available on other OS 
+
+when a desktop is started on a linux computer the communication of the GUI and the OS happens on the X server
+
+mainly uses tcp/ip but can also use unix sockets 
+
+ports used typically in the range of TCP 6001-6009  
+when first opening a new desktop session with X server the port 6000 is used for the first X display :0
+
+range of ports lets it perform tasks such as hosting apps and providing services to clients 
+
+ports provide: 
+- remote access to system
+- secure sharing of files and data 
+
+X server not dependent on local computer; can access other computers and other computers can access it 
+
+VNC and RDP generate the graphical output on the remote computer and transport it over the network 
+
+X11 major disadvantage = unencrypted data transmission  
+however this can be overcome with tunneling the SSH protocol  
+need to allow X11 forwarding in the SSH configuration file `/etc/ssh/sshd_config` on the server that provides the application
+
+`cat /etc/ssh/sshd_config | grep X11Forwarding`
+
+then add the line:
+
+`X11Forwarding yes`
+
+with forwarding set you can start the application from our client: 
+
+`ssh -X htb-student@10.129.23.11 /user/bin/firefox`
+
+`-X` = enable X11 forwarding to graphically display applications
+
+since X11 is completely unencrypted, an entirely open X server lets anyone on the network read the contents of the windows without needing to sniff the network 
+
+tools like `xwd` and `xgrabsc` take advantage of this so pen testers can read users' keystrokes, obtain screenshots, move the mouse cursor and send keystrokes from the server over the network 
+
+
+
+
 
 
