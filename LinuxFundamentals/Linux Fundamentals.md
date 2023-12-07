@@ -1614,7 +1614,179 @@ ftpd : 10.129.22.0/24
 
 can only control access to services and not ports; not a replacement for firewall rules
 
+## Firewall Setup
 
+controlling and monitoring network traffic between different network segments
 
+filter incoming/outgoing network traffic with:
+- pre-defined rules
+- protocols
+- ports
+
+iptables -> ipchains -> ipfwadm tools
+
+iptables = filtering network traffic  
+cli for config firewall rules  
+
+Netfilter framework = integral part of kernel that firewall functionality is implemented with  
+hooks that can be used to intercept and modify network traffic 
+
+### Iptables
+
+set of rules for filtering network traffic based on rules 
+
+Nftables = more modern syntax and improvements over iptables 
+
+UFW = uncomplicated firewall; simple and user-friendly interface 
+
+FirewallD = dynamic and flexible firewall solution that can be used to manage complex firewall configurations 
+
+main components of iptables: 
+- Tables = organize and categorize firewall rules 
+- Chains = group a set of firewall rules applied to a specific type of network traffic
+- Rules = define the criteria for filtering traffic and actions to take for packets that match criteria 
+- Matches = match specific criteria for filtering network traffic 
+- Targets = specify the action for packets that match a specific rule (accept, drop, reject, modify)
+
+### Tables 
+
+categorize and organize firewall rules based on the type of traffic they are designed to handle 
+
+`filter` - used to filter network traffic - INPUT, OUTPUT, FORWARD 
+`nat` - modify the source or destination IP addresses - PREROUTING, POSTROUTING
+`mangle` - used to modify the header fields of network packets - PREROUTING, OUTPUT, INPUT, FORWARD, POSTROUTING
+
+built in tables and also a **raw table** = configure special packet processing options - PREROUTING, OUTPUT
+
+### Chains 
+
+organize rules that define how network traffic should be filtered or modified 
+
+- built-in chains = pre-defined and auto created when table is created 
+	- INPUT
+	- OUTPUT 
+	- FORWARD
+- User-defined chains 
+
+nat table has two built in chains: 
+- PREROUTING
+- POSTROUTING
+
+PREROUTING = modify the destination IP address of incoming packets before the routing table processes them 
+
+POSTROUTING = modify the source IP address of outgoing packets after the routing table has processed them 
+
+mangle table built in chains: 
+- PREROUTING
+- OUTPUT
+- INPUT
+- FORWARD
+- POSTROUTING
+
+used to modify the header fields of incoming/outgoing packets being processed by the corresponding chains 
+
+user-defined chains = simplify rule management by grouping firewall rules based on specific criteria 
+
+ex: org has multiple web servers that all require similar firewall rules, the rules can be grouped in a user defined-chain
+
+### Rules and targets
+
+used to define the criteria for filtering network traffic and the actions to take for packets that match the criteria 
+
+`-A <chain name>` = add rules to chain
+
+criteria or matches match specific fields in the IP header
+
+target specifies action to take for packets that match the rule
+
+common targets: 
+- ACCEPT = allow packet to pass through firewall to dest
+- DROP = drop packet, blocking it from passing
+- REJECT = drop packet and sends error message back to source
+- LOG = log packet info to system log
+- SNAT = modifies the source IP address of the packet typically used for NAT to translate private IP addresses to public IP addresses
+- DNAT = modifies the destination IP address typically used for NAT to forward traffic from one IP to another
+- MASQUERADE = similar to SNAT but used when the source IP address is not fixed such as dynamic IP address
+- REDIRECT = redirect packet to another port or IP address 
+- MARK = adds or modifies the Netfilter mark value of the packet, which can be used for advanced routing or other purposes 
+
+`sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT`
+
+this will add new entry to INPUT chain that allows incoming TCP traffic on port 22 to be accepted 
+
+### Matches 
+
+used to specify the criteria that determine whether a firewall rule should be applied to a particular packet or connection
+
+- `-p` = protocol
+- `--dport` = destination port 
+- `--sport` = source port to match
+- `-s` = source IP
+- `-d` = destination IP 
+- `-m state` = state of the connection (NEW, ESTABLISHED, RELATED)
+- `-m multiport` = multiple ports or port ranges
+- `-m tcp` = matches tcp packets 
+- `-m udp` = matches udp packets
+- `-m string` = packets that contain a string
+- `-m limit` = packets at a specified rate limit
+- `-m conntrack` = based on their connection tracking info
+- `-m mark` = packets based on their Netfilter mark value 
+- `-m mac` = MAC address
+- `-m iprage` = range of IP addresses
+
+`sudo iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT`
+
+adds rule to INPUT chain in the filter table that matches incoming traffic on port 80
+
+### Iptables lab 
+
+Setup a web server and reject all traffic:
+
+![](../Images/Pasted%20image%2020231206215400.png)
+![](../Images/Pasted%20image%2020231206215408.png)
+
+All traffic to the server will be dropped:
+
+![](../Images/Pasted%20image%2020231206215842.png)
+
+Remove the drop rule and change it to accept all traffic:
+
+![](../Images/Pasted%20image%2020231206215825.png)
+![](../Images/Pasted%20image%2020231206215941.png)
+![](../Images/Pasted%20image%2020231206215955.png)
+
+Reject incoming traffic from a specific IP address:
+
+![](../Images/Pasted%20image%2020231206220413.png)
+![](../Images/Pasted%20image%2020231206220424.png)
+
+Accept incoming traffic from a specific IP address:
+
+![](../Images/Pasted%20image%2020231206220527.png)
+![](../Images/Pasted%20image%2020231206220539.png)
+
+Block all incoming UDP traffic: 
+
+![](../Images/Pasted%20image%2020231206220710.png)
+![](../Images/Pasted%20image%2020231206220724.png)
+
+Accept all incoming TCP traffic:
+
+![](../Images/Pasted%20image%2020231206220854.png)
+![](../Images/Pasted%20image%2020231206220901.png)
+
+Create a new chain: 
+
+![](../Images/Pasted%20image%2020231206221044.png)
+![](../Images/Pasted%20image%2020231206221052.png)
+
+Redirect input traffic to the new chain: 
+
+![](../Images/Pasted%20image%2020231206221500.png)
+![](../Images/Pasted%20image%2020231206221506.png)
+
+List all existing rules:
+
+![](../Images/Pasted%20image%2020231206221529.png)
 
 
