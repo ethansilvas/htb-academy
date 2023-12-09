@@ -1987,3 +1987,31 @@ in solaris, can use `pfiles` to list all files opened by a process:
 pfiles `pgrep httpd`
 ```
 
+### Executable access
+
+`truss` = utility for developers and sys admin who need to debug complex software issues on the solaris OS 
+
+traces system calls made by a process to help identify the source of errors, performance issues, etc
+
+`strace` = alternative to truss but for ubuntu; helps analyze the interactions between the OS and apps running on it 
+
+`truss` = id and isolate issues related to app performance, network security, system resource utilization, etc. 
+
+trace system calls made by the apache web server process: 
+
+
+```
+sudo strace -p `pgrep apache2`
+```
+
+use truss to trace system calls made by the ls command: 
+
+```
+truss ls 
+
+execve("/usr/bin/ls", 0xFFBFFDC4, 0xFFBFFDC8) argc = 1
+...
+```
+
+truss can trace signals sent out to a process but strace cant  
+truss can also trace the system calls made by child processes, strace cant
