@@ -1789,4 +1789,201 @@ List all existing rules:
 
 ![](../Images/Pasted%20image%2020231206221529.png)
 
+## System Logs 
+
+system logs = set of files that contain info about the system and the activities taking place on it
+
+identify potential security weaknesses and vulnerabilities 
+
+gain insights into system behavior, network activity, and user activity 
+
+identify abnormal activity, unauthorized logins, attempted attacks, clear text creds, unusual file access 
+
+can also use logs as pen testers to evaluate the effectiveness of our security testing activities  
+determine if actions trigger any security events 
+
+configure logs: 
+- set appropriate log levels
+- configure log rotation to prevent logs from getting to large
+- ensure they are stored securely 
+
+some types of logs: 
+- kernel logs
+- system logs
+- authentication logs
+- application logs
+- security logs
+
+### Kernel logs
+
+info about kernel such as: 
+- hardware drivers 
+- system calls
+- kernel events 
+
+`var/log/kern.log` 
+
+![](../Images/Pasted%20image%2020231207165754.png)
+
+vulnerable or outdated drivers, system crashes, resource limitations
+
+commonly DoS issues
+
+suspicious system calls or other activities that could relate to malware 
+
+### System logs
+
+system level events such as service start and stops, login attempts, system reboots 
+
+`/var/log/syslog` 
+
+identify any possible access or activities on the system 
+
+issues that impact the availability or performance of the system 
+
+can also use `syslog` to identify potential issues: 
+
+![](../Images/Pasted%20image%2020231207165435.png)
+
+### Authentication logs 
+
+contain info about user authentication attempts, successful and failed 
+
+`var/log/auth.log`
+
+![](../Images/Pasted%20image%2020231207165839.png)
+
+### Application logs
+
+info about activities of specific applications running on the system 
+
+often stored in their own files such as: 
+
+`/var/log/apache2/error.log` or `/var/log/mysql/error.log`
+
+can be used to identify things like:
+- unauthorized access attempts 
+- data exfiltration 
+
+ex: 
+- access logs to track requests made to web server
+- audit logs used to track changes made to the system or to specific files 
+
+access logs = record of user and process activity on the system 
+audit logs = security-relevant events on the system (mods to sys config files)
+
+sample entries: 
+
+![](../Images/Pasted%20image%2020231207175444.png)
+
+### Security logs
+
+often recorded in variety of log files depending on security application tool in use 
+
+## Solaris 
+
+solaris = unix-based OS  
+known for robustness, scalability, and support for high-end hardware and software systems
+
+used in enterprise for mission-critical apps  
+- database management
+- cloud computing
+- virtualization
+
+oracle VM server for SPARC = built in hypervisor which allows multiple vms to run on a single server
+
+designed to handle large amounts of data and provide reliable and secure services to users 
+
+### Linux distributions vs solaris 
+
+solaris is proprietary - developed and owned by oracle 
+
+zettabyte file system ZFS = linux advanced file system that provides compression, snapshots, and high scalability 
+
+solaris has service management facility SMF = highly advanced service management framework that provides better reliability and availability for system services 
+
+solaris strength is support for high-end hardware and software systems  
+designed to work in large scale data centers and complex network infrastructures 
+
+image packaging system IPS = solaris package management system  
+
+provides Role-BAC and MAC 
+
+### Differences 
+
+- not open source
+- filesystem
+- process management
+- package management 
+- kernel and hardware support 
+- system monitoring 
+- security
+
+### System information 
+
+linux has `uname` to give info about the system itself, solaris has: 
+
+`showrev -a` = system info, solaris version, hardware type, patch level 
+
+### Installing packages 
+
+linux has `apt-get` like `sudo apt-get install apache2`, solaris has: 
+
+`pkgadd -d SUNWapchr` = install the sunwapchr package 
+
+Advanced packaging tool APT vs Solaris package manager SPM 
+
+note that solaris uses RBAC which means sudo might not be needed, but it is supported since solaris 11
+
+### Permission management
+
+linux and solaris uses `chmod` to change file permissions 
+
+can also use `find` to find files with certain permissions like: 
+
+`find / -perm 4000`
+
+solaris has find but slightly different: 
+
+`find / -perm -4000`
+
+### NFS in solaris 
+
+solaris has its own implementation of NFS 
+
+can be configured with `share` = share a directory over the network  
+also allows to change read/write, access restrictions, etc. 
+
+share a directory over NFS: 
+
+`share -F nfs -o rw /export/home`
+
+this will share the /export/home dir with read/write perms over NFS 
+
+solaris can also mount a file system with `mount` similar to linux: 
+
+`mount -F nfs 10.129.15.222:/nfs_share /mnt/local`
+
+NFS config stored in `/etc/dfs/dfsatb`: 
+
+```
+cat /etc/dfs/dfstab
+
+share -F nfs -o rw /export/home
+```
+
+contains entries fore each shared directory along with options for sharing 
+### Process mapping
+
+essential aspect of system admin and troubleshooting 
+
+`lsof` command is powerful utility to list all files opened by a process: 
+
+`sudo lsof -c apache2` 
+
+in solaris, can use `pfiles` to list all files opened by a process: 
+
+```
+pfiles `pgrep httpd`
+```
 
