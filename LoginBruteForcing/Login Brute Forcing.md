@@ -79,3 +79,29 @@ there are many methodologies to dictionary attacks:
 
 ## Default Passwords 
 
+many accounts have default passwords due to laziness, forgetfulness, and poor management 
+
+### Hydra 
+
+tool for login brute forcing 
+
+`apt install hydra -y`
+
+very common to find pairs of usernames and passwords used together since default service passwords are often left unchanged   
+better to start with wordlist of credentialed pairs first like `test:test`
+
+```shell-session
+hydra -C /opt/useful/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist.txt 178.211.23.155 -s 31099 http-get /
+```
+
+common for admin to overlook test or default accounts and their creds  
+always advised to start by scanning for default credentials  
+even worth testing top 3-5 common combos manually
+
+using the command on the target produces valid credentials: 
+
+![](../Images/Pasted%20image%2020231210190239.png)
+
+![](../Images/Pasted%20image%2020231210190325.png)
+
+## Username Brute Force
