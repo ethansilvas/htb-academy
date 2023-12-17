@@ -93,3 +93,34 @@ reading from file:
 
 ![](../Images/Pasted%20image%2020231215211435.png)
 
+## Fundamentals Lab
+
+Validate tcpdump is installed on the machine: 
+
+![](../Images/Pasted%20image%2020231216190321.png)
+
+view available interfaces to capture from: 
+
+![](../Images/Pasted%20image%2020231216190413.png)
+
+start a capture: 
+
+![](../Images/Pasted%20image%2020231216190444.png)
+
+modify capture to add verbosity and display contents in ASCII and hex: 
+
+![](../Images/Pasted%20image%2020231216190602.png)
+
+disable name resolution and display relative sequence numbers: 
+
+![](../Images/Pasted%20image%2020231216190753.png)
+
+save a capture to a pcap file: 
+
+![](../Images/Pasted%20image%2020231216190920.png)
+
+read a capture from a file:
+
+![](../Images/Pasted%20image%2020231216190945.png)
+
+
