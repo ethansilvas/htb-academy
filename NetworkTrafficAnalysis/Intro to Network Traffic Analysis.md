@@ -227,4 +227,33 @@ here we look for the 13th byte in the structure and the 2nd bit:
 
 `sudo tcpdump -i eth0 'tcp[13] &2 != 0'` 
 
+## Interrogating Network Traffic With Capture and Display Filters
+
+this lab will explore network traffic using packet filters to find more and more specific results
+
+the goal will be to determine what servers are answering DNS and HTTP/S requests in our local network 
+
+### Task 1: Read capture file without filters
+
+![](../Images/Pasted%20image%2020231219132210.png)
+
+### Task 2: Identify the type of traffic seen
+
+Common protocols: 
+- mixture of tcp and udp 
+- HTTP/S 
+- DNS 
+- 
+
+Ports utilized: 
+- 80, 443, 53 (DNS)
+- 50296
+- 40000
+- 37106
+- 56302
+- 52540
+- 52542
+
+### Task 3: Identify conversations
+
 
