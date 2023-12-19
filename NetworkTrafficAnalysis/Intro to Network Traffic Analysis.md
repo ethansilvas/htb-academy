@@ -256,14 +256,14 @@ Ports utilized:
 
 ### Task 3: Identify conversations
 
-What are the client and server port numbers of the first full TCP handshake?:  
+What are the client and server port numbers of the first full TCP handshake?
 
-client = 43806  
-server = 80
+client = 43806 (and other high ports for comms)
+server = 80, 443
 
 ![](../Images/Pasted%20image%2020231219133823.png)
 
-Who are the severs in these conversations?:
+Who are the severs in these conversations?
 
 - static.30.26.216.95.clients.your-server.de
 - atl26s18-in-f10.1e100.net
@@ -275,4 +275,18 @@ Who are the receiving hosts?
 - 172.16.146.2
 
 ### Task 4: Interpret the capture in depth
+
+What is the timestamp of the first established conversation in the pcap? 
+
+16:34:01.401270
+
+What is the IP address of apache.org from the DNS server responses? 
+
+![](../Images/Pasted%20image%2020231219140351.png)
+
+What protocol is being used in the first conversation? 
+
+HTTP port 80
+
+### Task 5: Filter out traffic
 
