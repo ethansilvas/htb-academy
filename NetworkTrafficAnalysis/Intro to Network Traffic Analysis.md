@@ -322,6 +322,22 @@ IPv4 address
 
 ### Task 6: Filter for TCP traffic
 
+Filter to only see HTTP/S traffic: 
+
+![](../Images/Pasted%20image%2020231219143410.png)
+
+What are the most common HTTP request methods from this pcap? 
+
+POST
+
+![](../Images/Pasted%20image%2020231219144019.png)
+
+What is the most common HTTP response from this pcap? 
+
+200
+
+![](../Images/Pasted%20image%2020231219144355.png)
+
 
 
 
