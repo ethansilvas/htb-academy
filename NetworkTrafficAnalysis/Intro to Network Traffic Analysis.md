@@ -189,3 +189,42 @@ using greater to find packets greater than 500 bytes:
 
 ![](../Images/Pasted%20image%2020231218201108.png)
 
+`AND` will show us anything that meet both requirements 
+
+capture any traffic from a specific host and on port 23:
+
+![](../Images/Pasted%20image%2020231218220911.png)
+
+using the or filter to view ICMP traffic or traffic from a specified host:
+
+![](../Images/Pasted%20image%2020231218221113.png)
+
+use not fijlter to get all traffic that isn't ICMP: 
+
+![](../Images/Pasted%20image%2020231218221322.png)
+
+### Pre-capture filters vs post-capture processing  
+
+can either apply filters to capture directly or when reading a pcap file  
+reading from file will not alter file
+
+### Tips and tricks
+
+`-S` will show absolute sequence numbers which are harder to read but if we look for these values in another log or tool we will only be able to find the packet based on absolute sequence numbers
+
+`-v -X -e` can help increase the amount of data captured while `-c -n -s -S -q` can help reduce and modify the amount of data written or seen 
+
+`-A` will show only ASCII text after the packet line instead of both ASCII and hex  
+`-l` will tell it to output packets in a different mode; line buffer instead of pooling and pushing in chunks
+
+`sudo tcpdump -Ar telnet.pcap` - will help you quickly look for anything human readable in the output 
+
+`sudo tcpdump -Ar http.cap -l | grep 'mailto:*'` - using -l will let you pipe out the output to another command  
+can be a quick way to scrape websites for email addresses, naming standards, and more 
+
+will need a little bit of knowledge on how protocols are structured to dig deeper into packets  
+here we look for the 13th byte in the structure and the 2nd bit:
+
+`sudo tcpdump -i eth0 'tcp[13] &2 != 0'` 
+
+
