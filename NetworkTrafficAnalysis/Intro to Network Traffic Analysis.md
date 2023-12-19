@@ -256,4 +256,23 @@ Ports utilized:
 
 ### Task 3: Identify conversations
 
+What are the client and server port numbers of the first full TCP handshake?:  
+
+client = 43806  
+server = 80
+
+![](../Images/Pasted%20image%2020231219133823.png)
+
+Who are the severs in these conversations?:
+
+- static.30.26.216.95.clients.your-server.de
+- atl26s18-in-f10.1e100.net
+
+![](../Images/Pasted%20image%2020231219134123.png)
+
+Who are the receiving hosts? 
+
+- 172.16.146.2
+
+### Task 4: Interpret the capture in depth
 
