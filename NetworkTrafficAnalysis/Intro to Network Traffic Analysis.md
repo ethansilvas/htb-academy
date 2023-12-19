@@ -290,3 +290,38 @@ HTTP port 80
 
 ### Task 5: Filter out traffic
 
+Filter out traffic that is not DNS:
+
+![](../Images/Pasted%20image%2020231219141601.png)
+
+Who is the DNS server for this segment? 
+
+172.16.146.1
+
+What domain names were requested in the pcap file? 
+
+- apache 
+- google fonts 
+- youtube
+- ocsp 
+- google apis
+
+What type of DNS records could be seen? 
+
+- IPv4 A
+- IPv6 AAAA
+- CNAME
+
+Who requests an A record for apache.org? 
+
+![](../Images/Pasted%20image%2020231219142108.png)
+
+What information does an A record provide? 
+
+IPv4 address
+
+### Task 6: Filter for TCP traffic
+
+
+
+
