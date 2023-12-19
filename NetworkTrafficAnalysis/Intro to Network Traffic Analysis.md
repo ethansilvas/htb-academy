@@ -243,7 +243,6 @@ Common protocols:
 - mixture of tcp and udp 
 - HTTP/S 
 - DNS 
-- 
 
 Ports utilized: 
 - 80, 443, 53 (DNS)
@@ -272,7 +271,7 @@ Who are the severs in these conversations?
 
 Who are the receiving hosts? 
 
-- 172.16.146.2
+172.16.146.2
 
 ### Task 4: Interpret the capture in depth
 
@@ -338,6 +337,10 @@ What is the most common HTTP response from this pcap?
 
 ![](../Images/Pasted%20image%2020231219144355.png)
 
+### Task 7: What can you determine about the server in the first conversation
 
+host = 172.16.146.2  
+server = static.30.26.216.95.clients.your-server.de
 
+![](../Images/Pasted%20image%2020231219150854.png)
 
