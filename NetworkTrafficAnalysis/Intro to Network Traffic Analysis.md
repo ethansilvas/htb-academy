@@ -123,4 +123,69 @@ read a capture from a file:
 
 ![](../Images/Pasted%20image%2020231216190945.png)
 
+## Tcpdump Packet Filtering 
+
+parse data included in our captures   
+
+help reduce space needed to write the file and help buffer process data quicker   
+
+filters will inspect any packets and look for given values in the protocol header to match 
+
+most common filters: 
+- `host` - anything involving the designated host (bidirectional) 
+- `src / dest` - modifiers; designate source and dest host or port 
+- `net` - show any traffic sourcing from or destined to the network designated; uses / notation
+- `proto` - filter for a specific proto type  
+- `portrange` - range of ports (0-1024) 
+- `less / greater "<>"` - look for a packet or protocol option of a specific size 
+- `and / &&` - concatenate two different filters together; ex: host AND port 
+- `or` - match either of two conditions 
+- `not`- anything but x 
+
+host filter to look for only activity from specific host: 
+
+![](../Images/Pasted%20image%2020231218185546.png)
+
+source and destination filters can be specified for hosts, network ranges, and ports:
+`src/dst [host|net|port] [IP|Network Range|Port]` 
+
+source to filter for traffic originating from a specified host IP: 
+
+![](../Images/Pasted%20image%2020231218190754.png)
+
+using source with port number to find all traffic where the source port is HTTP: 
+
+![](../Images/Pasted%20image%2020231218191411.png)
+
+using destination to filter for traffic going to a specified network range
+
+![](../Images/Pasted%20image%2020231218192602.png)
+
+when specifying protocols you can use the common name (tcp, udp, icmp...) or use their respective protocol numbers:
+
+![](../Images/Pasted%20image%2020231218192939.png)
+
+![](../Images/Pasted%20image%2020231218193016.png)
+
+protocol 17 is udp so the previous two commands are the same  
+using `proto` will be more useful when starting to dissect specific part of the IP or other protocol headers  
+
+keep in mind that port numbers can be used for anything  
+so if we really want to only see HTTP traffic we need to specify protocol and port like `tcp port 80`
+
+for protocols that use both tcp and udp like DNS we can filter looking at one or the other 
+
+for ports, we can also look at a range of ports with `portrange`: 
+
+![](../Images/Pasted%20image%2020231218194506.png)
+
+using `less` or `greater` (or `<>`) we can look for traffic based on the packet size  
+
+look for packets that are less than 64 bytes:
+
+![](../Images/Pasted%20image%2020231218200657.png)
+
+using greater to find packets greater than 500 bytes: 
+
+![](../Images/Pasted%20image%2020231218201108.png)
 
