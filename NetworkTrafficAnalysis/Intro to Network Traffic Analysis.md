@@ -344,3 +344,62 @@ server = static.30.26.216.95.clients.your-server.de
 
 ![](../Images/Pasted%20image%2020231219150854.png)
 
+## Analysis With Wireshark 
+
+wireshark is GUI network traffic analyzer  
+can capture data off many different interfaces, even USB or bluetooth  
+provides much better deep packet analysis  
+
+features and capabilities: 
+- deep packet inspection 
+- graphical and TTY interfaces
+- can run on most OS 
+- ethernet, IEEE 802.11, PPP/HDLC, ATM, bluetooth, usb, token ring, frame relay, ... 
+- decryption capabilities for IPsec, ISAKMP, Kerberos, snmpv3, ssl/tls, wep, wpa/wpa2, ... 
+
+can check for wireshark with `which wireshark` and install with `sudo apt install wireshark`
+
+### TShark vs wireshark (terminal vs GUI)
+
+TShark = terminal tool based on wireshark  
+good for machines with little to no desktop environment  
+can easily pass captures to other tools  
+
+wireshark = feature rich GUI option for packet captures and analysis 
+
+basic tshark switches: 
+- `D` = display any interfaces available to capture from then exit out 
+- `L` = list the link-layer mediums you can capture from and then exit out (ethernet as ex)
+- `i` = choose interface to capture from 
+- `f` = packet filter in libpcap syntax; used in direct capture 
+- `c` = get specific number of packets
+- `a` = autostop condition; can be after duration, file size, or certain number of packets 
+- `r` = read from pcap file 
+- `W` = write into a file using pcapng format 
+- `P` = print the packet summary while writing to a file
+- `x` = add hex and ascii output into the capture 
+- `h` = see help menu 
+
+### Tshark basic usage
+
+showing interfaces available to capture from: 
+
+![](../Images/Pasted%20image%2020231219205924.png)
+
+basic packet capture: 
+
+![](../Images/Pasted%20image%2020231219210153.png)
+
+write to a capture file:
+
+![](../Images/Pasted%20image%2020231219210429.png)
+
+read from the capture file:
+
+![](../Images/Pasted%20image%2020231219210508.png)
+
+applying filters with `-f`:
+
+![](../Images/Pasted%20image%2020231219212326.png)
+
+
