@@ -434,3 +434,37 @@ one thing to note is that any changes in the capture options will restart the tr
 
 ### The basics
 
+save a capture file either through the `File` dropdown or with the save capture toolbar button: 
+
+![](../Images/Pasted%20image%2020231220191813.png)
+
+capture filters are initiated before the capture starts, and display filters are used after the capture is complete 
+
+wireshark does have trouble with large captures so the more specific the filters the better
+
+#### Capture filters
+
+before the capture starts  
+use BPF syntax like `host 215.15.2.30`  
+
+common filters: 
+- `host` = only traffic pertaining to certain host 
+- `net` = to or from a specific network, using / notation 
+- `src/dst [host|net|port]` = specify traffic coming from or going to a specified entity
+- `port` = capture from a specific port 
+- `not port` = everything except a port 
+- `port # and #` = get two different ports
+- `portrange x-x` = all ports within a range 
+- `ip / ether / tcp` = specified protocol headers
+- `broadcast / multicast / unicast` = one to one, one to many, or one to all 
+
+there are built in capture filters: 
+
+![](../Images/Pasted%20image%2020231220193323.png)
+
+we can then use these filters in the capture options menu: 
+
+![](../Images/Pasted%20image%2020231220193503.png)
+
+#### Display filters
+
