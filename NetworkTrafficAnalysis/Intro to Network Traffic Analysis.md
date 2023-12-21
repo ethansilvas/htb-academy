@@ -426,3 +426,11 @@ packet bytes shows contents in ascii or hex
 
 ### Packet captures with Wireshark
 
+can start a capture either using the big blue fin icon to start a quick capture or by going into `Capture -> options -> select interface -> start`
+
+![](../Images/Pasted%20image%2020231220173145.png)
+
+one thing to note is that any changes in the capture options will restart the trace 
+
+### The basics
+
