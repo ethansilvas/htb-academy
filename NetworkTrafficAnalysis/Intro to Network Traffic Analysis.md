@@ -468,3 +468,51 @@ we can then use these filters in the capture options menu:
 
 #### Display filters
 
+used while the capture is running and after it has stopped 
+
+proprietary to wireshark so there are more options than BPF 
+
+common display filters: 
+- `ip.addr = x.x.x.x` = only traffic from specific host 
+- `ip.addr = x.x.x.x/24` = only traffic from a network 
+- `ip.src/dst = x.x.x.x` = capture to or from a specific host
+- `dns / tcp / ftp / arp / ip` = filter by protocol 
+- `tcp.port == x` = filter by a tcp port
+- `tcp.port / udp.port != x` = everything except specified port 
+- `and / or / not` = and will concat, or will find either, not will exclude 
+
+display filters can be added with the main dropdown: 
+
+![](../Images/Pasted%20image%2020231220194136.png)
+
+capture traffic from a specific host: 
+
+![](../Images/Pasted%20image%2020231220194354.png)
+
+keep in mind that for both capture and display filters that they are taken in a literal sense, so looking for port 80 traffic is not the same as looking for HTTP traffic  
+ports can be bound and used for different purposes and looking for HTTP looks for key markers that the protocol uses such as GET/POST requests
+
+## Familiarity With Wireshark 
+
+a user has brought in a laptop with issues of network slowness, we connect laptop to network and perform packet captures to verify that the pc is working correctly 
+
+### Task 1: Validate Wireshark is installed:
+
+![](../Images/Pasted%20image%2020231220200631.png)
+
+![](../Images/Pasted%20image%2020231220200651.png)
+
+### Task 2/3: Select an interface to run a capture on and create a capture filter to only show traffic from your host IP 
+
+![](../Images/Pasted%20image%2020231220201051.png)
+
+### Task 4: Navigate to a webpage to generate traffic 
+
+starting a capture and visiting pepsi.com (45.60.75.51) and using a display filter to find the start of the TCP connection: 
+
+![](../Images/Pasted%20image%2020231220203510.png)
+
+viewing all traffic related to pepsi.com: 
+
+![](../Images/Pasted%20image%2020231220203719.png)
+
