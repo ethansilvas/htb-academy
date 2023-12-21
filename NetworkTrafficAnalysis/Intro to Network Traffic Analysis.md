@@ -402,4 +402,27 @@ applying filters with `-f`:
 
 ![](../Images/Pasted%20image%2020231219212326.png)
 
+### Termshark
+
+text based UI app that provides wireshark-like interface in your terminal window
+
+need to install from github 
+
+### Wireshark GUI walkthrough 
+
+3 main panels
+- packet list
+- packet details
+- packet bytes
+
+shows packet encapsulation in reverse order with lower layers encapsulation at the top of the window and higher levels at the bottom  
+ex: 
+- frame 4
+- ethernet
+- internet
+- HTTP
+
+packet bytes shows contents in ascii or hex 
+
+### Packet captures with Wireshark
 
