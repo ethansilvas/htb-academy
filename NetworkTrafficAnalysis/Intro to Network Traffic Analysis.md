@@ -619,3 +619,9 @@ with `File -> export objects -> http` we can then export/save all of the found i
 
 ![](../Images/Pasted%20image%2020231221173743.png)
 
+we know have all of the images that were requested: 
+
+![](../Images/Pasted%20image%2020231221173939.png)
+
+### Live capture and analysis 
+
