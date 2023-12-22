@@ -516,3 +516,106 @@ viewing all traffic related to pepsi.com:
 
 ![](../Images/Pasted%20image%2020231220203719.png)
 
+## Wireshark Advanced Usage
+
+### Plugins 
+
+the `Statistics` and `Analyze` tabs can provide many insights into our data  
+can use many of the baked in plugins that wireshark has for detailed reports about network traffic  
+can show top talkers in traffic, specific convos, breakdown by IP and protocol, etc. 
+
+#### Statistics 
+
+http packet counter: 
+
+![](../Images/Pasted%20image%2020231221140115.png)
+
+dns stats: 
+
+![](../Images/Pasted%20image%2020231221140431.png)
+
+generate traffic to duckduckgo.com (52.250.42.157), then view in the conversations stats: 
+
+![](../Images/Pasted%20image%2020231221140724.png)
+
+#### Analyze 
+
+allows the following of tcp streams by stitching tcp packets back together to recreate the entire stream in a readable format 
+
+finding a packet related to the duckduckgo IP address and following the stream: 
+
+![](../Images/Pasted%20image%2020231221143102.png)
+
+![](../Images/Pasted%20image%2020231221143141.png)
+
+you can alternatively do this by entering a display filter for `tcp.stream eq #` where the # is the tcp stream index which you can find in the TCP info section: 
+
+![](../Images/Pasted%20image%2020231221143537.png)
+
+### Specific TCP streams 
+
+wireshark can recover many types of data from streams, but it requires you to have captured the entire conversation 
+
+can extract files from the object export option: 
+
+![](../Images/Pasted%20image%2020231221144650.png)
+
+![](../Images/Pasted%20image%2020231221144747.png)
+
+FTP moves data between a server and host to pull it out of the raw bytes and reconstruct the file 
+
+ftp uses port 20 and 21 to function  
+20 = transfer data between server and host  
+21 = ftp control port, any commands such as login, listing files, and issuing download/uploads 
+
+useful FTP display filters:
+- `ftp` 
+- `ftp.request.command` = show any commands sent across the ftp-control channel, port 21
+	- can look for info like usernames and passwords with this filter, and filenames
+- `ftp-data` = show any data transferred over the data channel port 20
+	- capture anything sent during the conversation, can reconstruct data by placing the raw data back into a new file and naming it properly 
+
+also, since FTP uses TCP, we can still use the follow tcp stream to group conversations 
+
+basic steps to dissecting ftp data: 
+1. filter for FTP traffic with `ftp` 
+2. look at command controls with `ftp.request.command`
+3. choose a file then filter for `ftp-data`, select a packet that corresponds with our file and follow the tcp stream 
+4. change show and save data as to Raw and save the content as the original file name 
+
+## Packet Inception, Dissecting Network Traffic with Wireshark 
+
+provided a packet capture with unencrypted web session data, there is an image embedded that needs to be used as evidence of bad network usage  
+this image is believed to be sending messages hidden behind it  
+use wireshark to locate and extract the evidence
+
+### Task 1: Load the predefined pcap file:
+
+![](../Images/Pasted%20image%2020231221172433.png)
+
+### Task 2: Filter the results
+
+our goal is to extract potential images embedded for evidence 
+
+first apply a filter to view only http traffic:
+
+![](../Images/Pasted%20image%2020231221172741.png)
+
+### Task 3: Follow the stream and extract the item found
+
+from the HTTP packets we can see that many files are being requested and there are several 200 OK responses for them: 
+
+![](../Images/Pasted%20image%2020231221172907.png)
+
+now using the tcp stream follow on one of the 200 OK responses we can see if any data has been transfered: 
+
+![](../Images/Pasted%20image%2020231221173425.png)
+
+we see that there are some images being sent in the JFIF format, so now we can create a display filter to see all HTTP traffic that includes JFIF images: 
+
+![](../Images/Pasted%20image%2020231221173604.png)
+
+with `File -> export objects -> http` we can then export/save all of the found image files: 
+
+![](../Images/Pasted%20image%2020231221173743.png)
+
