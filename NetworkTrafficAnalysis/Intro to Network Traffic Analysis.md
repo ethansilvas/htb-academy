@@ -674,4 +674,40 @@ in this conversation, our host did the following:
 - get the size of a notable file named flag.jpeg
 - switch to passive mode
 - retrieve the flag.jpeg file 
+#### FTP analysis 
+
+so now that we know there is FTP traffic with a notable file named flag.jpeg, lets reassemble the ftp-data on our machine  
+
+first lets look at the tcp stream related to the file in question and then save the data as raw: 
+
+![](../Images/Pasted%20image%2020231221185005.png)
+
+then after saving as the original file name, "flag.jpeg  
+
+first lets look at the tcp stream related to the file in question and then save the data as raw: 
+
+![](../Images/Pasted%20image%2020231221185005.png)
+
+then after saving as the original file name, "flag.jpeg  
+
+first lets look at the tcp stream related to the file in question and then save the data as raw: 
+
+![](../Images/Pasted%20image%2020231221185005.png)
+
+then after saving as the original file name, "flag.jpeg", we can see it in our system: 
+
+![](../Images/Pasted%20image%2020231221185146.png)
+
+#### HTTP analysis 
+
+now lets go back to the HTTP traffic we saw and analyze it further
+
+![](../Images/Pasted%20image%2020231221185426.png)
+
+who is the webserver in question? 
+
+172.16.10.20
+
+what application is running the webserver? 
+
 
