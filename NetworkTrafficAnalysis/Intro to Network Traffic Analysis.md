@@ -625,3 +625,53 @@ we know have all of the images that were requested:
 
 ### Live capture and analysis 
 
+after RDP'ing to a machine and performing a live capture, here are the results: 
+
+![](../Images/Pasted%20image%2020231221180256.png)
+
+before doing any specific analysis steps, lets do some general analysis tasks  
+we are concerned with the two hosts 172.16.10.2 (our machine) and 172.16.10.20
+
+right away we can see the two hosts forming a TCP connection: 
+
+![](../Images/Pasted%20image%2020231221180736.png)
+
+performing a tcp stream follow we get the following results: 
+
+![](../Images/Pasted%20image%2020231221180859.png)
+
+from the above results and a look at the packet info of the full conversation we can see some FTP traffic on port 21: 
+
+![](../Images/Pasted%20image%2020231221181029.png)
+
+doing a display filter for both of the IP addresses in question reveals that this was not the only connection the two formed: 
+
+![](../Images/Pasted%20image%2020231221181806.png)
+
+there are many packets being sent between the two hosts but from the above picture we can see some ftp-data traffic and HTTP traffic 
+
+looking at the ftp-data traffic we can see the high ports being used line up with the previous info of the connection being in PASV mode: 
+
+![](../Images/Pasted%20image%2020231221182101.png)
+
+from the HTTP traffic we can see some php files being requested with 200 OK responses: 
+
+![](../Images/Pasted%20image%2020231221182209.png)
+
+it appears that our machine did a POST request on the login form: 
+
+![](../Images/Pasted%20image%2020231221182510.png)
+
+finally, looking at the `ftp.request.command` packets we can confirm some of the earlier found conversation: 
+
+![](../Images/Pasted%20image%2020231221182851.png)
+
+in this conversation, our host did the following:
+- request to login as the user anonymous 
+- check the OS 
+- look at the current working directory
+- change the file type to image
+- get the size of a notable file named flag.jpeg
+- switch to passive mode
+- retrieve the flag.jpeg file 
+
