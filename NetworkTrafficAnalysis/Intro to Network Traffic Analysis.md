@@ -710,4 +710,14 @@ who is the webserver in question?
 
 what application is running the webserver? 
 
+apache ubuntu: 
 
+![](../Images/Pasted%20image%2020231221185654.png)
+
+what were the most common method requests? 
+
+lots of GET requests for pages and one POST for the login page 
+
+following the HTTP stream we can see the POST request has a cleartext password in it: 
+
+![](../Images/Pasted%20image%2020231221190112.png)
