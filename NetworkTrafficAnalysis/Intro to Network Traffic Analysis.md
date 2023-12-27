@@ -758,3 +758,38 @@ when performing analysis of the target machine, some RDP traffic has been captur
 an RDP-key was found hidden in a folder hive on the target  
 this key can be used to decrypt the communications between the target machine and a suspicious host 
 
+### Analysis
+
+first, lets filter to see all of the RDP traffic: 
+
+![](../Images/Pasted%20image%2020231226194201.png)
+
+for now, we can't see much because RDP uses TLS to encrypt any data transferred
+
+filtering for port 3389 will give a better view on the connection: 
+
+![](../Images/Pasted%20image%2020231226200654.png)
+
+add the RSA key to the TLS options: 
+
+![](../Images/Pasted%20image%2020231226201019.png)
+
+now after filtering for RDP traffic we see all of the data traffic: 
+
+![](../Images/Pasted%20image%2020231226201106.png)
+
+we can see this traffic because we have the RDP certificate from the server, and OpenSSL can pull the private key from it 
+
+### Viewing the encrypted traffic 
+
+What host initiated the RDP session with our server? 
+
+![](../Images/Pasted%20image%2020231226201708.png)
+
+Which user account was used to initiated the RDP connection? 
+
+from the RDP and TCP stream info we can see the user bucky was used: 
+
+![](../Images/Pasted%20image%2020231226202658.png)
+
+
