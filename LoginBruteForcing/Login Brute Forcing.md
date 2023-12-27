@@ -126,3 +126,18 @@ hydra requires at least 3 specific flags if the credentials are in a single list
 this command will end up taking a long time because although default passwords are commonly used together, they are not among the top for individual wordlists  
 so this likely means that the default password was buried deep in rockyou.txt 
 
+### Username brute force 
+
+if we only wanted to brute force either the username or password, we can set a static value for them  
+use the same flag but lowercase 
+
+`-l` = static username 
+`-p` = static password 
+
+`hydra -L /opt/useful/SecLists/Usernames/Names/names.txt -p amormio -u -f 178.35.49.134 -s 32901 http-get /`
+
+using this method on the previously found target of admin:admin results in the admin username being found with the static password: 
+
+![](../Images/Pasted%20image%2020231227144218.png)
+
+
