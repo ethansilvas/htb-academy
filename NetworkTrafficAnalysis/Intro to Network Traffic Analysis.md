@@ -741,3 +741,14 @@ the target unknown host successfully connected to tcp port 4444 on our target sy
 
 ![](../Images/Pasted%20image%2020231226183141.png)
 
+port 4444 is an uncommon port that is often used for remote access trojans or backdoors
+
+the above conversation is the only conversation between the potential threat and our host  
+following the tcp stream we can see some very harmful activity:
+
+![](../Images/Pasted%20image%2020231226183559.png)
+
+the stream reveals that after connecting to the target system the threat actor conducted some movement on the system then eventually created a new user `hacker`, then added that user to the admin group: 
+
+![](../Images/Pasted%20image%2020231226183739.png)
+
