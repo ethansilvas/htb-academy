@@ -105,3 +105,24 @@ using the command on the target produces valid credentials:
 ![](../Images/Pasted%20image%2020231210190325.png)
 
 ## Username Brute Force
+
+now we will try to attack HTTP basic auth by using separate wordlists for usernames and passwords 
+
+one of the most common wordlists is `rockyou.txt`  
+has over 14 million unique passwords collected from leaded dbs  
+
+hydra requires at least 3 specific flags if the credentials are in a single list: 
+- credentials 
+- target host 
+- target path 
+
+`-L` = usernames wordlist   
+`-P` = passwords wordlist   
+`-f` = stop on the first successful login   
+`-u` = tries all users on each password, instead of all passwords on one user before going to the next  
+
+`hydra -L /opt/useful/SecLists/Usernames/Names/names.txt -P ./rockyou.txt -u -f 178.35.49.134 -s 32901 http-get /`
+
+this command will end up taking a long time because although default passwords are commonly used together, they are not among the top for individual wordlists  
+so this likely means that the default password was buried deep in rockyou.txt 
+
