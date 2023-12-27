@@ -721,3 +721,23 @@ lots of GET requests for pages and one POST for the login page
 following the HTTP stream we can see the POST request has a cleartext password in it: 
 
 ![](../Images/Pasted%20image%2020231221190112.png)
+
+## Traffic Analysis Workflow 
+
+### Analysis
+
+#### What is the issue? 
+
+unknown connections are making strange traffic to our hosts with a destination port that is uncommon and likely for malicious purposes 
+#### Define our scope and goal
+
+- What are we looking for? 
+	- We are looking for any possible malicious activity related to the unknown host: 10.129.43.29 
+- When did the issue start? 
+	- May 10, 2021 21:32:13.810650000 BST
+#### Capture network traffic and identify required network traffic components 
+
+the target unknown host successfully connected to tcp port 4444 on our target system:
+
+![](../Images/Pasted%20image%2020231226183141.png)
+
