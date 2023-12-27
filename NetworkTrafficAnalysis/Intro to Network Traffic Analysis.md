@@ -752,3 +752,9 @@ the stream reveals that after connecting to the target system the threat actor c
 
 ![](../Images/Pasted%20image%2020231226183739.png)
 
+## Decrypting RDP Connections 
+
+when performing analysis of the target machine, some RDP traffic has been captured  
+an RDP-key was found hidden in a folder hive on the target  
+this key can be used to decrypt the communications between the target machine and a suspicious host 
+
