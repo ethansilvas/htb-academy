@@ -140,4 +140,54 @@ using this method on the previously found target of admin:admin results in the a
 
 ![](../Images/Pasted%20image%2020231227144218.png)
 
+## Hydra Modules 
+
+in the previous exercises we found an admin login form  
+this will be interesting to try to gain access to without generating a lot of network traffic  
+with the admin panels we can manage servers, services, and configs  
+many admin panels also have features like b374k shell that could allow us to execute OS commands directly 
+
+when we get to the admin panel, to generate as little traffic as possible, it is a good idea to try the top 10 most popular admin credentials like admin:admin  
+if this doesn't work then we can try password spraying  
+this will try leaked passwords across multiple accounts 
+
+### Brute forcing forms 
+
+hydra lists two http modules that will be useful for this admin panel cracking: 
+- http[s]-{head|get|post} = basic http auth like we used before 
+- http[s]-{get|post}-form = login forms like .php or .aspx and others 
+
+first we need to find out if the form is GET or POST by attempting one login and looking at the url: 
+
+the url did not paste any of the input into the url when attempting to login, so this means that it is a POST form: 
+
+![](../Images/Pasted%20image%2020231227150848.png)
+
+now we can form our hydra http-post-form command: 
+`/login.php:[user parameter]=^USER^&[password parameter]=^PASS^:[FAIL/SUCCESS]=[success/failed string]` 
+
+for hydra to understand if the login was successful or not we have to provide a unique string from the source code of the page we're logging in on  
+hydra will examine the source code response page after each attempt and look for the string we provided 
+
+Fail = FALSE = F=html_content  
+Success = TRUE = S=html_content  
+
+we can provide either string and it will keep trying until the fail string is not found or the success string is found  
+
+there is unfortunately no found string that we can use for the failed state: 
+
+![](../Images/Pasted%20image%2020231227152643.png)
+
+and we can't use "Admin Panel" because if that string exists in the success page then hydra won't be able to tell the difference 
+
+what we can do though is use something like the login button  
+it is very unlikely that the login button will also exist in the successful login page 
+
+```html
+<form name="login" autocomplete="off" class="form" action="" method="post">
+```
+
+we don't even need to use the full thing, we can just use `<form name="login"`:
+
+`"/login.php:[user parameter]=^USER^&[password parameter]=^PASS^:F=<form name='login'"`
 
