@@ -191,3 +191,41 @@ we don't even need to use the full thing, we can just use `<form name="login"`:
 
 `"/login.php:[user parameter]=^USER^&[password parameter]=^PASS^:F=<form name='login'"`
 
+## Determine Login Parameters 
+
+we can find the POST parameters by intercepting the login request with Burp Suite or take a look at the source code of the site 
+
+### Using browser
+
+a simple way to get the POST request is to use the browser's built in network tools to view the request after attempting to login: 
+
+![](../Images/Pasted%20image%2020231227194250.png)
+
+this will reveal the post parameters: 
+
+`username=admin&password=admin`
+
+can also copy as cURL to get the full request: 
+
+`curl 'http://94.237.62.195:41370/login.php' -X POST -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Origin: http://94.237.62.195:41370' -H 'DNT: 1' -H 'Authorization: Basic YWRtaW46YWRtaW4=' -H 'Connection: keep-alive' -H 'Referer: http://94.237.62.195:41370/login.php' -H 'Cookie: PHPSESSID=mldgm82ib2m2t2rk6iop77hhme' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-GPC: 1' --data-raw 'username=admin&password=admin'`
+
+### Using burp suite 
+
+if the site uses a lot of HTTP requests, it might be easier to use Burp to go through all of them 
+
+first we open Burp Suite and go to the proxy tab: 
+
+![](../Images/Pasted%20image%2020231227200838.png)
+
+enable the Burp proxy with FoxyProxy: 
+
+![](../Images/Pasted%20image%2020231227200916.png)
+
+then after trying another login we can see the captured login on Burp: 
+
+![](../Images/Pasted%20image%2020231227201010.png)
+
+now with the information we need, we can add it to the hydra command: 
+
+`"/login.php:username=^USER^&password=^PASS^:F=<form name='login'"`
+
