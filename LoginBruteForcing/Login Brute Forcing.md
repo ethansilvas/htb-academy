@@ -500,3 +500,21 @@ now I can successfully connect to SSH with the credentials:
 
 viewing the current directory I can see the flag.txt file with the first flag
 
+### Second user brute force
+
+while logged into the harry.potter account in SSH I can see that there is another user I can access: 
+
+![](../Images/Pasted%20image%2020231228223838.png)
+
+we can see that ftp is open again with netstat: 
+
+![](../Images/Pasted%20image%2020231228224056.png)
+
+using the loopback IP we can try to brute force the other user with the rockyou-30.txt list which is in the harry.potter user's home directory: 
+
+![](../Images/Pasted%20image%2020231228224807.png)
+
+then with these credentials I can switch to the user and grab the flag from their home directory: 
+
+![](../Images/Pasted%20image%2020231228225317.png)
+
