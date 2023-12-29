@@ -494,3 +494,9 @@ then with the same list of generated usernames I tried a brute force and it work
 
 ![](../Images/Pasted%20image%2020231228223431.png)
 
+now I can successfully connect to SSH with the credentials: 
+
+![](../Images/Pasted%20image%2020231228223618.png)
+
+viewing the current directory I can see the flag.txt file with the first flag
+
