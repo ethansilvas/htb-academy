@@ -423,3 +423,19 @@ first we will try with a short list of common admin passwords `ftp-betterdefault
 
 this did not reveal any passwords so lets increase our username and password list lengths
 
+the approach I took for this next task was to run one longer brute force with rockyou.txt and a list of usernames while I tried shorter searches in the background
+
+my long search didn't actually take that long and I found the credentials with `top-usernames-shortlist.txt` and rockyou.txt: 
+
+![](../Images/Pasted%20image%2020231228205122.png)
+
+another search I ran that did not get results was trying a static admin username with `cirt-deafult-passwords.txt`: 
+
+![](../Images/Pasted%20image%2020231228205237.png)
+
+I also tried smaller searches like the ftp-betterdefaultpasslist.txt list, but the rockyou.txt search just didn't take that long to find the credentials 
+
+with the found credentials I can login and see the flag: 
+
+![](../Images/Pasted%20image%2020231228205932.png)
+
