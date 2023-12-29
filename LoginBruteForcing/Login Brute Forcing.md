@@ -363,3 +363,24 @@ then in the home directory I can see the flag:
 
 ![](../Images/Pasted%20image%2020231228180338.png)
 
+## Skills Assessment 
+
+there is one single TCP port open and there is likely weak credentials that can be brute forced 
+
+### Brute force the authentication 
+
+we have our target IP and port but it is username and password authenticated: 
+
+![](../Images/Pasted%20image%2020231228200101.png)
+
+to start, I wanted to try a very quick scan and only did the top 17 usernames and top 15 passwords:
+
+![](../Images/Pasted%20image%2020231228201228.png)
+
+luckily this worked with the `top-usernames-shortlist.txt` and `best15.txt` files and it resulted in the credentials of user and password 
+
+using this to login you can get past the first authentication check: 
+
+![](../Images/Pasted%20image%2020231228201503.png)
+
+
