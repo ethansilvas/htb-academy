@@ -267,6 +267,12 @@ you can filter the generated list to
 - remove no special chars 
 - remove no numbers
 
+```bash
+sed -ri '/^.{,7}$/d' william.txt            # remove shorter than 8
+sed -ri '/[!-/:-@\[-`\{-~]+/!d' william.txt # remove no special chars
+sed -ri '/[0-9]+/!d' william.txt            # remove no numbers
+```
+
 ![](../Images/Pasted%20image%2020231228165655.png)
 
 the file is now much shorter: 
@@ -467,4 +473,24 @@ so now instead of 28k passwords we have 10k that fit the password requirements
 now lets create a list of specialized usernames with Username Anarchy: 
 
 ![](../Images/Pasted%20image%2020231228214548.png)
+
+### Service brute force 
+
+doing a quick nmap scan with our known source port reveals that SSH is open: 
+
+![](../Images/Pasted%20image%2020231228214912.png)
+
+so now lets see if we can brute force into ssh with our specialized usernames and passwords: 
+
+![](../Images/Pasted%20image%2020231228221626.png)
+
+this ended up taking too long so instead I followed the hint to shorten my search by trying CUPP with less information than the full thing I filled out previously 
+
+for this search I instead did first and last name with special characters and numbers: 
+
+![](../Images/Pasted%20image%2020231228223336.png)
+
+then with the same list of generated usernames I tried a brute force and it worked very quickly: 
+
+![](../Images/Pasted%20image%2020231228223431.png)
 
