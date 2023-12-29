@@ -464,3 +464,7 @@ lets do the same filters that we did last time:
 
 so now instead of 28k passwords we have 10k that fit the password requirements
 
+now lets create a list of specialized usernames with Username Anarchy: 
+
+![](../Images/Pasted%20image%2020231228214548.png)
+
