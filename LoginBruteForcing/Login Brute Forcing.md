@@ -383,4 +383,43 @@ using this to login you can get past the first authentication check:
 
 ![](../Images/Pasted%20image%2020231228201503.png)
 
+### Admin panel 
+
+the next login reveals a similar admin panel that we have done in the previous exercises: 
+
+![](../Images/Pasted%20image%2020231228201616.png)
+
+first lets see if this is a POST or GET form: 
+
+![](../Images/Pasted%20image%2020231228202209.png)
+
+this is a post form so now we want to form our hydra command  
+
+we want our command to look something like this: 
+
+`"/login.php:user=^USER^&pass=^PASS^:incorrect"`
+
+so now lets open the POST call in Burp Suite: 
+
+![](../Images/Pasted%20image%2020231228202539.png)
+
+from this we can see our username and password structure and now we can form our command: 
+
+`"/admin_login.php:user=^USER^&pass=^PASS^:[true or false]"`
+
+now all we need is a unique string from the source code to determine if the login failed or passed
+
+we can see in the source HTML the login form element: 
+
+![](../Images/Pasted%20image%2020231228202924.png)
+
+so now we can finalize our command to: 
+
+`"/admin_login.php:user=^USER^&pass=^PASS^:F=<form name='log-in'"`
+
+first we will try with a short list of common admin passwords `ftp-betterdefaultpasslist.txt`:
+
+![](../Images/Pasted%20image%2020231228203343.png)
+
+this did not reveal any passwords so lets increase our username and password list lengths
 
