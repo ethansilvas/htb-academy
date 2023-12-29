@@ -287,3 +287,79 @@ using username anarchy we can create a list of specialized usernames:
 
 ![](../Images/Pasted%20image%2020231228170214.png)
 
+## Service Authentication Brute Forcing 
+
+### SSH attack 
+
+the command to do a service attack with hydra is simple as we specify the username/password wordlists and add `service://SERVER_IP:PORT` to the end 
+
+hydra will suggest to add `-t 4` to the end for the max number of parallel attempts because SSH typically limits the number of parallel connections and drop other connections 
+
+the final command looks like: 
+
+`hydra -L bill.txt -P william.txt -u -f ssh://178.35.49.134:22 -t 4`
+
+this can result in a username and password that we can ssh into with like so: 
+
+`ssh b.gates@178.35.49.134 -p 22`
+
+### FTP brute forcing 
+
+once we are ssh'd in, we can see what other users are on the system:
+
+`ls /home` 
+
+we can also do local recon to see what other ports are open locally: 
+
+`netstat -antp | grep -i list` 
+
+if port 21 is open we can try brute forcing the FTP login with the other users we find locally 
+
+for this example, let's assume that the admin account has hydra installed, so we can just run it on the logged in user: 
+
+`hydra -l m.gates -P rockyou-10.txt ftp://127.0.0.1`
+
+if we get a result we can try to FTP as that user or switch to another user: 
+
+`ftp 127.0.0.1`
+
+switch to the user: 
+
+`su - m.gates`
+
+### Brute force b.gates 
+
+what is the flag found in the home dir of the user b.gates? 
+
+first make sure we have our personalized password list: 
+
+![](../Images/Pasted%20image%2020231228174726.png)
+
+make the hydra ssh command using a static username of b.gates and our personalized password list: 
+
+![](../Images/Pasted%20image%2020231228174806.png)
+
+we have found the password **4dn1l3m!$** that we can use to ssh with 
+
+use ssh to connect on the specified port and verify that I am logged in as b.gates: 
+
+![](../Images/Pasted%20image%2020231228174934.png)
+
+look around in the directories and find the flag in b.gates home directory: 
+
+![](../Images/Pasted%20image%2020231228175016.png)
+
+since the user has hydra and the shorter version of rockyou.txt, try to brute force the FTP login for the other user, m.gates
+
+using the loopback IP I can brute force the password for the m.gates user: 
+
+![](../Images/Pasted%20image%2020231228180159.png)
+
+then I switch to that user: 
+
+![](../Images/Pasted%20image%2020231228180251.png)
+
+then in the home directory I can see the flag: 
+
+![](../Images/Pasted%20image%2020231228180338.png)
+
