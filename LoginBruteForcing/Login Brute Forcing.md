@@ -363,7 +363,7 @@ then in the home directory I can see the flag:
 
 ![](../Images/Pasted%20image%2020231228180338.png)
 
-## Skills Assessment 
+## Skills Assessment - Website
 
 there is one single TCP port open and there is likely weak credentials that can be brute forced 
 
@@ -438,4 +438,29 @@ I also tried smaller searches like the ftp-betterdefaultpasslist.txt list, but t
 with the found credentials I can login and see the flag: 
 
 ![](../Images/Pasted%20image%2020231228205932.png)
+
+## Skills Assessment - Service Login
+
+given an IP of an online academy we want to find weak credentials being used for the website itself and other services that it is using 
+
+this will likely require usage of more specified password lists based on the employees 
+
+from the previous exercise we know that the user in this case is Harry Potter, so using 
+
+### Specific wordlists
+
+first lets use CUPP to generate a specified wordlist for Harry Potter: 
+
+![](../Images/Pasted%20image%2020231228213356.png)
+
+we know from after logging into the admin panel that the password must be
+- 8 characters or more 
+- have numbers 
+- have special characters 
+
+lets do the same filters that we did last time: 
+
+![](../Images/Pasted%20image%2020231228214009.png)
+
+so now instead of 28k passwords we have 10k that fit the password requirements
 
