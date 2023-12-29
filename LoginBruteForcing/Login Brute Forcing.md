@@ -252,3 +252,38 @@ with the found password we can login:
 
 ![](../Images/Pasted%20image%2020231227205800.png)
 
+## Personalized Wordlists 
+
+### CUPP 
+
+tool to generate wordlists based on information on the target  
+
+using `cupp -i` you can generate a list: 
+
+![](../Images/Pasted%20image%2020231228165054.png)
+
+you can filter the generated list to 
+- remove shorter than 8 characters
+- remove no special chars 
+- remove no numbers
+
+![](../Images/Pasted%20image%2020231228165655.png)
+
+the file is now much shorter: 
+
+![](../Images/Pasted%20image%2020231228165736.png)
+
+### Mangling 
+
+we can still make many different permutations of our targeted wordlist 
+
+**rsmangler** and **The Mentalist** are two tools that can stretch small wordlists to millions of lines long 
+
+### Custom username wordlist
+
+can use tools like **Username Anarchy** 
+
+using username anarchy we can create a list of specialized usernames: 
+
+![](../Images/Pasted%20image%2020231228170214.png)
+
