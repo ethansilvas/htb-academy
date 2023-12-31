@@ -89,4 +89,19 @@ now that we have the general extension that can be used, we can use it to find m
 
 this will return results that if the status is 200 you can see the `size` parameter which will determine if the page is empty or has content within it 
 
+### Fuzzing the blog directory 
+
+now we want to use extension and page directories to find a flag hidden in one of the /blog pages 
+
+first lets fuzz the extension of the /blog pages: 
+
+![](../Images/Pasted%20image%2020231230173109.png)
+
+now we know that the pages have the .php extension so now lets fuzz for pages under the /blog directory: 
+
+![](../Images/Pasted%20image%2020231230173833.png)
+
+since /blog/home is the only one that has a size over 0 I go there and the flag is in the page content 
+
+
 
