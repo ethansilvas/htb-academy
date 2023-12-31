@@ -178,3 +178,7 @@ no, this only means there are no public sub-domains
 even if we did the previous step of adding a domain like `academy.htb` to our /etc/hosts list, we only added the main domain   
 so when ffuf looks for sub-domains it will not find them in the /etc/hosts list and instead looks for public DNS results  
 
+here I can try to fuzz for sub-domains on inlanefreight: 
+
+![](../Images/Pasted%20image%2020231231141641.png)
+
