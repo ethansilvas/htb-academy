@@ -81,3 +81,12 @@ now we can use this command to find the file extension (note that web-extensions
 ffuf -w /opt/useful/SecLists/Discovery/Web-Content/web-extensions.txt:FUZZ -u http://SERVER_IP:PORT/blog/indexFUZZ
 ```
 
+### Page fuzzing 
+
+now that we have the general extension that can be used, we can use it to find more pages: 
+
+`ffuf -w ... -u http://SERVER_IP:PORT/blog/FUZZ.php`
+
+this will return results that if the status is 200 you can see the `size` parameter which will determine if the page is empty or has content within it 
+
+
