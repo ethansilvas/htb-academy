@@ -40,4 +40,19 @@ ffuf can fuzz these urls very quickly but if we want to go even faster we can in
 
 however, this isn't recommended because this can disrupt the site causing a DoS or possibly even bring down your own internet 
 
+### Finding more hidden directories
+
+with our target IP and port we see a blank home page: 
+
+![](../Images/Pasted%20image%2020231230164754.png)
+
+now lets form a ffuf command to find hidden directories: 
+
+![](../Images/Pasted%20image%2020231230165118.png)
+
+this command will result in finding the URLs `forum` and `blog` which are both seemingly empty but do not return a 404 or error: 
+
+![](../Images/Pasted%20image%2020231230165713.png)
+
+![](../Images/Pasted%20image%2020231230165651.png)
 
