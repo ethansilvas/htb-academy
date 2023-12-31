@@ -56,3 +56,28 @@ this command will result in finding the URLs `forum` and `blog` which are both s
 
 ![](../Images/Pasted%20image%2020231230165651.png)
 
+## Page Fuzzing 
+
+now that we've found hidden directories, we want to find more hidden pages within them  
+we will use fuzzing again but first we will want to know what kinds of pages the site is using, such as html, aspx, php, etc. 
+
+one common way to determine these extensions are by using the HTTP response headers and guessing  
+for example, apache servers could be php, or IIS could be asp/aspx, etc. 
+
+looking at the response headers would be time consuming so we can again use ffuf to fuzz the extensions 
+
+we can use another wordlist to find extensions like: 
+
+`ffuf -w /opt/useful/SecList/Discovery/Web-Content/web-extensions.txt:FUZZ`  
+
+however, we will also need to know the name of the file that we are trying to find the extension for  
+we can always just use two wordlists and have a unique keyword for each to do `FUZZ_1.FUZZ.2` to find both the file name and the extension  
+
+but there is almost always find a `index.*` file in websites, so it is good to look for this one 
+
+now we can use this command to find the file extension (note that web-extensions.txt contains the "." so we don't need to include in our command): 
+
+```shell 
+ffuf -w /opt/useful/SecLists/Discovery/Web-Content/web-extensions.txt:FUZZ -u http://SERVER_IP:PORT/blog/indexFUZZ
+```
+
