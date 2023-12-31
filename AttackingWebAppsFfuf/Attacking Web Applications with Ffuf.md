@@ -103,5 +103,28 @@ now we know that the pages have the .php extension so now lets fuzz for pages un
 
 since /blog/home is the only one that has a size over 0 I go there and the flag is in the page content 
 
+## Recursive Fuzzing 
 
+so far we have fuzzed for directories, gone under those directories and fuzzed for files/extensions  
+however if we did this for dozens of directories this would take forever  
+
+recursive fuzzing = auto scans under newly found directories 
+
+some sites may have really long directory trees like /login/user/content/uploads/...   
+this is why it is advised to specify a depth to our scan 
+
+`-recursion` = enable recursive scanning 
+`-recursion-depth` = specify the depth
+`-e .php` = when using recursion we can specify the extension 
+`-v` = output full URLs 
+
+a full command similar to what we did previously would look like: 
+
+```shell
+ffuf -w /opt/useful/SecLists/Discovery/Web-Content/directory-list-2.3-small.txt:FUZZ -u http://SERVER_IP:PORT/FUZZ -recursion -recursion-depth 1 -e .php -v
+```
+
+using this on the spawned target reveals a flag in the forum directory: 
+
+![](../Images/Pasted%20image%2020231230191218.png)
 
