@@ -158,3 +158,23 @@ and to confirm this we can try some of the other domains we found like /blog/ind
 in our earlier scans we did not find any mention of admin or panels, and the admin page found when going directly to the IP noted that the admin page was moved to academy.htb  
 
 so this means we can now start looking for sub domains under `*academy.htb`
+
+## Sub-domain Fuzzing
+
+sub domains are any website underlying another domain  
+photos.google.com is the photos sub-domain of google.com   
+the concept is similar since we are just trying different websites to see if they exist  
+all we need is a wordlist and target  
+
+in SecLists, there is a list for sub-domains `/opt/useful/SecLists/Discovery/DNS/` 
+
+our ffuf command is similar and we just need to change where we place our FUZZ keyword: 
+
+`ffuf -w ... -u https://FUZZ.inlanefrieght.com/`
+
+if we do these commands and we get 0 results then there are no sub-domains?  
+no, this only means there are no public sub-domains 
+
+even if we did the previous step of adding a domain like `academy.htb` to our /etc/hosts list, we only added the main domain   
+so when ffuf looks for sub-domains it will not find them in the /etc/hosts list and instead looks for public DNS results  
+
