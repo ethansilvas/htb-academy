@@ -128,3 +128,33 @@ using this on the spawned target reveals a flag in the forum directory:
 
 ![](../Images/Pasted%20image%2020231230191218.png)
 
+## DNS Records
+
+many websites are not public websites reachable by anyone  
+browsers only know how to go to IP addresses  
+when you provide the browser a URL, it tries to map the URL to an IP with either the local `/etc/hosts` file and the public DNS  
+if the url is not in either of those then it would not know how to connect to the site 
+
+in the previous examples we found a page that said it was an admin panel that was moved to `http://academy.htb:PORT`, but when we try to visit it, it does not work 
+
+to connecto to academy.htb we need to add it to our /etc/hosts file: 
+
+`sudo sh -c 'echo "SERVER_IP  academy.htb" >> /etc/hosts'`
+
+if we use this command then we can go to our desired site and specify the port to get a response: 
+
+![](../Images/Pasted%20image%2020231230201621.png)
+
+however, this page is the same as the one when we go to the IP directly: 
+
+![](../Images/Pasted%20image%2020231230201757.png)
+
+so this means that academy.htb is the same domain as the ones we have been using in our testing so far  
+
+and to confirm this we can try some of the other domains we found like /blog/index.php: 
+
+![](../Images/Pasted%20image%2020231230201902.png)
+
+in our earlier scans we did not find any mention of admin or panels, and the admin page found when going directly to the IP noted that the admin page was moved to academy.htb  
+
+so this means we can now start looking for sub domains under `*academy.htb`
