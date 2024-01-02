@@ -220,3 +220,36 @@ for the previous search for vhosts we can filter by size to get the same results
 ![](../Images/Pasted%20image%2020240101165013.png)
 
 ## Parameter Fuzzing - GET
+
+knowing that we have the admin.academy.htb sub-domain lets run a recursive scan on it: 
+
+![](../Images/Pasted%20image%2020240102141114.png)
+
+from the results we can find admin/admin.php which shows: 
+
+![](../Images/Pasted%20image%2020240102150135.png)
+
+we did not get prompted to login and there is no cookie that we have that can be verified  
+so maybe there is a key that we can pass to read the flag  
+
+in order to pass this key we will need to use a GET or POST request, and with ffuf we can fuzz these parameters to find a parameter that can be accepted by the page 
+
+fuzzing parameters can reveal unpublished parameters that are publicly accessible  
+these parameters are less tested and secured so it is important to test these for vulnerabilities like we will in later modules 
+
+### GET request fuzzing 
+
+GET requests are usually passed right after the URL with the `?`: 
+
+`http://admin.academy.htb:PORT/admin/admin.php?param1=key`
+
+in this case we will pass the FUZZ for param1 
+
+with the `burp-parameter-names.txt` list we can look for common parameter names: 
+
+![](../Images/Pasted%20image%2020240102151336.png)
+
+in these results we see that the user parameter is accepted so now lets visit it: 
+
+![](../Images/Pasted%20image%2020240102151434.png)
+
