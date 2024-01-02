@@ -219,3 +219,4 @@ for the previous search for vhosts we can filter by size to get the same results
 
 ![](../Images/Pasted%20image%2020240101165013.png)
 
+## Parameter Fuzzing - GET
