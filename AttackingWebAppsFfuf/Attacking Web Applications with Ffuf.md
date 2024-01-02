@@ -201,3 +201,11 @@ we can use the `-H` flag and use the FUZZ keyword within it:
 ffuf could return many results that all show 200 OK, but this is because we are simply changing the header while visiting academy.htb:PORT/, which we already know will return 200 OK  
 if the vhost does exist then we should get a different response size because we would be getting the hidden page which is likely to have different content  
 
+if we still have academy.htb in our /etc/hosts we can run this command and get many results back: 
+
+![](../Images/Pasted%20image%2020240101163932.png)
+
+however if you grep to find all results where the size isn't the 986, there are only two results: 
+
+![](../Images/Pasted%20image%2020240101164150.png)
+
