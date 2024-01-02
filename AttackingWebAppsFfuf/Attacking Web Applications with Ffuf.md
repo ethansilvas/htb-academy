@@ -209,3 +209,13 @@ however if you grep to find all results where the size isn't the 986, there are 
 
 ![](../Images/Pasted%20image%2020240101164150.png)
 
+## Filtering Results 
+
+by default ffuf only filters based on HTTP code, and filters out 404
+
+with ffuf gives us many options to filter or match the results 
+
+for the previous search for vhosts we can filter by size to get the same results we saw from grepping: 
+
+![](../Images/Pasted%20image%2020240101165013.png)
+
