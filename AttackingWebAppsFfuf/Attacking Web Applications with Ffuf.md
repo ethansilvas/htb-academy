@@ -253,3 +253,27 @@ in these results we see that the user parameter is accepted so now lets visit it
 
 ![](../Images/Pasted%20image%2020240102151434.png)
 
+## Parameter Fuzzing - POST 
+
+POST requests can't be passed with the URL through the `?`  
+POST requests are passed in the data field within the HTTP request  
+
+the `-d` option in ffuf lets you fuzz the data field, combined with the `-X` option to send POST requests 
+
+however, in PHP, POST data "content-type" can only accept "application/x-www-form-urlencoded" so we need to set that with `-H 'Content-Type: application/x-www-form-urlencoded`  
+
+so now our POST ffuf command is slightly different than the GET request: 
+
+`ffuf -w ... -u http://admin.academy.htb:PORT/admin/admin.php -X POST -d 'FUZZ=key' -H 'Content-Type: application/x-www-form-urlencoded'`: 
+
+![](../Images/Pasted%20image%2020240102152735.png)
+
+now we have found an additional parameter, `id`
+
+lets try sending a POST request with this parameter: 
+
+![](../Images/Pasted%20image%2020240102152928.png)
+
+we can see that we get an invalid id message
+
+
