@@ -182,3 +182,22 @@ here I can try to fuzz for sub-domains on inlanefreight:
 
 ![](../Images/Pasted%20image%2020231231141641.png)
 
+## Vhost Fuzzing 
+
+previously we saw that we can fuzz public domains, but not private ones 
+
+vhost = basically a sub-domain served on the same server and has the same IP, meaning a single IP could be serving two or more different sites  
+vhosts may or may not have public DNS records 
+
+vhost fuzzing = running a scan on an IP that we have identified, which will be able to find public and non-public sub-domains and vhosts 
+
+to scan vhosts you could manually add an entire wordlist to our /etc/hosts, but obviously this is impractical  
+instead we can fuzz HTTP headers, specifically the `Host:` header 
+
+we can use the `-H` flag and use the FUZZ keyword within it: 
+
+`ffuf -w ...subdomains-top1million-5000.txt:FUZZ -u http://academy.htb:PORT/ -H 'Host: FUZZ.academy.htb'`
+
+ffuf could return many results that all show 200 OK, but this is because we are simply changing the header while visiting academy.htb:PORT/, which we already know will return 200 OK  
+if the vhost does exist then we should get a different response size because we would be getting the hidden page which is likely to have different content  
+
