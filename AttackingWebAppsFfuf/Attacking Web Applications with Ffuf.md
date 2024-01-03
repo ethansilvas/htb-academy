@@ -322,3 +322,18 @@ now I am ready to enumerate any sub-domains or vhosts for `*.academy.htb`, and t
 
 ### Extension fuzzing 
 
+for each of the found sub-domains I now should check for what extensions they use 
+
+first I will add each of the found sub-domains to /etc/hosts: 
+
+![](../Images/Pasted%20image%2020240102164920.png)
+
+then I can check each sub-domain for accepted extensions with `web-extensions.txt`: 
+
+![](../Images/Pasted%20image%2020240102165311.png)
+
+from the results I found that .php work for all of them and .php7 works for faculty.academy.htb  
+also, .phps returns as forbidden for some  
+
+
+
