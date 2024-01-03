@@ -290,3 +290,11 @@ we can create this list with bash:
 
 `for i in $(seq 1 1000); do echo $i >> ids.txt; done`
 
+now we create another ffuf command but replace the parameter value with FUZZ:  
+
+![](../Images/Pasted%20image%2020240102160632.png)
+
+then after doing a curl request with the id parameter set to 73 we can see the flag: 
+
+![](../Images/Pasted%20image%2020240102160917.png)
+
