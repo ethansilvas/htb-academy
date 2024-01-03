@@ -332,8 +332,24 @@ then I can check each sub-domain for accepted extensions with `web-extensions.tx
 
 ![](../Images/Pasted%20image%2020240102165311.png)
 
-from the results I found that .php work for all of them and .php7 works for faculty.academy.htb  
-also, .phps returns as forbidden for some  
+the following results were found: 
+- academy.htb = .php .phps
+- archive.academy.htb = .php .phps
+- test.academy.htb = .php .phps
+- faculty.academy.htb = .php .phps .php7
+### Recursive searches
 
+now with the found sub-domains and their accepted extensions, I will run recursive searches on each to see if I can identify any found pages 
 
+the general ffuf command I use looks like: 
+
+```shell
+ffuf -w /opt/useful/SecLists/Discovery/Web-Content/directory-list-2.3-small.txt:FUZZ -u http://*.academy.htb:PORT/FUZZ -recursion -recursion-depth 1 -e ".php,.phps" -v -ic -fs 287
+```
+
+there are a few index.php files found in the home directories of each sub-domain, but one directory was found for both the archive and faculty sub-domains, `/courses`
+
+the recursive fuzzing found index.php and index.php7 files for this directory, but one page of importance was the `/courses/linux-security.php7`: 
+
+![](../Images/Pasted%20image%2020240102175042.png)
 
