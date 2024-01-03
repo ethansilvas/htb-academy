@@ -156,3 +156,36 @@ identify the following hash: `$S$D34783772bRXEx1aCsvY.bqgaaSu75XmVlKrW9Du8IQlvxH
 
 ![](../Images/Pasted%20image%2020240103132912.png)
 
+## Hashcat Overview 
+
+`-a` for attack mode  
+`-m` for hashcat mode 
+
+attack modes: 
+- 0 = straight 
+- 1 = combination 
+- 3 = brute-force 
+- 6 = hybrid wordlist + mask
+- 7 = hybrid mask + wordlist 
+
+you can also view the example hashes with: `hashcat --example-hashes | less`
+
+the benchmark test or performance test for a hash type can be performed with `-b`: 
+
+![](../Images/Pasted%20image%2020240103145005.png)
+
+hashcat has two main ways to optimize speed: 
+- optimized kernels = `-O` which means enable optimized kernels (limits password length)
+	- password length generally is 32, which most wordlists won't even hit 
+	- can take estimated time down from days to hours 
+	- recommended to always run with `-O` first and then without if your GPU is idle 
+- workload = `-W` which means enable a specific workload profile
+	- default number is 2, but if you want to use pc while hashcat is running, then use 1 
+	- if you plan on your pc only running hashcat then use 3 
+
+`--force` should be avoided  
+this will appear to make hashcat work on certain hosts, but what it does is disable safety checks, mutes warnings, and bypasses problems  
+this can lead to false positives, false negatives, malfunctions, etc.  
+if it is not working without --force, then the root cause should be found instead of using --force
+
+
