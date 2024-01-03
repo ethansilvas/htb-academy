@@ -369,5 +369,11 @@ next, I will fuzz the POST parameters:
 
 ![](../Images/Pasted%20image%2020240102180543.png)
 
-so now I know that there are two parameters, `username` and `user` that I can fuzz 
+so now I know that there are two parameters, `username` and `user` that I can fuzz, I know that user is no longer used so I try a curl request with username: 
+
+![](../Images/Pasted%20image%2020240102180817.png)
+
+I then fuzz both of the parameters and ended up finding a valid username `harry`, after sending a POST request with this as the data I find the flag: 
+
+![](../Images/Pasted%20image%2020240102182339.png)
 
