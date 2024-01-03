@@ -306,3 +306,19 @@ as a first step of penetration testing, I will need to locate all pages and doma
 
 then, I will conduct fuzzing on any found pages to see if any of them has parameters that can be interacted with  
 
+### Sub-domain/vhost fuzzing
+
+to begin my testing, I check if the `academy.htb` domain is public: 
+
+![](../Images/Pasted%20image%2020240102162432.png)
+
+it is not public so I add the IP address and name to /etc/hosts: 
+
+![](../Images/Pasted%20image%2020240102162556.png)
+
+now I am ready to enumerate any sub-domains or vhosts for `*.academy.htb`, and to do this I will use the `subdomains-top1million-5000.txt` file: 
+
+![](../Images/Pasted%20image%2020240102164629.png)
+
+### Extension fuzzing 
+
