@@ -276,4 +276,17 @@ lets try sending a POST request with this parameter:
 
 we can see that we get an invalid id message
 
+## Value Fuzzing 
+
+now that we have successfully fuzzed a parameter, now it is time to find accepted values for that parameter 
+
+however, this will require a custom wordlist   
+for something like usernames we can use a pre-made one for usernames  
+in other scenarios like custom parameters we can develop our own wordlists 
+
+for the found `id` parameter we can try a wordlist of all numbers 1-1000
+
+we can create this list with bash: 
+
+`for i in $(seq 1 1000); do echo $i >> ids.txt; done`
 
