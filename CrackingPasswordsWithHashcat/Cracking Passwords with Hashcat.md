@@ -106,3 +106,53 @@ create an XOR cipher of the password opens3same using the key academy:
 
 ![](../Images/Pasted%20image%2020240103124805.png)
 
+## Identifying Hashes 
+
+the length of a hash can be used to map it to the algorithm that created it 
+
+hashes of 32 characters can be an MD5 or NTLM hash 
+
+sometimes hashes are stored in certain formats like `hash:salt` or `$id$salt$hash`
+
+`2fc5a684737ce1bf7b3b239df432416e0dd07357:2014` is a SHA1 hash with the salt of 2014
+
+ids of hashes can be used to map to the hashing algorithm as well: 
+- `$1$` = MD5
+- `$2a$` = blowfish 
+- `$2y$` = blowfish with correct handling of 8-bit characters 
+- `$5$` = SHA256
+- `$6$` = SHA512
+
+open and closed source software can use many different forms of hashing  
+
+### Hashid
+
+hashid is a python tool that can be used to detect various kinds of hashes:
+
+![](../Images/Pasted%20image%2020240103131927.png)
+
+you can also provide a file of hashes for hashid to identify line by line 
+
+it can also provide the corresponding hashcat hash mode with `-m`: 
+
+![](../Images/Pasted%20image%2020240103132155.png)
+
+### Context is important 
+
+not always possible to identify the algorithm based on the hash 
+
+additional context is useful such as: 
+- was it found via active directory or from a windows host
+- was it found through the exploitation of a SQL injection 
+
+this context can narrow down the possible hash types, and therefore the hashcat hash mode needed to attempt to crack it 
+
+hashcat provides a [reference](https://hashcat.net/wiki/doku.php?id=example_hashes) that maps hash modes to example hashes  
+this can be helpful because hashid may return many results for a given hash, but the hashcat examples can tell us that it is indeed a certain hash mode 
+
+identify the following hash: `$S$D34783772bRXEx1aCsvY.bqgaaSu75XmVlKrW9Du8IQlvxHlmzLc`
+
+![](../Images/Pasted%20image%2020240103132813.png)
+
+![](../Images/Pasted%20image%2020240103132912.png)
+
