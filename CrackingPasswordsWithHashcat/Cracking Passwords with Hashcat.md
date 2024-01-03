@@ -98,3 +98,11 @@ some examples of asymmetric algorithms are:
 one of the most prominent uses of asymmetric encryption is HTTPS, which uses SSL/TLS  
 when a client connects to a servers hosting an HTTPS website, a public key exchange occurs  
 
+generate an MD5 hash of HackTheBox123!: 
+
+![](../Images/Pasted%20image%2020240103124600.png)
+
+create an XOR cipher of the password opens3same using the key academy: 
+
+![](../Images/Pasted%20image%2020240103124805.png)
+
