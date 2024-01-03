@@ -57,3 +57,44 @@ another thing to consider for algorithms is how vulnerable they are to collision
 MD5 has been vulnerable to collisions  
 
 ### Encryption 
+
+encryption = converting data into a format where the original content is not accessible  
+encryption is a reversable process; possible to decrypt ciphertext to get original data  
+one of two types: symmetric and asymmetric 
+
+#### Symmetric encryption
+
+use a key or secret to encrypt the data and use the same key to decrypt 
+
+XOR is a simple example: 
+
+![](../Images/Pasted%20image%2020240103123522.png)
+
+![](../Images/Pasted%20image%2020240103123532.png)
+
+in the example above the plaintext is p@ssw0rd and the key is secret  
+anyone that has the key can decrypt any of its ciphertext  
+
+some examples of symmetric algorithms: 
+- AES
+- DES
+- 3DES
+- Blowfish 
+
+these are vulnerable to attacks like bruteforcing, frequency analysis, padding oracle attack, etc. 
+
+#### Asymmetric encryption 
+
+two keys, public and private, are used to encrypt and decrypt 
+
+the public key can be shared with anyone that wants to encrypt info and pass it securely to the owner  
+only the owner has the private key and can then decrypt the data encrypted with their public key 
+
+some examples of asymmetric algorithms are: 
+- RSA 
+- ECDSA
+- Diffie-Hellman 
+
+one of the most prominent uses of asymmetric encryption is HTTPS, which uses SSL/TLS  
+when a client connects to a servers hosting an HTTPS website, a public key exchange occurs  
+
