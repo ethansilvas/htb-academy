@@ -353,3 +353,21 @@ the recursive fuzzing found index.php and index.php7 files for this directory, b
 
 ![](../Images/Pasted%20image%2020240102175042.png)
 
+### Parameter fuzzing 
+
+now that we have a page that we know is looking for some sort of authentication access, I will look for parameters that it might accept 
+
+first, lets fuzz the GET parameters: 
+
+![](../Images/Pasted%20image%2020240102180208.png)
+
+attempting to use the user parameter I get: 
+
+![](../Images/Pasted%20image%2020240102180335.png)
+
+next, I will fuzz the POST parameters: 
+
+![](../Images/Pasted%20image%2020240102180543.png)
+
+so now I know that there are two parameters, `username` and `user` that I can fuzz 
+
