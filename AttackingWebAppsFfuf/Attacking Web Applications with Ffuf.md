@@ -298,3 +298,11 @@ then after doing a curl request with the id parameter set to 73 we can see the f
 
 ![](../Images/Pasted%20image%2020240102160917.png)
 
+## Skills Assessment - Web Fuzzing 
+
+we are given an online academy's IP address but no further info  
+
+as a first step of penetration testing, I will need to locate all pages and domains linked to their IP 
+
+then, I will conduct fuzzing on any found pages to see if any of them has parameters that can be interacted with  
+
