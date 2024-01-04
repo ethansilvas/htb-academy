@@ -500,4 +500,23 @@ you can also extract emails with `-e`:
 
 `cewl -d 5 -m 8 -e http://inlanefreight.com/blog -w wordlist.txt`
 
+### Previously cracked passwords 
+
+hashcat stores all cracked passwords in the `hashcat.profile` file in the format hash:password 
+
+you can view them with `--show` 
+
+it can also be used to create new wordlists of previously cracked passwords: 
+
+`cut -d: -f 2- ~/hashcat.potfile`
+
+### Hashcat-utils
+
+a repo that contains utils useful for more advanced password cracking 
+
+maskprocessor, for example, is a tool that creates wordlists using a given mask: 
+
+`/mp64.bin Welcom?s`
+
+this will append all special characters at the end of a word
 
