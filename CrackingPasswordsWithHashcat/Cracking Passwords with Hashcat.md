@@ -267,3 +267,61 @@ then we can add our hash to a file and crack it:
 ![](../Images/Pasted%20image%2020240103190847.png)
 ![](../Images/Pasted%20image%2020240103190900.png)
 
+## Mask Attack
+
+mask attack are used to generate words matching a specific pattern  
+this is useful when the password length or format is not known 
+
+mask can be created from static characters, ranges of characters, or placeholders
+
+placeholders: 
+- ?| = lower-case ASCII letters (a-z)
+- ?u = upper-case ASCII letters (A-Z)
+- ?d = digits (0-9)
+- ?h = 0123456789abcdef
+- ?H = 123456789ABCDEF
+- ?s = special characters (`space!"#$'()*+,-./:;<=>?@[]^_`)
+- ?a = ?|?u?d?s
+- ?b = 0x00 - 0xff
+
+these placeholders can be combined with options `-1` to `-4` which can be used for custom placeholders: 
+
+![](../Images/Pasted%20image%2020240103205325.png)
+
+consider a company inlane freight which has passwords with the scheme `ILFREIGHT<userid><year>`
+
+the mask `ILFREIGHT?l?l?l?l?l20[0-1]?d` can be used to crack passwords where:  
+- `?l` is a letter 
+- `20[0-1]?d` will include all years from 2000 to 2019
+
+first lets make a hash of the password: 
+
+![](../Images/Pasted%20image%2020240103210547.png)
+
+![](../Images/Pasted%20image%2020240103210511.png)
+
+then lets craft a mask attack command: 
+
+![](../Images/Pasted%20image%2020240103211043.png)
+
+here we use the following parameters: 
+- `-a 3` for attack mode 3 for brute force mask attack 
+- `-m 0` for mode 0 which is MD5
+- `-1 01` create a custom charset placeholder for just the numbers 0 and 1, this is then used in the mask string after "20" so hashcat will only look for years that start with 200 or 201
+
+we are then able to crack the password: 
+
+![](../Images/Pasted%20image%2020240103211410.png)
+
+`--increment` can be used to increment the mask automatically with a length limit of `--increment-max`
+
+to find the password from a hash I start by adding it to a file and creating my mask command: 
+
+![](../Images/Pasted%20image%2020240103212650.png)
+
+then the password can be found: 
+
+![](../Images/Pasted%20image%2020240103212728.png)
+
+## Hybrid Mode
+
