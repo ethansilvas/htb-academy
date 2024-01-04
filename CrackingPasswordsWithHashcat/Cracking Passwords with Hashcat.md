@@ -231,3 +231,39 @@ judging by the size of it, it appears to be an MD5 hash so I will specify the mo
 
 ![](../Images/Pasted%20image%2020240103171745.png)
 
+## Combination Attack 
+
+a combination attack uses two wordlists as input and creates combos from them  
+this is useful because often users will simply combine two words together, thinking it's more safe 
+
+you can see the different combos that it creates with `--stdout`: 
+
+`hashcat -a 1 --stdout file1 file2`
+
+the full combo attack syntax is: 
+
+`hashcat -a 1 -m <hash type> <hash file> <wordlist 1> <wordlist 2>`
+
+first we create a md5 hash of secretpassword:
+
+![](../Images/Pasted%20image%2020240103190301.png)
+
+then use the following wordlists: 
+
+![](../Images/Pasted%20image%2020240103190416.png)
+
+we can then crack the password with attack method 1: 
+
+![](../Images/Pasted%20image%2020240103190437.png)
+
+now lets find the cleartext of the md5 hash `19672a3f042ae1b592289f8333bf76c5`
+
+first we create our wordlists: 
+
+![](../Images/Pasted%20image%2020240103190648.png)
+
+then we can add our hash to a file and crack it: 
+
+![](../Images/Pasted%20image%2020240103190847.png)
+![](../Images/Pasted%20image%2020240103190900.png)
+
