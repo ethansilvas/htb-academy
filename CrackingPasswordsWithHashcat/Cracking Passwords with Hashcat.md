@@ -325,3 +325,37 @@ then the password can be found:
 
 ## Hybrid Mode
 
+hybrid mode is a variation of the combinator attack where multiple modes can be used together  
+this can be useful to create very customized wordlists  
+particularly useful when you have a good idea of what the orgs password policy is 
+
+mode 6 
+
+using the password football1$ lets create a wordlist and a mask: 
+
+![](../Images/Pasted%20image%2020240103213053.png)
+
+now we can make our command, and in it we will specify the rockyou.txt wordlist and a mask of `?d?s` which hashcat will append to the end of each word in rockyou.txt: 
+
+![](../Images/Pasted%20image%2020240103213337.png)
+
+![](../Images/Pasted%20image%2020240103213409.png)
+
+if we wanted to prepend characters we can instead use attack mode 7, for example: 
+
+`hashcat -a 7 -m 0 hybrid_hash_prefix -1 01 '20?1?d' rockyou.txt`
+
+now lets try to crack the plaintext of `978078e7845f2fb2e20399d9e80475bc1c275e06`
+
+first lets find our what type of hash it is: 
+
+![](../Images/Pasted%20image%2020240103214039.png)
+
+it appears to be a SHA-1 hash so now lets try to use rockyou.txt with the supplied mask of ?d?s:
+
+![](../Images/Pasted%20image%2020240103214619.png)
+
+we get the password from appending the mask: 
+
+![](../Images/Pasted%20image%2020240103214645.png)
+
