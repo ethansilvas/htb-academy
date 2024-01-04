@@ -359,3 +359,44 @@ we get the password from appending the mask:
 
 ![](../Images/Pasted%20image%2020240103214645.png)
 
+## Creating Custom Wordlists
+
+### Crunch
+
+crunch is an open source tool to create wordlists based on parameters like word length, char set, or pattern  
+it can generate permutations and combinations 
+
+basic crunch syntax: 
+
+`crunch <min length> <max length> <charset> -t <pattern> -o <outputfile`
+
+`-t` is used to specify the pattern for passwords 
+- @ = lower case characters
+- , = upper case 
+- % = numbers
+- ^ = symbols 
+
+we can generate a wordlist with words of length 4-8 characters with the default charset: 
+
+`crunch 4 8 -o wordlist`
+
+for a password of form `ILFREIGHTYYYYXXXX` where YYYY is the year and XXXX is the employee id, we can create a list of these passwords like so: 
+
+`crunch 17 17 -t ILFREIGHT201%@@@@ -o wordlist` 
+
+if we know something like a birthdate, 10/03/1998, we can use `-d` to specify the amount of times a character can be repeated: 
+
+`crunch 12 12 -t 10031998@@@@ -d 1 -o wordlist`
+
+### CUPP
+
+create personalized wordlists based on OSINT about the target 
+
+`python3 cupp.py -i`
+
+offers leet mode which uses combos of letters and numbers in common words 
+
+can also fetch common names form online databases using `-l`
+
+### KWPROCESSOR 
+
