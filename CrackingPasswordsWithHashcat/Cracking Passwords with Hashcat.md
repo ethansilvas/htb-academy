@@ -426,3 +426,64 @@ an example command:
 
 `-s` will add shift 
 
+### Princeprocessor 
+
+an efficient password guessing algorithm to improve password cracking rates  
+
+takes in a wordlist and creates chains of words taken from the wordlist: 
+
+```
+dog 
+cat
+ball
+```
+
+```shell-session
+dog
+cat
+ball
+dogdog
+catdog
+dogcat
+catcat
+dogball
+catball
+balldog
+ballcat
+ballball
+dogdogdog
+catdogdog
+dogcatdog
+catcatdog
+dogdogcat
+<SNIP>
+```
+
+princeprocessor install: 
+
+```shell
+wget https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z
+7z x princeprocessor-0.22.7z
+cd princeprocessor-0.22
+./pp64.bin -h
+```
+
+`--keyspace` can be used to find the number of combos produced from the wordlist: 
+
+`./pp64.bin --keyspace < words`
+
+you can form a wordlist with: 
+
+`./pp64.bin -o wordlist.txt < words`
+
+by default it only creates words up to 16 in length, and you can change that with `--pw-min` or `--pw-max`:
+
+`./pp64.bin --pw-min=10 --pw-max=25 -o wordlist.txt < words`
+
+you can also specify the number of elements per word with `--elem-cnt-min` and `--elem-cnt-max`:
+
+`./pp64.bin --elem-cnt-min=3 -o wordlist.txt < words`
+
+the above command will output words with three elements or more, such as "dogdogdog"
+
+
