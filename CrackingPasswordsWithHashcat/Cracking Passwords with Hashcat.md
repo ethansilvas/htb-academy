@@ -400,3 +400,29 @@ can also fetch common names form online databases using `-l`
 
 ### KWPROCESSOR 
 
+kwprocessor creates wordlists with keyboards walks  
+keyboard walks follow patterns on the keyboard, like "qwertyasdfg"  
+
+needs to be installed manually: 
+
+```shell
+git clone https://github.com/hashcat/kwprocessor
+cd kwprocessor
+make
+```
+
+various options are used based on the directions that a user could choose on keyboard  
+for example `--keywalk-west` specifies movement towards the west from the base character 
+
+commands take in: 
+- base characters = character set the pattern will start with
+- keymap = maps locations of keys on language-specific keyboard layouts 
+- route = pattern to be followed by passwords, for example 222 will be 2 east, 2 south, 2 west from the base character 
+	- if base character is T then generated route would be "TYUJNBV"
+
+an example command: 
+
+`kwp -s 1 basechars/full.base keymaps/en-us.keymap routes/2-to-10-max-3-direction-changes.route`
+
+`-s` will add shift 
+
