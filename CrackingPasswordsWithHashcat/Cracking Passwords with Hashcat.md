@@ -188,4 +188,46 @@ this will appear to make hashcat work on certain hosts, but what it does is disa
 this can lead to false positives, false negatives, malfunctions, etc.  
 if it is not working without --force, then the root cause should be found instead of using --force
 
+## Dictionary Attack
+
+hashcat has 5 different attack modes  
+most straightforward is dictionary 
+
+hashcat attack type 0 = straight or dictionary attack  
+reads from a wordlist and tries to crack the supplied hashes 
+
+`hashcat -a 0 -m <hash type> <hash file> <wordlist>`
+
+here we set up a SHA-256 hash of !academy: 
+
+![](../Images/Pasted%20image%2020240103165135.png)
+
+and hashcat is able to crack it with rockyou.txt: 
+
+![](../Images/Pasted%20image%2020240103165205.png)
+![](../Images/Pasted%20image%2020240103165220.png)
+
+Bcrypt is based on blowfish, uses salt, and can have many rounds of the algorithm applied  
+it is very resistant to password cracking even with a large password cracking rig 
+
+attempting to crack the same hash with rockyou will take over 1.5 hours, compared to the 4 second long SHA-256 crack  
+
+you can view crack time by pressing the `s` key while hashcat is running
+
+applying the algorithm more and more times will increase the cracking time exponentially 
+
+in the case of hashes like bcrypt, it is often better to use smaller, more targeted, wordlists
+
+even weaker passwords with stronger hashing algorithms can be more difficult to crack just based on the algorithm  
+however this doesn't mean that a weak password with a stronger hashing algorithm is more secure 
+
+cracking rigs with many GPUs make the processing time much faster 
+
+now lets try to crack the hash `0c352d5b2f45217c57bef9f8452ce376`
+
+judging by the size of it, it appears to be an MD5 hash so I will specify the mode as 0, add the hash to hash.txt, and use rockyou.txt: 
+
+![](../Images/Pasted%20image%2020240103171716.png)
+
+![](../Images/Pasted%20image%2020240103171745.png)
 
