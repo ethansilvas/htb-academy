@@ -486,4 +486,18 @@ you can also specify the number of elements per word with `--elem-cnt-min` and `
 
 the above command will output words with three elements or more, such as "dogdogdog"
 
+### CeWL
+
+cewl will spider and scrape a website and creates a list of the words that are present 
+
+you can find words related to a company in their blogs, testimonials, and product descriptions 
+
+the general syntax is: 
+
+`cewl -d <depth to spider> -m <minimum word length> -w <output wordlist> <url>`
+
+you can also extract emails with `-e`: 
+
+`cewl -d 5 -m 8 -e http://inlanefreight.com/blog -w wordlist.txt`
+
 
