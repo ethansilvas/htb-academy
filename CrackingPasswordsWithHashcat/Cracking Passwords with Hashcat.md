@@ -628,3 +628,25 @@ if they had variations or leet replacements then it might require hybrid or rule
 
 ### Example 2 - linux shadow file 
 
+sha512crypt hashes are commonly found in the /etc/shadow file on linux systems 
+
+lets look at an ubuntu hash of password123: 
+
+```shell-session
+$6$tOA0cyybhb/Hr7DN$htr2vffCWiPGnyFOicJiXJVMbk1muPORR.eRGYfBYUnNPUjWABGPFiphjIjJC5xPfFUASIbVKDAHS3vTW1qU.1:18285:0:99999:7:::
+```
+
+there are 9 fields separated by colons at after the hash  
+first 2 fields contain username and its encrypted hash, the rest of the fields contain various attributes such as password creation time, last change time, expiry 
+
+for the hash itself there are 3 fields separated by $   
+6 = SHA-512 hashing algorithm  
+next 16 characters are the salt  
+the rest is the actual hash  
+
+we can crack it with rockyou: 
+
+![](../Images/Pasted%20image%2020240104171012.png)
+![](../Images/Pasted%20image%2020240104170951.png)
+
+
