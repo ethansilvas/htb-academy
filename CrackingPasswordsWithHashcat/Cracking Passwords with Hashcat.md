@@ -604,3 +604,27 @@ then we use that rule with rockyou.txt to crack the hash:
 ![](../Images/Pasted%20image%2020240104163057.png)
 ![](../Images/Pasted%20image%2020240104163205.png)
 
+## Cracking Common Hashes 
+
+we will come across a wide variety of hash types, and some are extremely common while others are rarely seen at all 
+
+### Example 1 - database dumps 
+
+MD5, SHA1, and bcrypt hashes are often seen in database dumps 
+
+lets create a list of SHA1 hashes: 
+
+![](../Images/Pasted%20image%2020240104164738.png)
+
+![](../Images/Pasted%20image%2020240104164725.png)
+
+then lets use it with rockyou to crack the passwords: 
+
+![](../Images/Pasted%20image%2020240104164821.png)
+![](../Images/Pasted%20image%2020240104164710.png)
+
+these passwords were simple and easy to crack  
+if they had variations or leet replacements then it might require hybrid or rule attacks  
+
+### Example 2 - linux shadow file 
+
