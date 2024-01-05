@@ -649,4 +649,42 @@ we can crack it with rockyou:
 ![](../Images/Pasted%20image%2020240104171012.png)
 ![](../Images/Pasted%20image%2020240104170951.png)
 
+### Example 3 - common active directory password hash types 
+
+credential theft and password reuse are widespread attacks during assessments against orgs using active directory  
+it is often possible to obtain creds or re-use password hashes via pass the hash or SMB relay attacks 
+
+some passwords will need to be cracked offline such as NetNTLMv1 or NetNTLMv2, and kerberos 5 TGS-REP  
+same with an NTLM hash obtained from memory using Mimikatz or from a windows machine's local SAM database  
+
+#### NTLM 
+
+one example is getting an NTLM password hash for a user that has RDP access to a server but is not a local admin  
+the NTLM hash can't be used for a pass the hash attack  
+cleartext is needed so that we can connect to the server via RDP
+
+lets create an NTLM hash of Password01: 
+
+![](../Images/Pasted%20image%2020240104171920.png)
+
+then we can crack it with rockyou: 
+
+![](../Images/Pasted%20image%2020240104172032.png)
+![](../Images/Pasted%20image%2020240104172043.png)
+
+#### NetNTLMv2 
+
+common to run tools like Responder to perform MITM attacks to steal creds  
+these can often be cracked and used to establish a foothold in the AD environment or sometimes gain full admin access to many or all systems 
+
+consider the password hash retrieved using Responder: 
+
+```shell-session
+sqladmin::INLANEFREIGHT:f54d6f198a7a47d4:7FECABAE13101DAAA20F1B09F7F7A4EA:0101000000000000C0653150DE09D20126F3F71DF13C1FD8000000000200080053004D004200330001001E00570049004E002D00500052004800340039003200520051004100460056000400140053004D00420033002E006C006F00630061006C0003003400570049004E002D00500052004800340039003200520051004100460056002E0053004D00420033002E006C006F00630061006C000500140053004D00420033002E006C006F00630061006C0007000800C0653150DE09D201060004000200000008003000300000000000000000000000003000001A67637962F2B7BF297745E6074934196D5F4371B6BA3E796F2997306FD4C1C00A001000000000000000000000000000000000000900280063006900660073002F003100390032002E003100360038002E003100390035002E00310037003000000000000000000000000000
+```
+
+now lets run it with rockyou: 
+
+![](../Images/Pasted%20image%2020240104173046.png)
+![](../Images/Pasted%20image%2020240104173127.png)
 
