@@ -700,3 +700,80 @@ just a wordlist did not crack the password so now lets try with a hashcat defaul
 ![](../Images/Pasted%20image%2020240104175119.png)
 ![](../Images/Pasted%20image%2020240104175143.png)
 
+## Cracking Miscellaneous Files and Hashes 
+
+very common to encounter password-protected documents like word and excel docs, onenote notebooks, KeePass database files, SSH private key passphrases, PDF files, zip files, etc. 
+
+most of these can be ran through hashcat to crack 
+
+lots of tools exist to get the password hashes from these files in a format that hashcat can crack, for example JohnTheRipper 
+
+```
+sudo git clone https://github.com/magnumripper/JohnTheRipper.git
+cd JohnTheRipper/src
+sudo .configure && make
+```
+
+JohnTheRipper has tools in C that it provides, and most have ports in Python 
+
+keepas2john.py is an additional tool for KeePass 1.x/2.x databases 
+
+### Example 1 - cracking password protected microsoft office documents 
+
+office2john.py can be used to extract password hashes from office documents 
+
+for a word document we can first extract the hash: 
+
+`python office2john.py hashcat_Word_example.docx`
+
+then we can crack it with one of hashcats office modes: 
+
+![](../Images/Pasted%20image%2020240104194756.png)
+![](../Images/Pasted%20image%2020240104194932.png)
+
+### Example 2 - cracking password protected zip files 
+
+johntheripper has a tool zip2john for getting hashes from password protected zip files 
+
+hashcat has modes for many types of compressed files such as 7-zip and winzip
+
+we can create a password protected zip file and then use zip2john to get the hash: 
+
+![](../Images/Pasted%20image%2020240104200923.png)
+![](../Images/Pasted%20image%2020240104201537.png)
+
+### Example 3 - cracking password protected keepass files 
+
+not uncommon to find KeePass file on sysadmin workstation or accessible file share  
+these can be treasure troves because the may store various passwords in them  
+it may provide local admin passwords, passwords to infrastructure, access to network devices, etc. 
+
+we can grab a hash with either the compiled or python version: 
+
+`python keepass2john.py Master.kdbx`
+
+these are often harder to crack because some can have algorithms like AES 
+
+### Example 4 - cracking protected pdf files 
+
+we can find these on workstations, file shares, or inside an email inbox 
+
+we can extract the hash with: 
+
+`python pdf2john.py inventory.pdf | awk -F":" '{ print $2 }`
+
+### 7-zip example
+
+we know have a password protected 7-zip file, so lets use johntheripper to get the hash: 
+
+![](../Images/Pasted%20image%2020240104210344.png)
+
+now we can use rockyou.txt to crack the password: 
+
+![](../Images/Pasted%20image%2020240104210704.png)
+![](../Images/Pasted%20image%2020240104210652.png)
+
+and now we can use the password to see the hidden flag: 
+
+![](../Images/Pasted%20image%2020240104210627.png)
+
