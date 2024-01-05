@@ -777,3 +777,105 @@ and now we can use the password to see the hidden flag:
 
 ![](../Images/Pasted%20image%2020240104210627.png)
 
+## Cracking Wireless (WPA/WPA2) Handshakes with Hashcat
+
+wireless networks are not always properly segmented from the company's corporate network 
+
+hashcat can be used to crack both the MIC (4-way handshake) and PMKID (1st packet/handshake)
+
+### Cracking MIC
+
+when the client and the WAP communicate, they must ensure that they both have the wireless network key but not transmit it across the network  
+the key is encrypted and verified by the AP 
+
+in order to capture a valid 4-way handshake we need to send de-authentication frames to force a client to disconnect from an AP  
+then when the client reauthenticates (usually automatically) the attacker can then try to sniff out the WPA 4-way handshake 
+
+the handshake is a collection of keys exchanged during the authentication process between the client and the AP   
+these keys are used to create a common key called the Message Integrity Check (MIC) used by an AP to verify that each packet has not been compromised 
+
+![](../Images/Pasted%20image%2020240105135021.png)
+
+we can capture handshakes with tools like airodump-ng and then we need to convert it to a format that hashcat can crack  
+the format required is `hccapx`  
+there is an online service to convert this format which is not recommended for actual client data, but fine for practice: cap2hashcat online   
+to do it offline we need hashcat-utils 
+
+```shell
+ethansilvas@htb[/htb]$ git clone https://github.com/hashcat/hashcat-utils.git
+ethansilvas@htb[/htb]$ cd hashcat-utils/src
+ethansilvas@htb[/htb]$ make
+```
+
+within hashcat-utils there is `cap2hccapx` which takes in a packet capture file and converts it to .hccapx: 
+
+`./cap2hccapx.bin corp_capture1-01.cap mic_to_crack.hccapx`
+
+we can then crack the output file with mode 22000 since the old mode 2500 has been deprecated: 
+
+`hashcat -a 0 -m 22000 mic_to_crack.hccapx rockyou.txt`
+
+the resulting key can be used to authenticate to the wireless network 
+
+### Cracking PMKID 
+
+wireless networks using WPA/WPA2-PSK allows us to obtain the PSK used by network through attacking the AP directly  
+does not require deauth frames  
+
+PMK is the same as the MIC 4-way handshake but is generally faster and without interrupting users 
+
+pairwise master key identifier (PMKID) is the AP's unique id to keep track of the PMK used by the client  
+PMKID located in the first packet of the 4-way handshake, does not require capturing the entire handshake 
+
+PMKID calcualted with HMAC-SHA1 with the PMK (wireless network password) used as the key, the string "PMK Name", MAC address of the AP, and the MAC address of the station: 
+
+![](../Images/Pasted%20image%2020240105142601.png)
+
+need to obtain the PMKID hash by first getting it from the capture file using a tool like hcxpcaptool from hcxtools 
+
+can use hcxpcaptool to extract the PMKID hash: 
+
+`hcxpcaptool -z pmkidhash_corp cracking_pmkid.cap`
+
+which we can then use with hashcat: 
+
+`hashcat -a 0 -m 22000 pmkidhash_corp rockyou.txt`
+
+since this tool has been replaced we can also use the new hcxpcapngtool: 
+
+```shell-session
+ethansilvas@htb[/htb]$ git clone https://github.com/ZerBea/hcxtools.git
+ethansilvas@htb[/htb]$ cd hcxtools
+ethansilvas@htb[/htb]$ make && make install
+```
+
+then do: 
+
+`hcxpcapngtool cracking_pmkid.cap -o pmkidhash_corp`
+
+and use the same hashcat mode 22000 to crack it 
+
+with the successful crack we can then attempt to authenticate to the wireless network 
+
+### Example Cracking
+
+first we start with an MIC capture file 
+
+lets get the hash using cap2hccapx: 
+
+![](../Images/Pasted%20image%2020240105144431.png)
+
+then use rockyou with mode 22000: 
+
+![](../Images/Pasted%20image%2020240105145002.png)
+![](../Images/Pasted%20image%2020240105145015.png)
+
+now with a PMKID pcap we can extract the hash with hcxpcaptool: 
+
+![](../Images/Pasted%20image%2020240105145750.png)
+
+then use the same mode to get the password: 
+
+![](../Images/Pasted%20image%2020240105145819.png)
+![](../Images/Pasted%20image%2020240105145827.png)
+
