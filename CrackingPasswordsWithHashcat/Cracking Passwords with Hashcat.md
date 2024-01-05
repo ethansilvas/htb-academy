@@ -688,3 +688,15 @@ now lets run it with rockyou:
 ![](../Images/Pasted%20image%2020240104173046.png)
 ![](../Images/Pasted%20image%2020240104173127.png)
 
+now lets try an unknown hash 7106812752615cdfe427e01b98cd4083 
+
+it appears to be an NTLM hash so now lets try using rockyou.txt: 
+
+![](../Images/Pasted%20image%2020240104175024.png)
+![](../Images/Pasted%20image%2020240104175036.png)
+
+just a wordlist did not crack the password so now lets try with a hashcat default rule rockyou-30000.rule: 
+
+![](../Images/Pasted%20image%2020240104175119.png)
+![](../Images/Pasted%20image%2020240104175143.png)
+
