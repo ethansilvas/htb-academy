@@ -520,3 +520,87 @@ maskprocessor, for example, is a tool that creates wordlists using a given mask:
 
 this will append all special characters at the end of a word
 
+## Working with Rules
+
+the rule-based attack is the most advanced and complex password cracking mode 
+
+rules perform operations on input wordlist like prefixing, suffixing, toggling case, cutting, reversing, etc.  
+
+increased cracking rates and saves disk space and processing time 
+
+rules can be created using functions that take a word as input and output a modified version: 
+- `|` = convert all to lowercase 
+- `u` = convert to uppercase 
+- `c / C` = capitalize / lowercase first letter and invert the rest
+- `t / TN` = toggle case : whole word / at position N 
+	- InlaneFreight2020 -> iNLANEfREIGHT2020
+- `d / q / zN / ZN` = duplicate word / all characters / first character / last character 
+	- InlaneFreight2020InlaneFreight2020
+	- IInnllaanneeFFrreeiigghhtt22002200
+	- IInlaneFreight2020
+	- InlaneFreight20200
+- `{/}` = rotate word left / right 
+	- InlaneFreight2020 -> nlaneFreight2020I / 0InlaneFreight2020
+- `^X / $X` = prepend / append character X 
+	- InlaneFreight2020 (^! / $!) -> !InlaneFreight2020 / InlaneFreight2020! 
+- `r` = reverse 
+	- InlaneFreight2020 -> 0202thgierFenalnI
+
+sometimes input wordlists contains words that don't match our target specs, rejection rules can be used to prevent the processing of these words 
+
+words of length less than N can be rejected with `>N` and same with greater than `<N` 
+
+reject rules only work with either hashcat-legacy or when using `-j` or `-k` with hashcat 
+
+### Example rule creation 
+
+usual user behavior shows that they tend to replace letters with similar numbers  
+also, corporate passwords are often prepended or appended by a year 
+
+`c so0 si1 se3 ss5 sa@ $2 $0 $1 $9`: 
+- first letter word is capitalized 
+- then there are rules to substitute `-s` letters like o -> 0, i -> 1, ... 
+- then 2019 is appended to it 
+
+lets now store the rule and password in their own files: 
+
+![](../Images/Pasted%20image%2020240104160030.png)
+
+you can debug a rule with `-r` to specify the rule, followed by the wordlist: 
+
+![](../Images/Pasted%20image%2020240104160413.png)
+
+now lets look at the password St@r5h1p2019, first lets make a SHA1 hash: 
+
+![](../Images/Pasted%20image%2020240104160824.png)
+
+now we can then use the custom rule we created and the rockyou.txt file to crack the hash: 
+
+![](../Images/Pasted%20image%2020240104161043.png)
+![](../Images/Pasted%20image%2020240104161052.png)
+
+hashcat supports the use of multi-rules with repeated use of the `-r` flag 
+
+hashcat has built in rules in the `/hashcat/rules` folder  
+it is better to use these rules before using custom rules 
+
+you can also generate random rules on the fly and apply them to each word in the wordlist with `-g`: 
+
+`hashcat -a 0 -m 100 -g 1000 hash rockyou.txt`
+
+on an engagement exercise, it is generally best to start with small and targeted wordlists/rule sets  
+especially if the password policy is known  
+
+rules will greatly reduce our password cracking time and resources 
+
+now lets try cracking the hash of 46244749d1e8fb99c37ad4f14fccb601ed4ae283 
+
+first we modify our rule to append 2020 to the end of each word in the wordlist: 
+
+![](../Images/Pasted%20image%2020240104163143.png)
+
+then we use that rule with rockyou.txt to crack the hash: 
+
+![](../Images/Pasted%20image%2020240104163057.png)
+![](../Images/Pasted%20image%2020240104163205.png)
+
