@@ -79,3 +79,12 @@ error-based SQLi are considered to be the fastest, except for UNION query-based,
 
 ### UNION query-based
 
+`UNION ALL SELECT 1, @@version,3`
+
+using UNION makes is possible to extend the original (vulnerable) query with the injected statements' results   
+attacker can get additional results from the injected statements within the page response itself  
+
+considered the fastest because the attacker could pull the content of the entire database with a single request 
+
+### Stacked queries 
+
