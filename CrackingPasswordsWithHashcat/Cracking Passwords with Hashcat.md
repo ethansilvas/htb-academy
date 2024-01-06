@@ -938,3 +938,18 @@ there are many results so lets do some grep, sort, and uniq filtering to get the
 ![](../Images/Pasted%20image%2020240105174543.png)
 
 from using rockyou alone we can see that freight1 is the most common password, and we get 533 results 
+
+lets try to find more by using some of the hashcat rules available to us
+
+first lets try the rockyou-30000 rule: 
+
+![](../Images/Pasted%20image%2020240105175111.png)
+![](../Images/Pasted%20image%2020240105175129.png)
+
+with this rule alone it will take around 5 hours to complete so I pause it after a while and try the leet speak rule to see if there are any others: 
+
+this only found 2 more that the previous rockyou-30000 had found: 
+
+![](../Images/Pasted%20image%2020240105182122.png)
+
+
