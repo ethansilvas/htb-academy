@@ -88,3 +88,11 @@ considered the fastest because the attacker could pull the content of the entire
 
 ### Stacked queries 
 
+`; DROP TABLE users`
+
+stacking queries also known as piggy-backing is injecting additional SQL statements after the vulnerable one 
+
+if there is a requirement for running non-query statements like INSERT, UPDATE, DELETE then stacking must be supported by the vulnerable platform (microsoft sql server and postgresql support by default) 
+
+SQLmap can use such vulnerabilities to run non-query statements executed in advanced features like execution of OS commands and data retrieval like time-based blind sqli types
+
