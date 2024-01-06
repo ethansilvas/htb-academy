@@ -126,3 +126,28 @@ sqlmap supports these through DNS exfiltration where requested queries are retri
 
 running sqlmap on the dns server for the domain under control (.attacker.com) allows sqlmap to perform the attack by forcing the server to request non-existent subdomains (foo.attacker.com) where foo would be the SQL response we want  
 sqlmap collects the erroring DNS requests and collects the foo part to form the entire sql response 
+
+## Getting Started with SQLMap 
+
+in a simple scenario, there is a web page that accepts user input via a GET parameter (ex: id)  
+you want to test if the web page is affected by a SQL injection  
+if so then you will want to exploit it and get as much info as you can  
+possibly even try to access the underlying file system and execute OS commands 
+
+some vulnerable php code could look like: 
+
+```php
+$link = mysqli_connect($host, $username, $password, $database, 3306);
+$sql = "SELECT * FROM users WHERE id = " . $_GET["id"] . " LIMIT 0, 1";
+$result = mysqli_query($link, $sql);
+if (!$result)
+    die("<b>SQL error:</b> ". mysqli_error($link) . "<br>\n");
+```
+
+there will be an error reported as part of the web-server response in case of any sql query problems  
+these will make SQLi detection easier
+
+basic command on a url would look like: 
+
+`sqlmap -u "http://www.example.com/vuln.php?id=1 --batch`
+
