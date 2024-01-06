@@ -96,3 +96,17 @@ if there is a requirement for running non-query statements like INSERT, UPDATE, 
 
 SQLmap can use such vulnerabilities to run non-query statements executed in advanced features like execution of OS commands and data retrieval like time-based blind sqli types
 
+### Time-based blind SQL injection 
+
+`AND 1=IF(2>1,SLEEP(5),0)`
+
+similar to boolean-based blind sql injection but the response time is used as the source for the differentiation between TRUE and FALSE 
+
+TRUE = noticeable difference between response time of regular server response  
+FALSE = response time indistinguishable from regular response times 
+
+much slower than boolean-based sqli since TRUE queries would delay the server response  
+usually used when boolean-based is not applicable  
+for example, when statement is a non-query 
+
+### Inline queries 
