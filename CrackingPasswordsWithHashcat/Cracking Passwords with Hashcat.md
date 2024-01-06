@@ -916,3 +916,25 @@ using the hashcat example hashes it appears to be mode 13100:
 ![](../Images/Pasted%20image%2020240105163858.png)
 ![](../Images/Pasted%20image%2020240105163908.png)
 
+### Your colleague has now given you the local SAM database's hashes of the Domain Cached credentials for a domain admin user
+
+hash: `$DCC2$10240#backup_admin#62dabbde52af53c75f37df260af1008e`
+
+from the hash example list this will be mode 2100: 
+
+![](../Images/Pasted%20image%2020240105164413.png)
+![](../Images/Pasted%20image%2020240105164513.png)
+
+### With the last password your colleague found the NTDS database containing password hashes of all users within the AD domain. Try to crack as many as possible, and find the cleartext password that appears 5 times
+
+first lets just try a dictionary attack with mode 1000 and rockyou.txt: 
+
+![](../Images/Pasted%20image%2020240105173539.png)
+![](../Images/Pasted%20image%2020240105173548.png)
+
+there are many results so lets do some grep, sort, and uniq filtering to get the most common values: 
+
+![](../Images/Pasted%20image%2020240105174615.png)
+![](../Images/Pasted%20image%2020240105174543.png)
+
+from using rockyou alone we can see that freight1 is the most common password, and we get 533 results 
