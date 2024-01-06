@@ -56,4 +56,26 @@ FALSE = substantial differences form regular server response
 
 boolean-based blind SQL injection is most common SQLi type in web apps 
 
-### 
+### Error-based SQL injection 
+
+`AND GTID_SUBSET(@@version,0)`
+
+if the database management system (DBMS) errors are being returned in the server response then there is a chance that they can be used to carry the results for requested queries  
+so you can target functions that cause known misbehaviors with specific payloads  
+
+sqlmap has the biggest list of these payloads and covers error-based SQL injections for: 
+
+- MySQL 
+- microsoft SQL server 
+- IBM DB2 
+- PostgreSQL 
+- Sybase 
+- Firebird
+- Oracle 
+- Vertica
+- MonetDB
+
+error-based SQLi are considered to be the fastest, except for UNION query-based, because it can retrieve a limited amount of data called "chunks" through each request 
+
+### UNION query-based
+
