@@ -151,3 +151,111 @@ basic command on a url would look like:
 
 `sqlmap -u "http://www.example.com/vuln.php?id=1 --batch`
 
+## SQLMap Output Description 
+
+sqlmap output shows exactly what vulnerabilities sqlmap is exploiting  
+
+there are many common messages found from a can of SQLMap 
+### URL content is stable
+
+"target URL content is stable"
+
+no major changes between responses in case of continuous identical requests 
+
+in the event of stable responses, it is easier to spot the difference caused by SQLi attempts 
+
+### Parameter appears to be dynamic
+
+"GET parameter 'id' appears to be dynamic"
+
+always desired for parameter to be dynamic = any changes made to its value results in a change in its response; parameter may be linked to a database  
+
+if it is static then it could be an indicator that the value is not processed by the target 
+
+### Parameter might be injectable 
+
+"heuristic (basic) test shows that GET parameter 'id' might be injectable (possible DMBS: 'MySQL')"
+
+in this case there was a DBMS error that looks like it could be from MySQL which means that the target could be injectable with MySQL 
+
+### Parameter might be vulnerable to XSS attacks 
+
+"heuristic (XSS) test shows that GET parameter 'id' might be vulnerable to cross-site scripting (XSS) attacks"
+
+sqlmap also does quick XSS scans 
+
+### Back-end DMBS is '...'
+
+"it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DMBSes? Y/n" 
+
+this will show up if it is clear that the target is using a specific DBMS 
+
+### Level/risk values
+
+"for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values? Y/n"
+
+if it is clear that there is a specific DBMS being used then it is also possible to extend the tests for that same specific DBMS beyond the basic tests  
+
+if it isn't known what DBMS is being used then it will only use the top payloads 
+
+### Reflective values found 
+
+"reflective values found and filtering out"
+
+warning that parts of the used payload are found in the response  
+this could cause problems to automation tools, so SQLMap filters it out 
+
+### Parameter appears to be injectable 
+
+"GET parameter 'id' appears to be 'AND boolean-based blind - WHERE or HAVING clause' injectable (with --string="luther")"
+
+could be injectable  
+boolean-based and time-based blinds are likely to have false-positives but SQLmap will try to filter these at the end 
+
+"with --string="luther"" = recognized and used the appearance of constant string value luther in the response for distinguishing TRUE and FALSE responses  
+this means that there will be no need for advanced internal mechanisms like dynamicity/reflection or fuzzy comparison of responses which can't be considered as false-positive 
+### Time-based comparison statistical model 
+
+"time-based comparison requires a larger statistical model, please wait.... (done)"
+
+sqlmap uses stat model for the recognition of regular response times  
+this requires a sufficient number of regular response times so that it can distinguish between deliberate delay even in the high-latency network environments 
+
+### Extending UNION query injection technique tests 
+
+"automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found"
+
+require a lot more requests for successful recognition of usable payload than other SQLi  
+sqlmap will typically cap the number of requests to lower testing time  
+but if there is a good chance that the target is vulnerable, meaning a vulnerability was possibly found, then it extends the cap 
+
+### Technique appears to be usable 
+
+"'ORDER BY' technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test"
+
+as a heuristic check for UNION-query types, sqlmap will use ORDER BY before actual UNION payloads are sent  
+if this works then sqlmap can recognize the correct number of required UNION columns by conducting the binary-search approach 
+
+### Parameter is vulnerable 
+
+"GET parameter 'id' is vulnerable. Do you want to keep testing the others (if any)? y/N"
+
+there was indeed a parameter found to be vulnerable, and you can opt to take this as the first one and exit or continue searching for all vulnerabilities 
+
+### Sqlmap identified injection points 
+
+"sqlmap identified the following injection point(s) with a total of 46 HTTP(s) requests:"
+
+after this is a list of all injection points with type, title, and payloads  
+
+will only list for findings that are provably exploitable 
+
+### Data logged to text files
+
+"fetched data logged to text files under '/home/user/.sqlmap/output/www.example.com'"
+
+shows where all logs, sessions, and output data was stored for the target 
+
+if an injection point is found, all details for future runs are stored in the same directory  
+sqlmap tries to reduce the required target requests as much as possible, depending on the session files data 
+
