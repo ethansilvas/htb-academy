@@ -515,4 +515,31 @@ from this I can get the flag:
 I could have also used the `-T flag5` option to specify only the table I want to see  
 also the `--no-cast` flag to ensure that the correct content is displayed
 
+for flag 6 we want to use non-standard boundaries and inject on the col parameter: 
+
+![](../Images/Pasted%20image%2020240108145735.png)
+
+for this I use `--level` to use the non-standard boundaries, and set the level to 5  
+however, this did not get the flag on it's own  
+in order to get the flag I needed to specify a prefix: 
+
+![](../Images/Pasted%20image%2020240108151348.png)
+
+then I was able to get the flag: 
+
+![](../Images/Pasted%20image%2020240108151415.png)
+
+for flag 7 we want to use UNION SQLi injections on the id parameter: 
+
+![](../Images/Pasted%20image%2020240108151536.png)
+
+to start I specified the `--technique=U` to only use UNION payloads: 
+
+![](../Images/Pasted%20image%2020240108152403.png)
+
+which resulted in the flag: 
+
+![](../Images/Pasted%20image%2020240108152351.png)
+
+I also tried specifying the `--union-cols=9` to match the table output
 
