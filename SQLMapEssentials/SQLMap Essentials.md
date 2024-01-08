@@ -281,4 +281,96 @@ for testing POST data the `--data` flag is used
 
 `sqlmap 'http://www.example.com/' --data 'uid=1&name=test'`
 
+if you know that there is only one parameter that you want to test you can use `-p` or a `*` after the parameter like: 
+
+`'uid=1*&name=test`
+
+### Full HTTP requests 
+
+if we need to do more complex HTTP requests with lots of header values and elongated POST body, we can use `-r`  
+this will be used to provide a request file containing the whole request  
+you can capture these types of requests with proxy apps like Burp 
+
+for example: 
+
+```http
+GET /?id=1 HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+DNT: 1
+If-Modified-Since: Thu, 17 Oct 2019 07:18:26 GMT
+If-None-Match: "3147526947"
+Cache-Control: max-age=0
+```
+
+you can either manually copy the request from within burp and write to file or right click the request in burp and choose copy to file 
+
+you can do this through the browser by doing `Copy > Copy Request Headers` 
+
+`sqlmap -r req.txt`
+
+similar to how we use `--data` we can specify the parameter we want to inject in with an `*`: 
+
+`/?id=*`
+
+### Custom SQLMap Requests 
+
+many options to customize for specific request options
+
+if you needed to specify the session cookie value you could use `--cookie`: 
+
+`sqlmap ... --cookie='newcookievalue'`
+
+or using the `-H` or `--header`: 
+
+`sqlmap ... -H='Cookie:PHPSESSID=abcdeqwerasdfasdf'`
+
+we can apply the same to other options like `--host`, `--referer`, and `-A/--user-agent` which are also used to specify the header values 
+
+`--random-agent` randomly selects User-agent header values  
+this is important because more and more protections recognize and block SQLMap's User-agent value `User-agent:sqlmap/1.4.9.12#dev (http://sqlmap.org)`  
+can also use `--mobile` to imitate the smartphone 
+
+sqlmap by default only targets HTTP parameters but can also choose to test the headers  
+easiest way is to specify the custom injection mark after the header's value  
+`--cookie=id1*`  
+this applies to any other part of the request 
+
+can also specify different methods like `--method PUT`
+
+### Custom HTTP requests
+
+sqlmap also supports JSON formatted (`{"id":1}`) and XML formatted (`<element><id>1</id></element>`) http requests 
+
+no strict restraints on how the parameter values are stored inside  
+if POST body is simple and short you can just use `--data`  
+however we can again use `-r` for longer ones 
+
+### Example Queries 
+
+with our target IP and port we can see a page with different exercises: 
+
+![](../Images/Pasted%20image%2020240107184822.png)
+
+for this section lets start with case 2: 
+
+![](../Images/Pasted%20image%2020240107184903.png)
+
+we have a text field and submit button that we want to inject on with a POST request 
+
+lets grab the POST request and use it as our command: 
+
+![](../Images/Pasted%20image%2020240107185106.png)
+
+we know that we want to inject on the id parameter so I use `*` to specify it  
+I also use `--batch` and `--dump` to get output files  
+
+we get our first flag: 
+
+![](../Images/Pasted%20image%2020240107185323.png)
 
