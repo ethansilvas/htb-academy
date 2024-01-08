@@ -500,3 +500,19 @@ if there is a requirement to use an appendix at the end of a UNION query in the 
 
 using the wrong FROM appendix automatically may be due to the inability to detect the correct DBMS 
 
+for the next set of questions we start with case 5 which we need to exploit an OR SQLi with the id parameter: 
+
+![](../Images/Pasted%20image%2020240108145026.png)
+
+I use the `--risk` option to use the higher risk payloads which will include OR statements: 
+
+![](../Images/Pasted%20image%2020240108145511.png)
+
+from this I can get the flag: 
+
+![](../Images/Pasted%20image%2020240108145543.png)
+
+I could have also used the `-T flag5` option to specify only the table I want to see  
+also the `--no-cast` flag to ensure that the correct content is displayed
+
+
