@@ -455,5 +455,17 @@ SELECT id,name,surname FROM users WHERE id LIKE (('test%')) UNION ALL SELECT 1,2
 
 ### Level/risk 
 
+sqlmap uses a default set of the most common boundaries and vectors, but you can still use bigger sets of them 
 
+to use different options you can specify the `--level` and `--risk` values: 
+- `--level` (1-5, default 1) extends both vectors and boundaries based on expectancy of success; the lower the expectancy the higher the level 
+- `--risk` (1-3, default 1) extends the used vector based on their risk of causing problems for the target such as database entry loss or DoS 
+
+you can check the differences between the used boundaries and payloads for different values of `--level` and `--risk` with `-v`  
+with verbosity level 3 or higher you can see payloads 
+
+regular users are encouraged not to change these values but in cases like where usage of OR payloads is necessary (like in login pages) we might have to raise the risk level ourselves   
+OR payloads are inherently dangerous where underlying vulnerable SQL statements are actively modifying the databases (UPDATE and DELETE)
+
+### Advanced Tuning
 
