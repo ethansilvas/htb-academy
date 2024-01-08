@@ -469,3 +469,34 @@ OR payloads are inherently dangerous where underlying vulnerable SQL statements 
 
 ### Advanced Tuning
 
+when dealing with huge target responses with dynamic content, subtle differences between TURE and FALSE could be used for detection  
+if the difference between TRUE and FALSE can be seen in HTTP codes, you can use `--code` to fixate TRUE responses to a specific code: 
+
+`--code=200`
+
+can also use `--titles` if the difference between TRUE and FALSE can be seen in the HTTP page titles; checks the `<title>` tag
+
+`--string` can check for specific string values being present in TRUE responses: `--string=success`
+
+if there is a lot of hidden content like `<script>`, `<style>`, or `<meta>` you can use the `--text-only` option to remove all HTML tags and bases the comparison on the textual content only 
+
+sometimes we want to narrow down the payloads to only a certain type  
+if time-based blind payloads are taking too long or if we want to force the usage of a specific payload type we can use `--technique`
+
+if we wanted to only use boolean-based blind, error-based, and UNION-query payloads we would do: 
+
+`--technique=BEU`
+
+sometimes UNION payloads require extra user-provided info to work  
+if we can find the exact number of columns of the vulnerable SQL query we can specify it with `--union-cols`: 
+
+`--union-cols=17`
+
+if the default dummy values that sqlmap uses like -NULL and random integers are not compatible with values from results of the vulnerable SQL query then we can specify our own values with `--union-char='a'` 
+
+if there is a requirement to use an appendix at the end of a UNION query in the form of the `FROM <table>` (like with Oracle) we can set it with `--union-form`: 
+
+`--union-from`
+
+using the wrong FROM appendix automatically may be due to the inability to detect the correct DBMS 
+
