@@ -386,3 +386,40 @@ we can then find the flag for case 3:
 
 ![](../Images/Pasted%20image%2020240107185844.png)
 
+for case 4 we want to inject on the JSON value of id: 
+
+![](../Images/Pasted%20image%2020240107190238.png)
+
+since the JSON data is simple I just add the content to the `--data` parameter: 
+
+![](../Images/Pasted%20image%2020240107190639.png)
+
+and we can see the flag for case 4: 
+
+![](../Images/Pasted%20image%2020240107190626.png)
+
+## Handling SQLMap Errors 
+
+there could be many errors with HTTP requests 
+
+### Display errors 
+
+first step is usually to switch the `--parse-errors` option to parse the DBMS errors and display them 
+
+### Store the traffic 
+
+`-t` stores the whole traffic content to an output file: 
+
+`sqlmap -u "http..." --batch -t /tmp/traffic.txt`
+
+this will contain all sent and received HTTP requests 
+
+### Verbose output 
+
+`-v` raises verbosity level: 
+
+`sqlmap -u 'http://...' -v 6 --batch`
+
+### Using proxy 
+
+`--proxy` will redirect all traffic through MITM proxy like burp 
