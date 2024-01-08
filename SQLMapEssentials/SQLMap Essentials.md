@@ -259,3 +259,26 @@ shows where all logs, sessions, and output data was stored for the target
 if an injection point is found, all details for future runs are stored in the same directory  
 sqlmap tries to reduce the required target requests as much as possible, depending on the session files data 
 
+## Running SQLMap on an HTTP Request 
+
+there are many options to set up an HTTP request before usage  
+improper cookie values, over complicated setups, or improper declaration of POST data will prevent correct detection of SQLl  
+
+one of the best way to set up a SQLMap request is using the copy cURL feature in the browser network tab 
+
+you can copy the cURL command and simply replace curl with sqlmap to get a working command: 
+
+```shell
+sqlmap 'http://www.example.com/?id=1' -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0' -H 'Accept: image/webp,*/*' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'Connection: keep-alive' -H 'DNT: 1'
+```
+
+when providing data for testing in SQLmap, there needs to either be a parameter that could be accessed for SQLi or specialized options/switches for auto parameter finding like `--crawl` or `-g`
+
+### GET/POST requests 
+
+typically GET parameters are provided with the `-u` or `--url` options  
+for testing POST data the `--data` flag is used 
+
+`sqlmap 'http://www.example.com/' --data 'uid=1&name=test'`
+
+
