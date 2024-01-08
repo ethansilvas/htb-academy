@@ -423,3 +423,37 @@ this will contain all sent and received HTTP requests
 ### Using proxy 
 
 `--proxy` will redirect all traffic through MITM proxy like burp 
+
+## Attack Tuning 
+
+sqlmap should mostly work out of the box for most scans, but there are ways to fine tune 
+
+every payload consists of: 
+- vector (ex: `UNION ALL SELECT 1,2,VERSION()`), carries the useful SQL code to be executed 
+- boundaries (ex: `<vector>-- -`), prefix and suffix formations; used for proper injection into the vulnerable SQL statement 
+
+### Prefix/suffix 
+
+in rare cases there is a need for prefix and suffixes not covered by the normal sqlmap run, to use them you can use `--prefix` and `--suffix`
+
+`sqlmap -u "www.example.com/?q=test" --prefix="%'))" --suffix="-- -"`
+
+the above command will result in an enclosure of all vectors between the prefix and suffix values
+
+if this is the vulnerable code: 
+
+```php
+$query = "SELECT id,name,surname FROM users WHERE id LIKE (('" . $_GET["q"] . "')) LIMIT 0,1";
+$result = mysqli_query($link, $query);
+```
+
+then the vector would look like: 
+
+```sql
+SELECT id,name,surname FROM users WHERE id LIKE (('test%')) UNION ALL SELECT 1,2,VERSION()-- -')) LIMIT 0,1
+```
+
+### Level/risk 
+
+
+
