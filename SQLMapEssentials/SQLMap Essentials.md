@@ -374,3 +374,15 @@ we get our first flag:
 
 ![](../Images/Pasted%20image%2020240107185323.png)
 
+for case 3 we are looking to inject on the id cookie value: 
+
+![](../Images/Pasted%20image%2020240107185458.png)
+
+for this I add an `*` to the cookie field for id:
+
+![](../Images/Pasted%20image%2020240107185610.png)
+
+we can then find the flag for case 3: 
+
+![](../Images/Pasted%20image%2020240107185844.png)
+
