@@ -609,3 +609,32 @@ we know that we are looking for the testdb database and flag1 table so when we s
 
 ![](../Images/Pasted%20image%2020240108210831.png)
 
+## Advanced Database Enumeration 
+
+if we want to get the structure of all the tables so that we have an overview of the db architecture, you can use `--schema`:
+
+`sqlmap -u ... --schema`
+
+we can search for dbs, tables, and columns with the `--search` option  
+lets us search for identifier names by using the LIKE operator: 
+
+`sqlmap -u ... --search -T user`
+
+this would search for table names with the keyword user 
+
+you can also search for all column names based on a keyword: 
+
+`sqlmap -u ... --search -C pass`
+
+using `--dump` will ask to crack passwords found in databases with dictionary attacks 
+
+there is support for cracking 31 different types of hash algorithms, and a dictionary of many common passwords from leaks 
+
+you can also dump the content of system tables containing database-specific credentials (like connection credentials) with `--passwords`: 
+
+`sqlmap -u ... --passwords --batch`
+
+using the `--all` switch with the `--batch` switch will do the entire enumeration process on the target itself   
+this means that it will do all enumeration steps and display them, but this will take a long time 
+
+
