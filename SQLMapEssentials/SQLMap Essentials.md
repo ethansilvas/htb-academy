@@ -794,4 +794,12 @@ with these I can see the flag:
 
 ![](../Images/Pasted%20image%2020240109181815.png)
 
+case 11 will require to bypass a filter of common XSS characters < and >: 
+
+![](../Images/Pasted%20image%2020240109181916.png)
+
+for this we can again try the `between` tamper script: 
+
+![](../Images/Pasted%20image%2020240109182154.png)
+![](../Images/Pasted%20image%2020240109182420.png)
 
