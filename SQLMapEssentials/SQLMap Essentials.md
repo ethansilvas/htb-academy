@@ -752,3 +752,23 @@ http parameter pollution (HPP) will split payloads similar to chunked but betwee
 
 some platforms will concatenate these, like ASP 
 
+to start this module's questions I will look for a flag in case 8: 
+
+![](../Images/Pasted%20image%2020240109174328.png)
+
+for this I will need to first look for a csrf token to specify in my sqlmap commands
+
+```shell
+curl 'http://94.237.62.195:37255/case8.php' -X POST -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Origin: http://94.237.62.195:37255' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Referer: http://94.237.62.195:37255/case8.php' -H 'Cookie: PHPSESSID=c2j8doa4v0l560vjp7ao9inb3n' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-GPC: 1' --data-raw 'id=1&t0ken=tbWczWwi7dhcSgKHtM1KtsLYXa5KJYiN6TDdn2Ph0uE'
+```
+
+looking at the above request that I captured from the page, I can see that the non-standard token "t0ken" is being used 
+
+now I can specify that in my sqlmap command: 
+
+![](../Images/Pasted%20image%2020240109175125.png)
+
+this will reveal the flag for table 8: 
+
+![](../Images/Pasted%20image%2020240109175322.png)
+
