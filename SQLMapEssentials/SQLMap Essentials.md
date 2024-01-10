@@ -660,3 +660,95 @@ for this I simply use `--dump` and allow for the dictionary password crack attem
 and I then search the dump file for the specific user to see the cracked password: 
 
 ![](../Images/Pasted%20image%2020240109161808.png)
+
+## Bypassing Web Application Protections 
+
+there are many sqlmap mechanisms to avoid detection 
+
+### Anti-CSRF token bypass
+
+one of the first lines of defense against automated tools like sqlmap is the use of anti-CSRF tokens into all HTTP requests 
+
+each HTTP request should have a valid token value available only if the user visited and used the page
+
+sqlmap can bypass this by using `--csrf-token`  
+with the token parameter name, sqlmap will attempt to parse the target response content and search for fresh token values to use in the next request 
+
+even if the user does not specify the token's name with `--csrf-token`, if any of the provided parameters contain any of the common infixes like csrf, xsrf, token, etc., you will be prompted to update it in further requests: 
+
+`sqlmap -u ... --data="id=1&csrf-token=SDLFKJSDLFKJSLDKJF" --csrf-token="csrf-token"`
+
+### Unique value bypass
+
+sometimes the site will require only unique values to be input to predefined parameters   
+similar to anti-CSRF but no need to parse the content   
+
+`--randomize` pointing to the parameter will use random values on each request to bypass the requirement of unique values  
+
+### Calculated parameter bypass
+
+some sites will expect a parameter value to be calculated based on another parameter's value  
+
+most often, one parameter value has to contain the message digest (h=MD5(id)) of another one 
+
+use `--eval` combined with python code to evaluate the hash: 
+
+`sqlmap -u ... --eval="import hashlib; h=hashlib.md5(id).hexdigest()" --batch -v 5`
+
+this will set the `h` parameter equal to the MD5 hash of the id parameter 
+
+### IP address concealing 
+
+you can set a proxy to hide your IP address with `--proxy`: 
+
+`--proxy="socks4://177.39.187.70:33283"` 
+
+you can also add a list of proxies with `--proxy-file`  
+sqlmap will go sequentially through the list 
+
+using Tor network our IP can appear anywhere from a large list of Tor exit nodes  
+there should be a SOCKS4 proxy service at the local port 9050 or 9150  
+with `--tor` sqlmap will try to find the local port and use it 
+
+you can ensure tor is properly being used with `--check-tor`   
+sqlmap will connect to `https://check.torproject.org` and check the response for the intended result 
+
+### WAF bypass
+
+as part of the initial tests, sqlmap sends a predefined malicious looking payload with a nonexistant parameter to check for WAF   
+the response will be very different if there is a WAF rule in place, for example with ModSecurity it would return "406 - Not Acceptable"
+
+sqlmap will use identYwaf to tell which type of WAF is in place, but we can skip it with `--skip-waf` in case we wanted to reduce noise 
+
+### User-agent blacklisting bypass 
+
+the default user agent of sqlmap can often be blacklisted and this can be switched using `--random-agent` 
+
+### Tamper scripts
+
+one of the most popular ways of bypassing WAF/IPS is tamper scripts   
+these are python scripts for modifying requests before being sent to the target  
+
+`between` is a popular script to replace all occurrences of greater than > operator with NOT BETWEEN 0 and #, and the = with BETWEEN # and #   
+this way many basic ways of detecting XSS are bypassed 
+
+tamper scripts can be chained with `--tamper`: 
+
+`--tamper=between,randomcase` 
+
+these will be ran based on their pre-defined priority because some scripts will modify the payloads while others do not care about the inner content 
+
+you can use `--list-tampers` to see a full list of the available scripts 
+
+### Miscellaneous bypasses
+
+chunked transfer encoding can be enabled with `--chunked`  
+this will split the POST request's body into chunks  
+blacklisted SQL keywords are split between chunks so that a request with them can bypass detections 
+
+http parameter pollution (HPP) will split payloads similar to chunked but between same parameter named values: 
+
+`?id=1&id=UNION&id=SELECT&id=username,password&id=FROM&id=users...` 
+
+some platforms will concatenate these, like ASP 
+
