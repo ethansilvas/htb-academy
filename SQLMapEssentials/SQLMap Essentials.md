@@ -887,3 +887,74 @@ I am not able to move around in the directories but using `ls` I am able to find
 
 ![](../Images/Pasted%20image%2020240109205601.png)
 
+## Skills Assessment
+
+you are given access to a web app with basic protection mechanisms  
+use the skills learned in this module to find the SQLi vulnerability and exploit it accordingly  
+find the hidden flag 
+
+going to the provided IP and port I can see a web app with lots of content: 
+
+![](../Images/Pasted%20image%2020240109205916.png)
+
+after looking around the site I found a form to submit a purchase: 
+
+![](../Images/Pasted%20image%2020240109210132.png)
+
+unfortunately, any attempts to place an order and view the cURL request does not work so I move on
+
+next, in the blog page I see a search bar that I again want to try to look for a cURL request I can use: 
+
+![](../Images/Pasted%20image%2020240109210540.png)
+
+I get a request and use this as my first test to see if I can inject on it: 
+
+```shell
+curl 'http://83.136.251.235:37451/blog.html?#' -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Referer: http://83.136.251.235:37451/blog.html' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-GPC: 1'
+```
+
+using this as a basic command and not specifying any parameters doesn't provide any results but SQLmap tells me to try using `--forms --crawl=2` so I try that: 
+
+![](../Images/Pasted%20image%2020240109211858.png)
+
+this finds two potential parameters in forms that can be injected on: 
+
+![](../Images/Pasted%20image%2020240109211942.png)
+
+![](../Images/Pasted%20image%2020240109211951.png)
+
+neither work, either due to them truly not being injectable or because of the protection in place
+
+these did point in directions to look for more injectable parameters and I find another one in the shop.html page when using the "add to cart" button: 
+
+![](../Images/Pasted%20image%2020240109212146.png)
+
+the action.php POST request has an `id` parameter: 
+
+```shell
+curl 'http://83.136.251.235:37451/action.php' -X POST -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'Content-Type: application/json' -H 'Origin: http://83.136.251.235:37451' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Referer: http://83.136.251.235:37451/shop.html' -H 'Sec-GPC: 1' --data-raw '{"id":1}'
+```
+
+I start by looking at the above action.php POST request and injecting on the `id` parameter: 
+
+![](../Images/Pasted%20image%2020240109212443.png)
+
+while this command is running I get the warning about basic XSS protections: 
+
+![](../Images/Pasted%20image%2020240109213219.png)
+
+so then I rerun it with the between tamper script and the randomcase one: 
+
+![](../Images/Pasted%20image%2020240109214317.png)
+
+the command takes a while but during it I see the database `final_flag`: 
+
+![](../Images/Pasted%20image%2020240109214308.png)
+
+so to hopefully save time I retry the command and specify the database and table: 
+
+![](../Images/Pasted%20image%2020240109215129.png)
+
+from this I get the final flag: 
+
+![](../Images/Pasted%20image%2020240109215120.png)
