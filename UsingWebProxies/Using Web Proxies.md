@@ -40,3 +40,21 @@ another common web proxy tool
 open-source and no paid only   
 continually gaining many of the paid-only features that burp has   
 
+## Setting up
+
+after installed, burp can be launched as an app or through the terminal with `burpsuite`  
+can also run the JAR file: 
+
+`java -jar /burpsuite.jar`
+
+when we open burp and are greeted with the project screen, if we are using the community version we would only be able to use temporary projects without being able to save them  
+
+![](../Images/Pasted%20image%2020240110140558.png)
+
+then we will be prompted about configurations, there are either burp default configurations or you can load a config file 
+
+ZAP also has the ability to be ran as an app or as a jar  
+can also launch from terminal with `zaproxy`   
+
+zap gives the option to save a project without paying, but for our purposes we will only need temp projects 
+
