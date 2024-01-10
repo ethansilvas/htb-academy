@@ -776,4 +776,22 @@ now for flag 9 I need to randomize unique values for a parameter:
 
 ![](../Images/Pasted%20image%2020240109175500.png)
 
-with `--randomize` I specify the uid parameter 
+with `--randomize` I specify the uid parameter and get the flag: 
+
+![](../Images/Pasted%20image%2020240109181336.png)
+
+![](../Images/Pasted%20image%2020240109181317.png)
+
+for flag 10 there is primitive protection in place: 
+
+![](../Images/Pasted%20image%2020240109181301.png)
+
+for basic protection I can try some tamper scripts like `between`: 
+
+![](../Images/Pasted%20image%2020240109181706.png)
+
+with these I can see the flag: 
+
+![](../Images/Pasted%20image%2020240109181815.png)
+
+
