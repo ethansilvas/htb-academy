@@ -772,3 +772,8 @@ this will reveal the flag for table 8:
 
 ![](../Images/Pasted%20image%2020240109175322.png)
 
+now for flag 9 I need to randomize unique values for a parameter: 
+
+![](../Images/Pasted%20image%2020240109175500.png)
+
+with `--randomize` I specify the uid parameter 
