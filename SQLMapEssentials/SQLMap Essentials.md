@@ -855,4 +855,35 @@ you can also combine this with `--technique` to specify types of OS shell method
 
 `sqlmap -u ... --os-shell --technique=E`
 
+now for the final questions we start by trying to find the file `/var/www/html/flag.txt`
+
+using the `--file-read` command I look for the specified file: 
+
+![](../Images/Pasted%20image%2020240109203916.png)
+
+the file is found and I can open it locally to view the flag within it: 
+
+![](../Images/Pasted%20image%2020240109203957.png)
+
+next we want to get an interactive OS shell on the remote host and try to find another flag within it
+
+lets run the command again but with `--os-shell` enabled: 
+
+![](../Images/Pasted%20image%2020240109204616.png)
+
+we can see that the UNION based injection will not let us use commands: 
+
+![](../Images/Pasted%20image%2020240109204755.png)
+
+now lets retry the command but specify an error based technique: 
+
+![](../Images/Pasted%20image%2020240109204831.png)
+
+with the new technique we get working commands: 
+
+![](../Images/Pasted%20image%2020240109204944.png)
+
+I am not able to move around in the directories but using `ls` I am able to find the flag and view it with `cat`: 
+
+![](../Images/Pasted%20image%2020240109205601.png)
 
