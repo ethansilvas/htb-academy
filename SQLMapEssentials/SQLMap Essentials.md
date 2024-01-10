@@ -637,4 +637,26 @@ you can also dump the content of system tables containing database-specific cred
 using the `--all` switch with the `--batch` switch will do the entire enumeration process on the target itself   
 this means that it will do all enumeration steps and display them, but this will take a long time 
 
+for this module's questions we will look at case 1 again: 
 
+![](../Images/Pasted%20image%2020240109155911.png)
+
+first I want to find the column with "style" in it's name
+
+for this I will use `--search -C style` to look for columns with the keyword in it: 
+
+![](../Images/Pasted%20image%2020240109160125.png)
+
+by searching using LIKE I can see the resulting column: 
+
+![](../Images/Pasted%20image%2020240109160241.png)
+
+next I want to find the user Kimberly's password
+
+for this I simply use `--dump` and allow for the dictionary password crack attempts:
+
+![](../Images/Pasted%20image%2020240109161129.png)
+
+and I then search the dump file for the specific user to see the cracked password: 
+
+![](../Images/Pasted%20image%2020240109161808.png)
