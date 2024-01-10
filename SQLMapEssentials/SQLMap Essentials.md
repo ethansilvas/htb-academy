@@ -803,3 +803,36 @@ for this we can again try the `between` tamper script:
 ![](../Images/Pasted%20image%2020240109182154.png)
 ![](../Images/Pasted%20image%2020240109182420.png)
 
+## OS Exploitation 
+
+you can use sqlmap to read and write files from the local system outside the DMBS  
+it can also try to give us direct command execution on the remote host with the proper permissions
+
+### File read/write 
+
+reading data is much more common since write requires permissions 
+
+an example MySQL command to read and write would be like: 
+
+`LOAD DATA LOCAL INFILE '/etc/passwd' INTO TABLE passwd;`
+
+requiring DBA privileges to read data is becoming more common 
+
+### Checking for DBA privileges 
+
+we can check for these privileges with `--is-dba`
+
+### Reading local files 
+
+`--file-read` will let us read files: 
+
+`--file-read "/etc/passwd"`
+
+### Writing local files 
+
+writing files is typically disabled but some web apps still require it so it is worth testing  
+
+we can use `--file-write` and `--file-dest` to write to files
+
+first we can create a basic php web shell: 
+
