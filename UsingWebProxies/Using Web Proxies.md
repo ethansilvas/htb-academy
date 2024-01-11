@@ -104,4 +104,60 @@ in the `Authorities` tab you can import the files downloaded from burp and zap:
 
 now all firefox web traffic will start routing through our proxy 
 
+## Intercepting Web Requests 
+
+with our proxy in place we can intercept and manipulate HTTP requests sent by the web app  
+
+### Intercepting requests 
+
+with burp we go to the `Proxy` tab and make sure request interception is on  
+
+after going to our spawned target we can see the request show up in burp: 
+
+![](../Images/Pasted%20image%2020240110191213.png)
+
+since this acts as a MITM we can choose to forward or drop the request, forwarding it allows us to then load the site: 
+
+![](../Images/Pasted%20image%2020240110191250.png)
+
+for zap, interception is off by default and we can enable it with the green button in the top bar: 
+
+![](../Images/Pasted%20image%2020240110191937.png)
+
+then after visiting the site you can see the requests just like burp: 
+
+![](../Images/Pasted%20image%2020240110192029.png)
+
+zap also inlcudes a HUD that is visible once we forward requests and view the site: 
+
+![](../Images/Pasted%20image%2020240110192210.png)
+
+### Manipulating intercepted requests 
+
+when we have captured requests we can manipulate them before we forward them to better understand how the site will react to any changes we make  
+
+there are many applications in pen testing that make use of this: 
+- SQL injections 
+- command injections 
+- upload bypass
+- authentication bypass
+- XSS
+- XXE
+- error handling 
+- deserialization 
+
+if we use the ping button to send another request and capture it: 
+
+![](../Images/Pasted%20image%2020240110193741.png)
+
+![](../Images/Pasted%20image%2020240110193729.png)
+
+we can now manipulate the request to insert characters that would otherwise be blocked by the front-end protection code   
+there still may be protections in the backend but we can check by manipulating the request before forwarding it 
+
+if we replace the IP we provided with `;ls;` we can get the ls command response: 
+
+![](../Images/Pasted%20image%2020240110194038.png)
+
+## Intercepting Responses
 
