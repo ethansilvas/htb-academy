@@ -58,3 +58,50 @@ can also launch from terminal with `zaproxy`
 
 zap gives the option to save a project without paying, but for our purposes we will only need temp projects 
 
+## Proxy Setup 
+
+with burp and zap we can set them up as a proxy for any app so that all requests can be routed through them  
+
+### Pre-configured browser 
+
+first we need to configure our browser to use the tools as the proxy, or use the pre-configured browser  
+
+in burp there is the option to open the pre-configured browser in the `Proxy -> Intercept` menu: 
+
+![](../Images/Pasted%20image%2020240110173618.png)
+
+in ZAP there is a firefox button in the top toolbar: 
+
+![](../Images/Pasted%20image%2020240110174057.png)
+
+### Proxy setup 
+
+burp and zap use 8080 for the web proxy listening port by default  
+
+if we wanted to serve the web proxy on a different port we can do so in burp under `Proxy -> Options` and in zap under `Tools -> Network -> Local Servers/Proxies` 
+
+with the foxyproxy browser extension you can modify the different proxy IPs or ports you want to use: 
+
+![](../Images/Pasted%20image%2020240110174821.png)
+
+### Installing CA certificate
+
+with our browser we will need to install the web proxy's CA certificates so that all HTTPS traffic is properly routed  
+
+you can get the burp certificate with the foxyproxy set and going to `http://burp`: 
+
+![](../Images/Pasted%20image%2020240110183038.png)
+
+you can get them in zap by going to `Tools -> Network -> Server Certificates` 
+
+![](../Images/Pasted%20image%2020240110183320.png)
+
+then with the certificates you can go to `about:preferences#privacy` in firefox and view your certificates
+
+in the `Authorities` tab you can import the files downloaded from burp and zap: 
+
+![](../Images/Pasted%20image%2020240110183527.png)
+
+now all firefox web traffic will start routing through our proxy 
+
+
