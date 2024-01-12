@@ -258,7 +258,52 @@ we can do the same with the request body to automatically apply our command inje
 
 ![](../Images/Pasted%20image%2020240111174043.png)
 
+## Repeating Requests 
 
+in the previous example of modifying a request and sending it, if we wanted to try multiple different commands the process would be very tedious  
+we can use request repeating to make this faster 
 
+request repeating lets us resend any web request that has previously gone through the proxy 
 
+in burp we can see the proxy history in the `HTTP history` tab: 
+
+![](../Images/Pasted%20image%2020240111184416.png)
+
+the zap history is at the bottom of the app: 
+
+![](../Images/Pasted%20image%2020240111184611.png)
+
+these histories also maintain WebSockets history which shows all connections initiated by the web app even after being loaded, like async updates and data fetching 
+
+zap only shows the final/modified request that was sent but burp you can see both the original and modified: 
+
+![](../Images/Pasted%20image%2020240111185123.png)
+
+### Repeating requests 
+
+right-clicking a request in burp will allow you to send the request to the repeater: 
+
+![](../Images/Pasted%20image%2020240111185217.png)
+
+then you can navigate to the repeater tab: 
+
+![](../Images/Pasted%20image%2020240111185248.png)
+
+right-clicking on the request again you can use the `Change request method` option to swap between GET and POST without having to rewrite the request: 
+
+![](../Images/Pasted%20image%2020240111185446.png)
+
+in zap if you right click a request you can use the option `Open/Resend with request editor` to resend requests: 
+
+![](../Images/Pasted%20image%2020240111185607.png)
+
+![](../Images/Pasted%20image%2020240111185616.png)
+
+there is also a method drop-down menu to swap HTTP methods: 
+
+![](../Images/Pasted%20image%2020240111185645.png)
+
+using the repeater we can quickly try other commands to get the other flag: 
+
+![](../Images/Pasted%20image%2020240111191652.png)
 
