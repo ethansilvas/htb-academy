@@ -205,6 +205,60 @@ you can also view any html comments in their position with the HUD:
 
 ![](../Images/Pasted%20image%2020240111160710.png)
 
+## Automatic Modification 
+
+we might want to apply mods to all outgoing HTTP requests or all incoming HTTP requests  
+
+### Automatic request modification
+
+we can choose to match any text within out requests, either in the header or body 
+
+first lets replace our User-Agent with "HackTheBox Agent 1.0" 
+
+for burp we can go to `Proxy -> Options -> Match and Replace`: 
+
+![](../Images/Pasted%20image%2020240111165141.png)
+
+we can then revisit the page and notice the User-Agent header is changed with our value: 
+
+![](../Images/Pasted%20image%2020240111165259.png)
+
+zap has a replacer feature that we can see by going to `Tools -> Replacer options`: 
+
+![](../Images/Pasted%20image%2020240111165721.png)
+
+zap also has the request header string that we can use with a regex pattern: 
+
+![](../Images/Pasted%20image%2020240111170235.png)
+
+### Automatic Response Modification
+
+in the same menu for match and replace, we can create a rule for the response body: 
+
+![](../Images/Pasted%20image%2020240111172557.png)
+
+this will automatically do our changes of swapping the form field from number to text
+
+we can then see that these replacements were automatically applied to the response: 
+
+![](../Images/Pasted%20image%2020240111172649.png)
+
+you can also apply the same rules using the zap replacer:
+
+![](../Images/Pasted%20image%2020240111173405.png)
+
+then viewing the request and matching response you can see all the replacement rules applied: 
+
+![](../Images/Pasted%20image%2020240111173417.png)
+![](../Images/Pasted%20image%2020240111173433.png)
+
+we can do the same with the request body to automatically apply our command injection: 
+
+![](../Images/Pasted%20image%2020240111173955.png)
+
+![](../Images/Pasted%20image%2020240111174043.png)
+
+
 
 
 
