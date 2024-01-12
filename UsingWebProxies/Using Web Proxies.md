@@ -361,4 +361,54 @@ so now we can change the text to instead set is_admin to true and then get the p
 
 ![](../Images/Pasted%20image%2020240111201130.png)
 
+## Proxying Tools 
+
+an important tool for proxies is enabling the interception of web requests made by cli tools and thick client apps  
+
+to route all web requests made by these tools through our proxy we have to set them up as the tool's proxy, like `http://127.0.0.1:8080` with our browser  
+each tool may have a different method for setting its proxy 
+
+### Proxychains 
+
+proxychains route all traffic coming from any command line to any proxy we specify  
+proxychains adds a proxy to any cli tool and is the easiest method to route traffic through our proxies 
+
+first we need to edit `/etc/proxychains.conf`, comment out the final line in the file and add this to the end: 
+
+```shell
+#socks4           127.0.0.1 9050
+http 127.0.0.1 8080
+```
+
+might also want to enable quite mode by un-commenting `quiet_mode` 
+
+then we can prepend proxychains to any command and the traffic of that command will be routed through proxychains
+
+for example we could do curl: 
+
+`proxychains curl http://server_ip:port`
+
+you would get an output like: 
+
+![](../Images/Pasted%20image%2020240111210448.png)
+
+### Nmap 
+
+with nmap you only need to use the `--proxies` flag, and it is typically recommended to skip the host discovery with `-Pn`: 
+
+`nmap --proxies http://127.0.0.1:8080 SERVER_IP -p PORT -Pn -sC`
+
+the nmap proxies may still be in development so in that case we could again prepend `proxychains` to the command 
+
+### Metasploit
+
+we can proxy web traffic made by metasploit modules to better investigate and debug them 
+
+start metasploit with `msfconsole`, then to set a proxy for any exploit we can use the `set PROXIES` flag: 
+
+![](../Images/Pasted%20image%2020240111211848.png)
+
+you can then see all the requests in the proxy: 
+
+![](../Images/Pasted%20image%2020240111212311.png)
 
