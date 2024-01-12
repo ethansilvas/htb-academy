@@ -412,3 +412,104 @@ you can then see all the requests in the proxy:
 
 ![](../Images/Pasted%20image%2020240111212311.png)
 
+## Burp Intruder 
+
+two of the most important features that burp and ZAP have are the web fuzzers and web scanners 
+
+burp's fuzzer is called Burp Intruder  
+can be used to fuzz pages, directories, sub-domains, parameters, parameter values, etc. 
+
+much more advanced than most cli based fuzzers but the free burp version is throttled at a speed of 1 request per second, which is extremely slow compared to cli which can do up to 10k requests at a time 
+
+to start working with the intruder we can visit our site with the proxy on and right click the request and select `Send to intruder`: 
+
+![](../Images/Pasted%20image%2020240112121654.png)
+
+### Positions
+
+the `Positions` tab shows us where we will place the payload position pointer, or where the words from our wordlist will be placed and iterated over 
+
+to start fuzzing for web directories our fuzzing should be in `GET /DIRECTORY/` such that existing pages would return 200 OK
+
+we can select DIRECTORY as the payload position by wrapping it in the special character: 
+
+![](../Images/Pasted%20image%2020240112122151.png)
+
+DIRECTORY in this case is the pointer's name, and can be anything  
+can also be used to refer to each pointer in the case where we are using more than one position with different wordlists for each
+
+next we can choose our attack type which defines how many payload pointers are used and determines which payload is assigned to which position 
+
+we can use `Sniper` which only uses one position
+
+**note**: make sure to leave the extra two lines at the end of the request or therer might be an error
+
+### Payloads
+
+for our payloads/wordlists there are 4 main things to consider: 
+- payload sets
+- payload options
+- payload processing 
+- payload encoding 
+
+first we can configure the payload set which identifies the number of payloads we will use   
+we chose an attack with only one payload position so we only need 1 payload set: 
+
+![](../Images/Pasted%20image%2020240112130427.png)
+
+next we want to select the payload type, which is the type of payloads/wordlists we will use  
+
+there are many different types of payloads: 
+- simple list = basic and most fundamental; provide a wordlist and intruder iterates over each line in it 
+- runtime file = similar to simple list but loads line-by-line as the scan runs to avoid excessive memory usage 
+- character substitution = specify a list of characters and their replacements, will try all potential permutations 
+
+![](../Images/Pasted%20image%2020240112131040.png)
+
+payload options are different for each payload type  
+
+![](../Images/Pasted%20image%2020240112131602.png)
+
+we could add each word of our list manually with the add button or we could load one of our lists
+
+![](../Images/Pasted%20image%2020240112131551.png)
+
+adding another wordlist or adding more of our own words on top of the loaded wordlist will be appended to the currently loaded one 
+
+burp pro also contains a selection of existing wordlists 
+
+remember that if you are using a very large wordlist it is better to use runtime file as the payload type rather than simple list 
+
+payload processing allows us to determine fuzzing rules over the loaded wordlist   
+for example, if we wanted to add an extension after our payload item or filter the wordlist based on specific criteria 
+
+![](../Images/Pasted%20image%2020240112133002.png)
+
+if we wanted to add a rule that skips any lines that start with `.` we can use the add button and select `Skip if matches regex`: 
+
+![](../Images/Pasted%20image%2020240112133147.png)
+
+the final option we have is payload encoding which lets us enable or disable payload URL-encoding: 
+
+![](../Images/Pasted%20image%2020240112133236.png)
+
+### Options
+
+in the options tab we can change many things like setting the number of retired on failure and pause before retry to 0
+
+![](../Images/Pasted%20image%2020240112134301.png)
+
+`Grep - Match` enables us to flag specific requests depending on their responses 
+
+if we are looking for responses that return 200 OK we can first enable grep match and clear the default list: 
+
+![](../Images/Pasted%20image%2020240112134457.png)
+
+then we can add 200 OK to the list and uncheck `Exclude HTTP headers` since we are looking for HTTP headers: 
+
+![](../Images/Pasted%20image%2020240112134550.png)
+
+we could also use `Grep - Extract` which is useful if the HTTP responses are lengthy and we only want certain parts 
+
+### Attack 
+
