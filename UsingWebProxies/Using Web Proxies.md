@@ -513,3 +513,7 @@ we could also use `Grep - Extract` which is useful if the HTTP responses are len
 
 ### Attack 
 
+using the start attack button we can begin to see all of the requests being made: 
+
+![](../Images/Pasted%20image%2020240112135244.png)
+
