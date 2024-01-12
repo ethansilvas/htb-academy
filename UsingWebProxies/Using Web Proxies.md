@@ -307,3 +307,58 @@ using the repeater we can quickly try other commands to get the other flag:
 
 ![](../Images/Pasted%20image%2020240111191652.png)
 
+## Encoding/Decoding
+
+when we modify and send custom HTTP requests we might have to perform different types of encoding/decoding to interact with the webserver properly  
+
+### URL encoding
+
+it is essential to ensure that our request data is URL-encoded and our headers are correctly set, or we might get a server error   
+
+some key characters to encode: 
+- spaces - might indicate the end of request data if not encoded 
+- `&` - otherwise interpreted as a parameter delimiter
+- `#` - otherwise interpreted as a fragment identifier 
+
+you can url encode characters in burp by right-clicking and using `Convert Selection -> URL -> URL -> encode key characters`: 
+
+![](../Images/Pasted%20image%2020240111194848.png)
+
+zap will do all of the URL-encoding in the background before sending 
+
+### Decoding 
+
+it is very common for web apps to encode their data, so we want to be able to decode it to examine the original text 
+
+some of the other types of encoders that these tools support: 
+- html
+- unicode
+- base64
+- ASCII hex
+
+in the `Decoder` section of burp we can decode string of text: 
+
+![](../Images/Pasted%20image%2020240111195816.png)
+
+you can also use the burp inspector to highlight and view decodings: 
+
+![](../Images/Pasted%20image%2020240111200030.png)
+
+in zap you can go to the `Tools -> Encode/Decode/Hash` section to use the equivalent tools: 
+
+![](../Images/Pasted%20image%2020240111200231.png)
+
+you can also customize your tabs to include specific encodings: 
+
+![](../Images/Pasted%20image%2020240111200331.png)
+
+### Encoding 
+
+in the example text we can see that it says `{"username":"guest", "is_admin":false}`  
+we might want to test modifying it to see if it changes our privileges 
+
+so now we can change the text to instead set is_admin to true and then get the proper encoding for it: 
+
+![](../Images/Pasted%20image%2020240111201130.png)
+
+
