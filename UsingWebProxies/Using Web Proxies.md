@@ -161,3 +161,50 @@ if we replace the IP we provided with `;ls;` we can get the ls command response:
 
 ## Intercepting Responses
 
+sometimes we may need to intercept the HTTP responses from the server before they reach the browser   
+this can help us change how a web page looks, for example showing/hiding disabled fields 
+
+### Burp 
+
+enable response interception in `Proxy -> Options`: 
+
+![](../Images/Pasted%20image%2020240111154702.png)
+
+we can then see the response we get after forwarding the ping button request like we did earlier: 
+
+![](../Images/Pasted%20image%2020240111154942.png)
+
+lets try changing the input type to text instead of number and increase the maxlength to input bigger strings:  
+
+![](../Images/Pasted%20image%2020240111155054.png)
+
+this then allows us to do the same exploit we did before, but through the UI: 
+
+![](../Images/Pasted%20image%2020240111155231.png)
+![](../Images/Pasted%20image%2020240111155258.png)
+
+the same technique can be used to persistently enable any disabled HTML buttons 
+
+### ZAP 
+
+zap will automatically intercept the response for you to edit: 
+
+![](../Images/Pasted%20image%2020240111160326.png)
+
+![](../Images/Pasted%20image%2020240111160246.png)
+
+another feature that the ZAP HUD has is to automatically show/hide any disabled or hidden fields: 
+
+![](../Images/Pasted%20image%2020240111160508.png)
+
+burp also has these options in `Proxy -> Options -> Response Modification`: 
+
+![](../Images/Pasted%20image%2020240111160612.png)
+
+you can also view any html comments in their position with the HUD: 
+
+![](../Images/Pasted%20image%2020240111160710.png)
+
+
+
+
