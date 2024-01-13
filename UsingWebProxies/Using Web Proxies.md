@@ -591,3 +591,24 @@ once we start the fuzzer we can see each request and sort them:
 
 there are other fields that might indicate a successful hit like `Size Resp. Body` which could indicate that we got a different page or `RTT` for attacks like time-based SQL injections 
 
+the skills page that we found sets the cookie to the MD5 hash of the username: 
+
+![](../Images/Pasted%20image%2020240112163015.png)
+
+lets visit the page and get a request to fuzz: 
+
+![](../Images/Pasted%20image%2020240112163134.png)
+
+now lets add a payload on our cookie value:
+
+![](../Images/Pasted%20image%2020240112163914.png)
+
+then lets add a processor onto it that converts each word in our wordlist to its MD5 hash: 
+
+![](../Images/Pasted%20image%2020240112163850.png)
+
+then once we start the fuzzer we can see a response with a different size: 
+
+![](../Images/Pasted%20image%2020240112164512.png)
+
+
