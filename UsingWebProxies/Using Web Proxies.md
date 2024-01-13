@@ -611,4 +611,88 @@ then once we start the fuzzer we can see a response with a different size:
 
 ![](../Images/Pasted%20image%2020240112164512.png)
 
+## Burp Scanner 
+
+burp comes with burp scanner which is a powerful scanner for web vulnerabilities   
+a crawler is used for building the website structure, and a scanner for passive and active scanning 
+
+burp scanner is a paid-only feature 
+
+### Target scope 
+
+to start a scan we can: 
+- start scan on specific request from proxy history 
+- new scan on a set of targets 
+- scan on items in-scope
+
+we can start a scan by right-clicking on a request in HTTP history: 
+
+![](../Images/Pasted%20image%2020240112171135.png)
+
+you could also select `New scan` in the dashboard to start a new scan on a set of custom targets 
+
+`Target Scope` can be used to define a custom set of targets that will be processed 
+
+going to `Target -> Site map` will show a list of all directories and files burp has detected: 
+
+![](../Images/Pasted%20image%2020240112171923.png)
+
+you can right click any of these to add them to our scope 
+
+we may also need to exclude items from our scope if scanning them could be dangerous or end our session like a logout function  
+
+### Crawler 
+
+going to the dashboard and starting our scan you can see it gives us two options, crawl and audit or crawl: 
+
+![](../Images/Pasted%20image%2020240112172214.png)
+
+a web crawler navigates a site by accessing any links found in its pages, using forms, and examining any requests it makes to build a map of the site  
+
+crawl and audit will run the scanner after its crawler 
+remember that crawling will not fuzz for new directories
+
+we can start a crawl and go to `Scan configuration` to configure our scan   
+here we can change things like the crawling speed or limit, choose to attempt to log in to any forms, etc.   
+
+you can also use `Select from library` which gives preset configs to choose from: 
+
+![](../Images/Pasted%20image%2020240112174526.png)
+
+next we can do the fastest crawl strategy and continue to the `Application login` tab  
+here we can add a set of credentials that burp will use to attempt to login with   
+can also add a set of steps to follow when logging in   
+
+once the scan is complete you can view the final site map in `Target -> Site map`
+
+### Passive scanner
+
+now that the site map is build we can select to scan the target for vulnerabilities 
+
+if we do `Crawl and Audit` burp will do two types of scans, passive and active  
+
+passive scans do not send requests but will analyze the source code of pages to try to identify vulnerabilities  
+without sending requests, the scanner can only suggest a list of potential vulnerabilities   
+
+to initiate a passive scan we can select the target in `Target -> Site map`, then right-click to select a passive scan   
+`view details` will reveal the identified vulnerabilities, you can also view this in the `Issue activity` section of the dashboard 
+
+### Active scanner
+
+an active scan will: 
+- run a crawl and a web fuzzer to identify all possible pages
+- run a passive scan on all identified pages
+- sends requests to all identified vulnerabilities in the passive scan 
+- performs javascript analysis to identify further vulnerabilities 
+- fuzzes insertion points and parameters to look for common vulnerabilities like XSS, command injection, SQL injection, and other common web vulnerabilities 
+
+setting the audit `configurations` will enable us to select what types of vulnerabilities we want to scan, where the scanner will insert the payloads, 
+
+like with passive scans, we are usually looking for vulnerabilities with high severity and firm/certain confidence
+
+### Reporting
+
+going to `Target -> Site map`, right-clicking on our target, and selecting `Issue -> report issues for this host` will prompt us to select the export type for the report and what info we want to include in it 
+
+![](../Images/Pasted%20image%2020240112182213.png)
 
