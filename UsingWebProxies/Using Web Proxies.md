@@ -517,3 +517,77 @@ using the start attack button we can begin to see all of the requests being made
 
 ![](../Images/Pasted%20image%2020240112135244.png)
 
+## ZAP Fuzzer 
+
+zap's fuzzer is very powerful for fuzzing web end-points but is missing some features that burp has   
+however, it doesn't throttle the fuzzing speed 
+
+to replicate what we did with burp lets first send a request to `http://SERVER_IP:PORT/test` so we can fuzz on test: 
+
+![](../Images/Pasted%20image%2020240112153038.png)
+
+then right click the `Fuzz` button to open the fuzzer window: 
+
+![](../Images/Pasted%20image%2020240112153122.png)
+
+the main options we want to configure are: 
+- fuzz location 
+- payloads 
+- processors 
+- options 
+
+### Locations 
+
+the fuzz location is similar to the intruder payload position, it is where our payloads will be placed
+
+first highlight the term we want to fuzz and use the add button to open up the options: 
+
+![](../Images/Pasted%20image%2020240112153344.png)
+
+### Payloads
+
+fuzz has payload types but aren't as advanced as burp's 
+
+some of them are: 
+- file = select a payload wordlist from a file
+- file fuzzers = select wordlists from built-in databases of wordlists
+- numberzz = sequences of numbers with custom increments 
+
+zap has built in wordlists that are available for free: 
+
+![](../Images/Pasted%20image%2020240112161630.png)
+
+even more can be installed from the zap marketplace 
+
+### Processors 
+
+we can use some payload processors to modify each word of our wordlist such as: 
+- base64 decode/encode
+- MD5 hash
+- postfix string 
+- prefix string
+- SHA-1/256/512 hash
+- url decode/encode
+- script
+
+for our example we will do url encoding to make sure that our request does not generate errors: 
+
+![](../Images/Pasted%20image%2020240112162059.png)
+
+### Options 
+
+some of the options we have available to us are to set the concurrent threads per scan: 
+
+![](../Images/Pasted%20image%2020240112162340.png)
+
+we could also traverse through the payloads depth first which attempts all words on a single payload position before moving to the next  
+breadth first would run every word on all payload positions before moving to the next word 
+
+### Start 
+
+once we start the fuzzer we can see each request and sort them: 
+
+![](../Images/Pasted%20image%2020240112162647.png)
+
+there are other fields that might indicate a successful hit like `Size Resp. Body` which could indicate that we got a different page or `RTT` for attacks like time-based SQL injections 
+
