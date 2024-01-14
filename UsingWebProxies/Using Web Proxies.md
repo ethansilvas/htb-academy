@@ -815,7 +815,39 @@ lets send the request to get the cookie:
 
 ![](../Images/Pasted%20image%2020240113182258.png)
 
-after using the decode/encode/hash with various different encoders until I got the 31 character one: 
+after using ASCII and then base64 decoding I get the value: 
 
 ![](../Images/Pasted%20image%2020240113182827.png)
+
+### Once you decode the cookie, it appears to be an MD5 hash missing its last character. Try to fuzz the last character of the decoded MD5 cookie with all alpha-numeric characters, while encoding each request with the encoding methods you identified above. 
+
+we will first need a request with the cookie set: 
+
+![](../Images/Pasted%20image%2020240113190227.png)
+
+then we can send it to the burp intruder and specify the cookie as our payload position: 
+
+![](../Images/Pasted%20image%2020240113190302.png)
+
+the exercise specifies to use alphanum-case.txt as our wordlist to find the missing letter, so we specify this in our payload options
+
+![](../Images/Pasted%20image%2020240113190409.png)
+
+then in order to do the reverse encodings (base64 then ASCII), we first add a prefix of the 31 character MD5 hash to each of our words in our wordlist: 
+
+![](../Images/Pasted%20image%2020240113190401.png)
+
+if we sort our results by length we can find many results with shorter response lengths that contain the flag: 
+
+![](../Images/Pasted%20image%2020240113190642.png)
+
+### You are using the `auxiliary/scanner/http/coldfusion_local_traversal` tool in Metasploit but it is not working. Capture the request and find the directory being called in "/XXXXX/administrator/..."
+
+in metasploit I use the tool on the target and specify the proxy port: 
+
+![](../Images/Pasted%20image%2020240113191529.png)
+
+then in burp the captured request reveals the directory: 
+
+![](../Images/Pasted%20image%2020240113191551.png)
 
