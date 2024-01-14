@@ -696,3 +696,90 @@ going to `Target -> Site map`, right-clicking on our target, and selecting `Issu
 
 ![](../Images/Pasted%20image%2020240112182213.png)
 
+## ZAP Scanner 
+
+zap's scanner also has the ability to crawl and conduct active/passive scans 
+
+ZAP Spider is the crawler and can be found by right-clicking a request and doing `Attack -> Spider` 
+
+![](../Images/Pasted%20image%2020240113162458.png)
+
+zap also has a scope which is the set of URLs that zap will test if we start a generic scan 
+
+after our scan is finished we can see the site map in the lefthand `Sites` menu under our target site: 
+
+![](../Images/Pasted%20image%2020240113162910.png)
+
+we could also do an Ajax spider crawl which also tries to identify links requested through javascript ajax requests which could be running on the page after it loads 
+
+as spider runs it is running its passive scanner on each response to look for potential vulnerabilities  
+you can see any found vulnerabilities in the alerts menu: 
+
+![](../Images/Pasted%20image%2020240113164027.png)
+
+once we have our site map we can right-click on it to initiate an active scan on all identified pages: 
+
+![](../Images/Pasted%20image%2020240113164420.png)
+
+if we have not already done the spider scan, doing an active scan will perform it first 
+
+we can also generate a report with all of the findings by going to `Report -> Generate HTML report`: 
+
+![](../Images/Pasted%20image%2020240113165201.png)
+
+![](../Images/Pasted%20image%2020240113165427.png)
+
+when our scan of the target finishes we can see a high priority command injection vulnerability be found: 
+
+![](../Images/Pasted%20image%2020240113171205.png)
+
+using the resender tool we can edit the example request to instead look for the file /flag.txt: 
+
+![](../Images/Pasted%20image%2020240113171305.png)
+
+## Extensions
+
+both burp and zap have community extensions  
+burp has the Extender and BApp store   
+ZAP has the ZAP Marketplace  
+
+### BApp store 
+
+you can see this in the `Extender -> BApp store` tabs: 
+
+![](../Images/Pasted%20image%2020240113172754.png)
+
+a good one to install is `Decoder Improved`: 
+
+![](../Images/Pasted%20image%2020240113172909.png)
+
+you can see each installed extension in the top menu tabs: 
+
+![](../Images/Pasted%20image%2020240113172941.png)
+
+some of the better extensions consider are: 
+
+![](../Images/Pasted%20image%2020240113173407.png)
+
+### ZAP marketplace
+
+use the `Manage Add-ons` to see the marketplace tab: 
+
+![](../Images/Pasted%20image%2020240113173455.png)
+
+![](../Images/Pasted%20image%2020240113173502.png)
+
+we can use the FuzzDB Files and FuzzDB Offensive addons in our previous exercise to use the `command-execution-unix.txt` wordlist: 
+
+![](../Images/Pasted%20image%2020240113174108.png)
+
+this way we can try many different commands to quickly find ones that produce unique results: 
+
+![](../Images/Pasted%20image%2020240113174232.png)
+
+### Closing thoughts
+
+burp and zap are essential tools along with Nmap, Hashcat, Wireshark, tcpdump, sqlmap, Ffuf, Gobuster, etc.   
+
+with these tools under our belt we can now try web attack focused boxes on the main HTB platform 
+
