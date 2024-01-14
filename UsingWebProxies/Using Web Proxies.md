@@ -809,3 +809,13 @@ if we keep resending it we can see a response with a different size that contain
 
 ![](../Images/Pasted%20image%2020240113180817.png)
 
+### The /admin.php page uses a cookie that has been encoded multiple times. Try to decode the cookie until you get a value with 31-characters
+
+lets send the request to get the cookie: 
+
+![](../Images/Pasted%20image%2020240113182258.png)
+
+after using the decode/encode/hash with various different encoders until I got the 31 character one: 
+
+![](../Images/Pasted%20image%2020240113182827.png)
+
