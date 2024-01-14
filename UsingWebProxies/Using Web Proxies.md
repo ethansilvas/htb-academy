@@ -783,3 +783,29 @@ burp and zap are essential tools along with Nmap, Hashcat, Wireshark, tcpdump, s
 
 with these tools under our belt we can now try web attack focused boxes on the main HTB platform 
 
+## Skills Assessment - Using Web Proxies
+
+in this assessment we are performing penetration testing for a local company 
+
+for each of the scenarios, determine the feature of burp/zap that would best fit and use them to find the flags
+
+### The /lucky.php page has a button that appears to be disabled. Try to enable the button and click on it to get the flag
+
+first lets capture a request to the page to see how we might manipulate it: 
+
+![](../Images/Pasted%20image%2020240113174947.png)
+
+we can see that the button has a `disabled` attribute, so now lets capture the response to edit it out: 
+
+![](../Images/Pasted%20image%2020240113175143.png)
+
+we can then visit the site and click the button, but from the response we don't usually see any flags because there is only a change for the flag to be seen
+
+so lets use the captured click request to resend it over and over: 
+
+![](../Images/Pasted%20image%2020240113180620.png)
+
+if we keep resending it we can see a response with a different size that contains the flag at the end: 
+
+![](../Images/Pasted%20image%2020240113180817.png)
+
