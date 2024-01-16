@@ -261,3 +261,72 @@ some commonly seen examples:
 - `404 Not Found` - client requests a resource that doesn't exist 
 - `500 Internal Server Error` - server can't process the request 
 
+## GET 
+
+browsers default to a GET request to obtain the remote resources hosted on a URL    
+### HTTP basic auth
+
+unlike usual login forms that use POST requests, basic HTTP authentication is handled directly by the webserver to protect specific pages and directories without directly interacting with the app  
+
+![](../Images/Pasted%20image%2020240116134840.png)
+
+trying to access the site with curl will show: 
+
+![](../Images/Pasted%20image%2020240116135234.png)
+
+with the `WWW-Authenticate: Basic realm="Access denied"` we can confirm that the page uses basic HTTP auth 
+
+we can provide the credentials with `-u`: 
+
+`curl -u admin:admin http://SERVER_IP:PORT`: 
+
+![](../Images/Pasted%20image%2020240116135457.png)
+
+we can also insert the credentials in the user info section of the URL: 
+
+`curl http://admin:admin@SERVER_IP:PORT`
+
+### HTTP authorization header
+
+when we do `-v` on the previous commands we can see: 
+
+![](../Images/Pasted%20image%2020240116135858.png)
+
+where the `Authorization: Basic` value is the base64 value of `admin:admin`   
+if we were using a modern method of auth like JWT, then the authorization would be of type `Bearer` and would contain a longer encrypted token 
+
+we can manually set the authorization value by setting the header value in the curl command: 
+
+`curl -H 'Authorization: Basic YWRtaW46YWRtaW4= http://SERVER_IP:PORT` 
+
+![](../Images/Pasted%20image%2020240116140429.png)
+
+these are a few methods to authenticate to the page  
+most modern web apps use forms built with back-end logic to authenticate the users and then return a cookie to maintain their authentication 
+
+### GET parameters
+
+after logging in we can see a page that gives us city search results based on a term we provide: 
+
+![](../Images/Pasted%20image%2020240116141247.png)
+
+when the page returns our results it could be contacting a remote resource to obtain the info and display it to the page 
+
+we can use the devtools network tab to monitor for any of these types of requests while using the site: 
+
+![](../Images/Pasted%20image%2020240116145237.png)
+
+we can see that the search form uses a GET request to search.php with the parameter search=le  
+
+now we can use the same request in curl: 
+
+![](../Images/Pasted%20image%2020240116145833.png)
+
+if we were to copy the command from devtools it would contain a lot of headers that we might not need  
+
+selecting the request in devtools and using `Copy as fetch` we can then also use this in the javascript console to repeat the request: 
+
+![](../Images/Pasted%20image%2020240116150038.png)
+
+## POST 
+
