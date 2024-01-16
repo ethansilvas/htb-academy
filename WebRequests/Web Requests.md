@@ -223,3 +223,41 @@ you can set request headers with `-H` but some headers like `User-Agent` and `Co
 
 `curl https://www.inlanefreight.com -A 'Mozilla/5.0'`
 
+## HTTP Methods and Codes
+
+there are multiple methods for accessing a resource, send info, forms, or files to a server   
+these methods tell the server how to process the request we send and how to reply 
+
+### Request methods 
+
+some of the commonly used methods: 
+- `GET` - requests a specific resource. Additional data can be passed to the server via query strings like `?param=value`
+- `POST` - sends data to the server. Can handle multiple types of input like text, PDFs, and other binary data. Data is appended in the request body after the headers. 
+- `HEAD` - requests headers that would be returned if a GET request was made. Doesn't return the request body, and usually used to check the response length before downloading resources 
+- `PUT` - creates new resources on the server
+- `DELETE` - deletes an existing resource on the webserver
+- `OPTIONS` - returns info about the server such as the methods that it accepts 
+- `PATCH` - applies partial modifications to the resource at the specified location
+
+the availability of a particular method depends on the server and the app configuration   
+most modern web apps rely on GET and POST but any that use a REST API also use PUT and DELETE   
+
+### Response codes
+
+status codes are used to tell the client the status of their request 
+
+an HTTP server can return five types of response codes: 
+- `1xx` - provides info and does not affect the processing of the request 
+- `2xx` - returned when a request succeeds
+- `3xx` - server redirects the client
+- `4xx` - signifies improper requests from the client, like the resource doesn't exist or requesting a bad format
+- `5xx` - a problem with the HTTP server itself
+
+some commonly seen examples: 
+- `200 OK` - successful request; response body usually contains resource
+- `302 Found` - redirects client to another URL
+- `400 Bad Request` - encountering malformed requests like requests without line terminators
+- `403 Forbidden` - client doesn't have appropriate access to the resource; also when server detects malicious input from the user 
+- `404 Not Found` - client requests a resource that doesn't exist 
+- `500 Internal Server Error` - server can't process the request 
+
