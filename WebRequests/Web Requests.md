@@ -61,3 +61,38 @@ we can also download a page or file and output the content to a file with `-O` o
 
 `-s` will silence any of the status text print out 
 
+## Hypertext Transfer Protocol Secure (HTTPS)
+
+HTTP sends requests in cleartext, HTTPS encrypts with SSL/TLS 
+
+if someone were to intercept HTTP traffic they would only see something like `Encrypted Application Data: kj;qwlekrjoweirjf;alskjdnvzlxmcn`
+
+data is transferred as a single encrypted stream  
+however, the request may still reveal the visited URL if it contacted a clear-text DNS server  
+an encrypted DNS server like 8.8.8.8 or 1.1.1.1 is best, or use a VPN to ensure all traffic is properly encrypted 
+
+### HTTPS Flow 
+
+![](../Images/Pasted%20image%2020240115162842.png)
+
+if we type in `http://` instead of `https://` for a site that enforces https the browser will attempt to resolve it and then redirect the user to the webserver hosting the target site  
+the server will redirect the client to HTTPS port 443 even thought the original request was using 80, and this is done using the 301 Moved Permanently response code 
+
+then the client sends a "client hello" packet to give info about itself  
+server will reply with "server hello", followed by a key exchange to exchange SSL certificates  
+client verifies key/certificate and sends back a key of its own   
+finally the encrypted handshake is initiated to confirm if the encryption and transfer are working 
+
+normal HTTP traffic will continue after the connection is formed, but it will be encrypted 
+
+it is possible to do an HTTP downgrade attack with at MITM proxy but most modern browsers, servers, and web apps protect against this 
+
+### cURL for HTTPS 
+
+cURL will automatically handle all HTTPS communication standards and perform the secure handshake   
+but if we contact a site with an invalid SSL certificate then it will not proceed with the communication to protect against MITM attacks 
+
+to skip the certificate check you can use `-k`: 
+
+`curl -k https://inlanefreight.com`
+
