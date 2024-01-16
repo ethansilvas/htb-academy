@@ -96,3 +96,60 @@ to skip the certificate check you can use `-k`:
 
 `curl -k https://inlanefreight.com`
 
+## HTTP Requests and Responses
+
+most HTTP communication is requests and responses   
+requests are made by clients and processed by the server   
+
+requests contain: 
+- resource (url, path, parameters) 
+- request data 
+- headers or options
+- etc. 
+
+responses contain the response code and may contain the resource data if the request has access to it 
+
+### HTTP request
+
+![](../Images/Pasted%20image%2020240115171337.png)
+
+this is an HTTP GET request to `http://inlanefreight.com/users/login.html`
+
+the first line of any HTTP request contains three main fields separated by spaces: 
+- Method - `GET` - HTTP method or verb which specifies action
+- Path - `/users/login.html` - path to the resource being accessed; can be suffixed with a query string (ex: `?username=user`) 
+- Version - `HTTP/1.1` - denote the HTTP version 
+
+the next sets of lines contain HTTP header value pairs like Host, User-Agent, and Cookie   
+these specify various attributes of a request   
+need to be separated by a new line   
+
+requests may then end with the request body and data 
+
+HTTP version 1.X sends data in clear-text and uses new-line characters to separate fields   
+HTTP version 2.X sends requests in binary and in dictionary form 
+
+### HTTP response 
+
+![](../Images/Pasted%20image%2020240115174000.png)
+
+the first line of a response contains two fields separated by spaces: 
+- HTTP version 
+- HTTP response code 
+
+after the first line the response lists its headers  
+then it may end with the response body   
+
+the response body is typically HTML code but could also be types like JSON, resources like images, stylesheets, scripts, o even a document like a PDF 
+
+### cURL 
+
+cURL allows us to preview the full HTTP request and response with `-v`: 
+
+![](../Images/Pasted%20image%2020240115175407.png)
+
+you can see even more info with more verbosity levels: 
+
+![](../Images/Pasted%20image%2020240115175552.png)
+
+
