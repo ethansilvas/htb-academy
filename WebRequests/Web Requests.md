@@ -330,3 +330,72 @@ selecting the request in devtools and using `Copy as fetch` we can then also use
 
 ## POST 
 
+post requests can be used when apps need to transfer files or move the user parameters from the URL  
+
+POST places user parameters in the HTTP request body which has 3 benefits: 
+- lack of logging - post may transfer large files that would not be efficient for the server to log as part of the requested URL, which is what happens in GET 
+- less encoding requirements - URLs are made to be shared which means they conform to characters that can be converted into letters. The request body can accept binary data so the only characters that need to be encoded are the ones that are used to separate parameters 
+- more data can be sent - there is a max URL length that is different between browsers, servers, CDNs, and url shorteners. Generally, URLs can't handle a lot of data because they are limited to the length of the URL itself
+
+### Login forms 
+
+our target now has a login form to authenticate instead of HTTP basic auth  
+using the network tab and filtering with the target IP we can see the requests being made when we login: 
+
+![](../Images/Pasted%20image%2020240116160013.png)
+
+when we look at the initial POST request we made to login we can see the info transmitted in the `Request` tab: 
+
+![](../Images/Pasted%20image%2020240116160106.png)
+
+we can do this request with curl using the `-X POST` flag: 
+
+`curl -X POST -d 'username=admin&password=admin' http://SERVER_PORT:IP` 
+
+![](../Images/Pasted%20image%2020240116160347.png)
+
+many login forms will redirect us to a different page once authenticated and we can follow the redirection with `-L`
+
+### Authenticated cookies 
+
+if we are successfully authenticated then we should receive a cookie so our browsers can persist authentication  
+
+using `-v` or `-i` we can see the `Set-Cookie` header with our cookie: 
+
+![](../Images/Pasted%20image%2020240116160610.png)
+
+with this cookie we should be able to access the site without doing the authentication process with the `-b` flag: 
+
+![](../Images/Pasted%20image%2020240116160837.png)
+
+we could also specify the cookie with the `-h` option: 
+
+`curl -H 'Cookie: PHPSESSID=vl8pgosbfgc9g9nibtb84ov2t5' http://SERVER_IP:PORT` 
+
+if we logout on the page and look in our `storage` in devtools we can see our cookies for the page: 
+
+![](../Images/Pasted%20image%2020240116162059.png)
+
+the cookie shown will not be valid to skip the authentication process because we just logged out, but if we go in and manually edit or replicate this cookie with the previously known cookie: 
+
+![](../Images/Pasted%20image%2020240116162348.png)
+
+then we can refresh the page and be already logged in: 
+
+![](../Images/Pasted%20image%2020240116162417.png)
+
+for many web apps, a valid cookie may be enough to get authenticated   
+this can be essential for some web attacks like XSS
+
+### JSON data 
+
+for this target when we use the search form we can see that a POST request is sent: 
+
+![](../Images/Pasted%20image%2020240116162607.png)
+
+the data is in JSON so our request must have the specified `Content-Type` header to be `application/json` 
+
+lets try to do this request with curl: 
+
+![](../Images/Pasted%20image%2020240116164523.png)
+
