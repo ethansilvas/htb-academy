@@ -399,3 +399,29 @@ lets try to do this request with curl:
 
 ![](../Images/Pasted%20image%2020240116164523.png)
 
+## CRUD API 
+
+APIs can also be used to perform requests that we did previously with PHP parameters 
+
+### APIs 
+
+many apis are used to interact with a database so that we would be able to specify the requested table and the requested row within our API query, then use the HTTP method to perform the operation needed  
+
+if we had the `api.php` endpoint and wanted to update the city table we could do: 
+
+`curl -X PUT http://SERVER_IP:PORT/api.php/city/london ...` 
+
+### CRUD
+
+in the previous example we could easily select the table and the row that we wanted to perform an operation on, then we could use HTTP methods to do different operations on that row
+
+APIs perform 4 main operations on databases: 
+- `Create` - `POST` - adds the specified data to the table 
+- `Read` - `GET` - reads the specified entity from the table 
+- `Update` - `PUT` - updates the data in the table 
+- `Delete` - `DELETE` - removes the specified row from the table 
+
+these 4 operations are mainly linked to CRUD but the same principles apply to REST APIs and many others   
+user access control will limit what actions we can perform and what results we can see   
+
+### Read
