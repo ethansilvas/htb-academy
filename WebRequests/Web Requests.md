@@ -425,3 +425,54 @@ these 4 operations are mainly linked to CRUD but the same principles apply to RE
 user access control will limit what actions we can perform and what results we can see   
 
 ### Read
+
+for reading data we can simply specify the table name after the API and then specify our search term: 
+
+`curl http://SERVER_IP:PORT/api.php/city/london`
+
+![](../Images/Pasted%20image%2020240116195128.png)
+
+we can use `jq` to pipe JSON data to and view it in readable format: 
+
+![](../Images/Pasted%20image%2020240116195226.png)
+
+### Create 
+
+to add a new entry we can use a POST request  
+
+since this api uses json we need to include the Content-Type again: 
+
+`curl -X POST http://SERVER_IP:PORT/api.php/city/ -d '<json>' -H 'Content-Type: application/json'`
+
+![](../Images/Pasted%20image%2020240116195740.png)
+
+### Update
+
+PUT and DELETE will update and remove the new entries we have made
+
+PATCH may also be used to update API entries instead of PUT   
+used to partially update an entry while PUT is used to update the entire entry   
+we can also use OPTIONS to see which of the two are accepted by the server   
+
+PUT is similar to POST but we have to specify the name of the entity that we want to edit 
+
+`curl -X PUT http://SERVER_IP:PORT/api.php/city/london -d '<json>' -H 'Content-Type: application/json'`
+
+![](../Images/Pasted%20image%2020240116200716.png)
+
+we can see from the output that we updated london to change the city and country  
+when we later check to see london it is no longer there but our new entry is 
+
+in some APIs the UPDATE operation can be used to create new entries as well because it will check if an entry exists and if it doesn't it will make one  
+
+### DELETE
+
+deletes are as easy as reading: 
+
+`curl -X DELETE http://SERVER_IP:PORT/api.php/city/New_HTB_City`
+
+![](../Images/Pasted%20image%2020240116201043.png)
+
+these kinds of actions are often not allowed for all users  
+to authenticate our user to use the API we would need to pass a cookie or authorization header like JWT 
+
