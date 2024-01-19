@@ -23,3 +23,23 @@ information gathering can be broken down to two main categories:
 - active info gathering - directly interact with the target. Port scanning, DNS enumeration, directory brute-forcing, vhost enumeration, and web app crawling/scanning
 
 crucial to keep the info that we collect well documented to include in our report or proof of concept 
+
+## WHOIS
+
+WHOIS is like the white pages for domain names  
+TCP-based transaction-oriented query/response protocol listening on TCP port 43 by default  
+use it for querying databases containing domain names, IP addresses, or autonomous systems 
+
+domain lookups retrieve info about the domain name of an already registered domain   
+internet corporation of assigned names and numbers (ICANN) requires that registrars enter the holder's contact info, domain creation, and expiration dates, and other info 
+
+sysinternals WHOIS = windows
+WHOIS = linux 
+whois.domaintools online 
+
+a simple command will result in a lot of info: 
+
+![](Images/Pasted%20image%2020240119131007.png)
+
+we could do the same on windows with `whois.exe facebook.com`
+
