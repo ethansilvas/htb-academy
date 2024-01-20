@@ -164,3 +164,80 @@ and the mailservers for paypal.com:
 
 ![](Images/Pasted%20image%2020240119143724.png)
 
+## Passive Subdomain Enumeration 
+
+subdomain enumeration = mapping all available subdomains within a domain name  
+increase attack surface and may uncover hidden management backend panels or intranet web apps   
+
+### VirusTotal 
+
+virustotal maintains a DNS replication service which is made by preserving DNS resolutions when users visit URLs given by them   
+
+for info on a domain you can search for it and go to the `relations` tab: 
+
+![](Images/Pasted%20image%2020240119165947.png)
+
+### Certificates 
+
+we can also get subdomains from SSL/TLS certificates because of Certificate Transparency (CT) which requires every SSL/TLS certificate issued by a CA to be published in a public log 
+
+https://search.censys.io/
+
+[https://crt.sh](https://crt.sh)
+
+![](Images/Pasted%20image%2020240119170621.png)
+
+we can use curl requests to easily work with the results: 
+
+`curl -s "https://crt.sh/?q=${TARGET}&output=json" | jq -r '.[] | "\(.name_value)\n\(.common_name)"' | sort -u > "${TARGET}_crt.sh.txt"`
+
+![](Images/Pasted%20image%2020240119171019.png)
+
+we can also manually do this with OpenSSL: 
+
+````shell
+openssl s_client -ign_eof 2>/dev/null <<<$'HEAD / HTTP/1.0\r\n\r' -connect "${TARGET}:${PORT}" | openssl x509 -noout -text -in - | grep 'DNS' | sed -e 's|DNS:|\n|g' -e 's|^\*.*||g' | tr -d ',' | sort -u
+````
+
+![](Images/Pasted%20image%2020240119171215.png)
+
+### Automating passive subdomain enumeration 
+
+TheHarvester is an early-stage pen testing tool   
+can use it to gather info to help identify a company's attack surface   
+collects emails, names, subdomains, IP addresses, URLs 
+
+here are some useful modules: 
+
+![](Images/Pasted%20image%2020240119171537.png)
+
+we can create a text file with all of these: 
+
+![](Images/Pasted%20image%2020240119175937.png)
+
+then input them into the harvester: 
+
+`cat sources.txt | while read source; do theHarvester -d "${TARGET}" -b $source -f "${source}_${TARGET}";done`
+
+![](Images/Pasted%20image%2020240119180008.png)
+
+you can then see all of the created files: 
+
+![](Images/Pasted%20image%2020240119180106.png)
+
+then we can extract all the subdomains from them: 
+
+```shell
+cat *.json | jq -r '.hosts[]' 2>/dev/null | cut -d':' -f 1 | sort -u > "${TARGET}_theHarvester.txt"
+```
+
+we can then merge all the passive recon files with:
+
+```shell
+cat facebook.com_*.txt | sort -u > facebook.com_subdomains_passive.txt
+cat facebook.com_subdomains_passive.txt | wc -l
+```
+
+![](Images/Pasted%20image%2020240119180234.png)
+
+we can see that we found 9164 subdomains 
