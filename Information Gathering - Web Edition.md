@@ -241,3 +241,40 @@ cat facebook.com_subdomains_passive.txt | wc -l
 ![](Images/Pasted%20image%2020240119180234.png)
 
 we can see that we found 9164 subdomains 
+
+## Passive Infrastructure Identification 
+
+netcraft can offer info about servers without interacting with them 
+
+`https://sitereport.netcraft.com`
+
+some results we are interested in are: 
+- background - general info about domain and date it was first seen by netcraft crawlers
+- network - info about the netblock owner, hosting company, nameservers, etc. 
+- hosting history - latest IPs used, webserver, target OS 
+
+![](Images/Pasted%20image%2020240119181801.png)
+
+need to pay attention to the latest IPs used  
+sometimes we can spot the IP address from the webserver before it was placed behind a load balancer, WAF, or IDS 
+
+### Wayback machine
+
+the internet archive provides access to digitalized materials like websites   
+
+using the wayback machine we can access versions of these sites that could be old  
+these sites may have interesting comments on their source code or files that shouldn't be there  
+
+for example, we can find an older version of the site that uses an old plugin that is very vulnerable  
+we might see on the current site that this plugin wasn't removed properly and can still be accessed via the wp-content directory 
+
+![](Images/Pasted%20image%2020240119185037.png)
+
+we can also use `waybackurls` to inspect urls saved by wayback machine and look for specific keywords: 
+
+`go install github.com/tomnomnom/waybackurls@latest`
+
+we can use the `-dates` switch to get a list of crawled URLs from a domain 
+
+`waybackurls -dates https://facebook.com > waybackurls.txt`
+
