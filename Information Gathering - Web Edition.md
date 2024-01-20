@@ -278,3 +278,75 @@ we can use the `-dates` switch to get a list of crawled URLs from a domain
 
 `waybackurls -dates https://facebook.com > waybackurls.txt`
 
+## Active Infrastructure Identification 
+
+infrastructure is what keeps the site running  
+web servers are directly involved in operation - Apache, NGINX, Microsoft IIS, etc. 
+
+if we can discover the web server then we can likely find the OS that the back-end server is running  
+for example if we find out the IIS version being run then we can map it back to the windows version that it comes installed on by default   
+
+### Web servers
+
+some info we want to find about the web server: 
+- url rewriting functionality 
+- load balancing 
+- script engines used
+- IDS 
+
+first thing we can do is look at the response headers: 
+
+`curl -I <target>`
+
+other characteristics to take into account of: 
+- X-Powered-By header - can tell us what the web app is using (php, asp.net, jsp, etc.)
+- cookies - each technology by default has its cookies 
+	- .NET = `ASPSESSIONID<RANDOM>=<COOKIE_VALUE>`
+	- PHP = `PHPSESSID=<COOKIE_VALUE>` 
+	- JAVA = `JSESSION=<COOKIE_VALUE>`
+
+automated tools often prob servers and compare their responses to guess info like version, installed modules, enabled services, ... 
+
+`Whatweb` recognizes web technologies like CMS, blogging platforms, statistic/analytics packages, JS libraries, web servers, and embedded devices  
+
+`Wappalyzer` is similar to whatweb but results are displayed while navigating the target url 
+
+`WafW00f` is a WAF fingerprinting tool to determine if a security solution is in place 
+
+`sudo apt install wafw00f -y`
+
+we can use options like `-a` to check for all solutions in place instead of stopping on the first found one   
+read targets from a file with `-i`  
+or proxy the requests using `-p`
+
+`wafw00f -v https://facebook.com`
+
+`Aquatone` is for automatic and visual inspection of websites across hosts   
+good for gaining overview of HTTP-based attack surfaces by scanning list of ports, visiting the site with a headless chrome browser, and taking a screenshot  
+
+```shell
+sudo apt install golang chromium-driver
+go get github.com/michenriksen/aquatone
+export "$PATH":"$HOME/go/bin"
+```
+
+we could cat our list of subdomains to aquatone with: 
+
+`cat facebook_aquatone.txt | aquatone -out ./aquatone -screenshot-timeout 1000`
+
+for some examples on how to use these technologies, lets consider two vhosts: 
+- app.inlanefreight.local
+- dev.inlanefreight.local
+
+what apache version is running on app.inlanefreight.local? which CMS is being used? 
+
+for this we can simply run whatweb with an aggression level of 3: 
+
+![](Images/Pasted%20image%2020240119205127.png)
+
+which operating system is in the dev.inlanefreight.local webserver? 
+
+now lets try visiting dev.inlanefreight.local and look with wappalyzer: 
+
+![](Images/Pasted%20image%2020240119205543.png)
+
