@@ -350,17 +350,63 @@ now lets try visiting dev.inlanefreight.local and look with wappalyzer:
 
 ![](Images/Pasted%20image%2020240119205543.png)
 
+## Active Subdomain Enumeration 
 
+can perform active subdomain enumeration by probing the infrastructure managed by the target or the 3rd party DNS servers we have identified   
+keep in mind our traffic will be detected 
 
+### ZoneTransfers 
 
+zone transfer = secondary DNS server receives info from the primary DNS server and updates it   
 
-## Active 2 
+[https://hackertarget.com/zone-transfer/](https://hackertarget.com/zone-transfer/)
 
-first we can do any ANY search and AXFR: 
+we can use `zonetransfer.me` to view information we get from a zone transfer: 
 
-![](Images/Pasted%20image%2020240122123754.png)
+![](Images/Pasted%20image%2020240120135408.png)
 
-then we can use `nslookup -query=AXFR <IP_ADDRESS> <NS_IP>` to look for any successful transfers on each of the found results to determine how many zones there are:
+to do this manually we can do the following: 
+
+identify nameservers: 
+
+`nslookup -type=NS zonetransfer.me`
+
+![](Images/Pasted%20image%2020240120135636.png)
+
+then perform a zone transfer using `-type=any` and `-query=AXFR`: 
+
+![](Images/Pasted%20image%2020240120135744.png)
+
+in the results we can see a lot of subdomain information, and if the zonetransfer is successful then we don't need to do much more enumeration
+
+![](Images/Pasted%20image%2020240120135852.png)
+
+### Gobuster
+
+tool for subdomain enumeration 
+
+in our previous passive domain enumeration we saw patterns like `lert-api-shv-{number}-sin6.facebook.com` 
+
+first lets use these patterns to create a text file: 
+
+![](Images/Pasted%20image%2020240120140548.png)
+
+next we can use gobuster with the following options: 
+- `dns` - launch the DNS module 
+- `-q` - don't print the banner 
+- `-r` - use custom dns server
+- `-d` - target domain name 
+- `-p` - path to the patterns file 
+- `-w` - path to the wordlist 
+- `-o` - output file
+
+````shell
+gobuster dns -q -r "${NS}" -d "${TARGET}" -w "${WORDLIST}" -p ./patterns.txt -o "gobuster_${TARGET}.txt"
+````
+
+![](Images/Pasted%20image%2020240120141311.png)
+
+first we enumerate all of the name servers that we want to test, then we can use `nslookup -query=AXFR <IP_ADDRESS> <NS_IP>` to look for any successful transfers on each of the found results to determine how many zones there are:
 
 ![](Images/Pasted%20image%2020240122123807.png)
 ## Virtual Hosts
@@ -379,7 +425,6 @@ multiple IP addresses or interface aliases can be configured on each NIC of a ho
 the servers or virtual servers bind to one or more IP addresses  
 different servers can be addressed under different IP addresses on the same host  
 from the client's pov the servers are independent of each other  
-
 
 ### Name-based virtual hosting 
 
@@ -410,4 +455,3 @@ we could then identify targets like `dev-admin.randomtarget.com`
 we can use ffuf to fuzz the directories with a command like: 
 
 `ffuf -w <wordlist>:FUZZ -u http://SERVER_IP -H "HOST: FUZZ.randomtarget.com" -fs <size>`
-
