@@ -455,3 +455,24 @@ we could then identify targets like `dev-admin.randomtarget.com`
 we can use ffuf to fuzz the directories with a command like: 
 
 `ffuf -w <wordlist>:FUZZ -u http://SERVER_IP -H "HOST: FUZZ.randomtarget.com" -fs <size>`
+
+so now we can look at a given ip which returns a default page: 
+
+![](Images/Pasted%20image%2020240122141625.png)
+
+we can do some basic enumeration: 
+
+![](Images/Pasted%20image%2020240122141836.png)
+
+![](Images/Pasted%20image%2020240122142031.png)
+
+we know that we want to fuzz `*.inlanefreight.htb` so lets set up our command: 
+
+`ffuf -w /opt/useful/SecLists/Discovery/DNS/namelist.txt:FUZZ -u http://10.129.223.148 -H "HOST:FUZZ.inlanefreight.htb"`
+
+![](Images/Pasted%20image%2020240122142558.png)
+
+then after adding these to `/etc/hosts` I can make a curl request to see which ones return the flag: 
+
+![](Images/Pasted%20image%2020240122142920.png)
+
