@@ -476,3 +476,37 @@ then after adding these to `/etc/hosts` I can make a curl request to see which o
 
 ![](Images/Pasted%20image%2020240122142920.png)
 
+## Crawling 
+
+we use crawling to find as many pages and subdirectories as we can find 
+
+zap spider only enumerates the resources it finds in links and forms (passive scan), but it can miss hidden folders and backup files 
+
+we can use ffuf to find these: 
+
+`ffuf -recursion -recursion-depth 1 -u http://SERVER_IP/FUZZ -w wordlist.txt:FUZZ`
+
+### Sensitive information disclosure 
+
+common to find backup or unreferenced files that can contain sensitive info  
+
+some common extensions we can find in SecLists are in `raft-[small, med, large]-extensions.txt`
+
+start by creating a list of folders we have found before: 
+
+```
+wp-admin
+wp-content
+wp-includes
+```
+
+then we can extract keywords from our target site using cewl  
+we can tell it to extract words with a min of 5 chars `-m5`, convert them to lowercase `--lowercase`, and save them to file `-w <file>`
+
+`cewl -m5 --lowercase -w wordlist.txt http://SERVER_IP`
+
+then we can define multiple wordlists in ffuf: 
+
+`ffuf -w folders.txt:FOLDERS, wordlist.txt:WORDLIST, extensions.txt:EXTENSIONS -u http://SERVER_IP/FOLDERS/WORDLISTEXTENSIONS`
+
+
