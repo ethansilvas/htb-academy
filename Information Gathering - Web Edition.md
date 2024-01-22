@@ -358,8 +358,56 @@ now lets try visiting dev.inlanefreight.local and look with wappalyzer:
 
 first we can do any ANY search and AXFR: 
 
-![[Screenshot 2024-01-22 at 11.46.35 AM.png]]
+![](Images/Pasted%20image%2020240122123754.png)
 
 then we can use `nslookup -query=AXFR <IP_ADDRESS> <NS_IP>` to look for any successful transfers on each of the found results to determine how many zones there are:
 
-![[Screenshot 2024-01-22 at 11.48.01 AM.png]]
+![](Images/Pasted%20image%2020240122123807.png)
+## Virtual Hosts
+
+vhost = allow several sites to be hosted on a single server   
+ex: hosting a mobile and desktop version of the site on the same server 
+
+two ways to configure vhosts: 
+- IP-based virtual hosting
+- name-based virtual hosting 
+
+### IP-based virtual hosting
+
+a host can have multiple NIC   
+multiple IP addresses or interface aliases can be configured on each NIC of a host   
+the servers or virtual servers bind to one or more IP addresses  
+different servers can be addressed under different IP addresses on the same host  
+from the client's pov the servers are independent of each other  
+
+
+### Name-based virtual hosting 
+
+the distinction for which domain the service was requested is made at application level  
+this means that `admin.inlanefreight.htb` and `backup.inlanefreight.htb` can refer to the same IP   
+internally on the server these are separated using different folders  
+
+`admin.inlanefreight.htb` can point to `/var/www/admin` and `backup.inlanefreight.htb` can point to `/var/www/backup` 
+
+in our testing we have seen domains having the same IP address that can be either vhosts or different servers hiding behind a proxy
+
+if we've identified the IP `192.168.10.10` and it returns a default page when we make a request, we can further look for vhosts
+
+we can request a domain we have previously found during our previous info gathering in the `Host` header: 
+
+`curl -s http://192.168.10.10 -H "Host: randomtarget.com` 
+
+we can then further automate this by using a dictionary file like `/opt/useful/SecLists/Discovery/DNS/namelist.txt`
+
+```shell
+cat ./vhosts | while read vhost;do echo "\n********\nFUZZING: ${vhost}\n********";curl -s -I http://192.168.10.10 -H "HOST: ${vhost}.randomtarget.com" | grep "Content-Length: ";done
+```
+
+we could then identify targets like `dev-admin.randomtarget.com`
+
+### Automating vhost discovery 
+
+we can use ffuf to fuzz the directories with a command like: 
+
+`ffuf -w <wordlist>:FUZZ -u http://SERVER_IP -H "HOST: FUZZ.randomtarget.com" -fs <size>`
+
