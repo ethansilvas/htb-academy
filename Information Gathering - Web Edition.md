@@ -350,3 +350,16 @@ now lets try visiting dev.inlanefreight.local and look with wappalyzer:
 
 ![](Images/Pasted%20image%2020240119205543.png)
 
+
+
+
+
+## Active 2 
+
+first we can do any ANY search and AXFR: 
+
+![[Screenshot 2024-01-22 at 11.46.35 AM.png]]
+
+then we can use `nslookup -query=AXFR <IP_ADDRESS> <NS_IP>` to look for any successful transfers on each of the found results to determine how many zones there are:
+
+![[Screenshot 2024-01-22 at 11.48.01 AM.png]]
