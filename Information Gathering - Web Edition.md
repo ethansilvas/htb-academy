@@ -509,4 +509,34 @@ then we can define multiple wordlists in ffuf:
 
 `ffuf -w folders.txt:FOLDERS, wordlist.txt:WORDLIST, extensions.txt:EXTENSIONS -u http://SERVER_IP/FOLDERS/WORDLISTEXTENSIONS`
 
+## Information Gathering - Web - Skills Assessment 
+
+perform passive and active information gathering against githubapp.com 
+
+### What is the registrar IANA ID number
+
+using WHOIS we can see that it is 292: 
+
+![](Images/Pasted%20image%2020240122152557.png)
+
+### What is the last mailserver returned when querying the MX records 
+
+using dig I can see that it is aspmx5: 
+
+![](Images/Pasted%20image%2020240122153731.png)
+
+### Perform active infrastructure identification against i.imgur.com. What server name is returned for the host
+
+for this we can use netcraft to see that it is cat factory 1.0: 
+
+![](Images/Pasted%20image%2020240122154746.png)
+
+### Perform subdomain enumeration against githubapp.com. Which subdomain has the word triage in the name
+
+for this we can just reuse the following command to get the crt.sh results: 
+
+`curl -s "https://crt.sh/?q=githubapp.com&output=json" | jq -r '.[] | "\(.name_value)\n\(.common_name)"' | sort -u > "${TARGET}_crt.sh.txt"`
+
+![](Images/Pasted%20image%2020240122162900.png)
+
 
