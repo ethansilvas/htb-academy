@@ -159,3 +159,17 @@ now that we understand the code (and ignore the obvious text on the site) we mig
 now we can attempt to replicate the functionality of the code to see if it is handled on the server-side when we send the POST request ourselves   
 if the function is enabled on the server-side we might uncover an unreleased functionality which has increased chances for bugs and vulnerabilities 
 
+## HTTP Requests 
+
+now lets attempt to replicate the found hidden code with curl  
+
+curl will allow us to do things like: 
+
+`curl -s http://SERVER_IP:PORT/ -X POST`
+
+however POST requests usually contain data so we can specify this with `-d "param1=sample`
+
+lets try replicating the POST request that the found code would do: 
+
+![](Images/Pasted%20image%2020240123134129.png)
+
