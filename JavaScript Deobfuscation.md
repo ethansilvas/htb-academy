@@ -173,3 +173,79 @@ lets try replicating the POST request that the found code would do:
 
 ![](Images/Pasted%20image%2020240123134129.png)
 
+## Decoding 
+
+from the previous output we seem to get a encoded output: 
+
+`N2gxNV8xNV9hX3MzY3IzN19tMzU1NGcz`
+
+many obfuscated code contains encoded text blocks that get decoded on execution 
+
+the three most commonly used text encodings are: 
+- base64 
+- hex
+- rot13
+
+### Base64
+
+typically used to reduce the use of special characters because any characters are represented in alpha-numeric characters in addition to + and / only   
+even if input is in binary, the resulting base64 would only use these characters 
+
+some ways to spot base64 encoding are 
+- only alpha numeric 
+- padding with = 
+- length has to be in multiple of 4
+- ex: if output is only of length 3, then the = is used to pad 
+
+to encode into base64 we can use linux to pipe it into `base64`
+
+`echo https://www.hackthebox.eu/ | base64`
+
+we can then do the same with the `-d` option to decode it 
+
+`echo aHR0cHM6Ly93d3cuaGFja3RoZWJveC5ldS8K | base64 -d`
+
+### Hex 
+
+this will encode each character into its hex order in the ASCII table   
+ex: a = 61, b = 62, ...
+
+can use linux to see the full table with `man ascii`
+
+we can spot hex because it will only contain hex characters which are only 16 characters: 0-9 and a-f
+
+we can encode on linux with `xxd -p`
+
+`echo https://www.hackthebox.eu/ | xxd -p`
+
+then to decode we can use `-p -r`
+
+### Caesar/rot13
+
+caesar cipher shifts each letter by a fixed number 
+
+there are variations of it like rot13 which shifts the characters 13 times forward 
+
+easy to spot because characters are mapped to specific characters like `http://www` becomes `uggc://jjj` 
+
+no command to do this in linux but we can do the following to create our own: 
+
+```shell
+echo https://www.hackthebox.eu/ | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+```
+
+and then the same one to decode: 
+
+```shell
+echo uggcf://jjj.unpxgurobk.rh/ | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+```
+
+`rot13` is also an online tool to encode/decode 
+
+### Other types of encoding 
+
+some tools to determine what type of encoding is being used is `cipher identifier` 
+
+some other types use encryption which is much harder to reverse engineer, especially if the decryption key is not stored in the script itself 
+
+
