@@ -123,3 +123,39 @@ in these cases we will need to manually reverse engineer the code to understand 
 
 secure coding 101 module goes through more advanced JS deobfuscation such as this
 
+## Code Analysis 
+
+now we have our de-minifying and deobfuscated code: 
+
+```javascript
+function generateSerial()
+	{
+	var flag="HTB
+		{
+		1_4m_7h3_53r14l_g3n3r470r!
+	}
+	";
+	var xhr=new XMLHttpRequest();
+	var url="/serial.php";
+	xhr.open("POST",url,true);
+	xhr.send(null)
+}
+```
+
+from here we can start trying to understand what the code actually does 
+
+we can see that it starts by defining a new `XMLHttpRequest` object to start sending a web request 
+
+then it defines a url string as `/serial.php` which we can assume is pointing to the same domain as our target as no other domain is specified 
+
+the next two lines use `.open()` and `.send()` to send a POST request with the url 
+
+if we go back to our target site we don't see anything that might tell us what this could be used for: 
+
+![](Images/Pasted%20image%2020240123132927.png)
+
+now that we understand the code (and ignore the obvious text on the site) we might guess that the function is used to generate a serial number but the site might not actually use it yet as the developers might have kept it for future use 
+
+now we can attempt to replicate the functionality of the code to see if it is handled on the server-side when we send the POST request ourselves   
+if the function is enabled on the server-side we might uncover an unreleased functionality which has increased chances for bugs and vulnerabilities 
+
