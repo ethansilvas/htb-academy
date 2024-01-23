@@ -248,4 +248,43 @@ some tools to determine what type of encoding is being used is `cipher identifie
 
 some other types use encryption which is much harder to reverse engineer, especially if the decryption key is not stored in the script itself 
 
+## Skills Assessment 
+
+we have a web server that contains JS and APIs and want to determine their functionality to understand how it can affect the customer 
+
+### Try to study the HTML code of the page and find the name of the JS file being used
+
+![](Images/Pasted%20image%2020240123144507.png)
+
+### Try to run the code to see if you get something in return 
+
+![](Images/Pasted%20image%2020240123144813.png)
+
+first lets output it into prettier form: 
+
+![](Images/Pasted%20image%2020240123144905.png)
+
+then lets deobfuscate by printing the return statement
+
+![](Images/Pasted%20image%2020240123145136.png)
+
+### Try to understand the main functionality and replicate it to find the secret key
+
+we can see that it wants to send an HTTP request: 
+
+![](Images/Pasted%20image%2020240123145951.png)
+
+it appears to send a POST request to `/keys.php` so lets try to replicate that with curl: 
+
+![](Images/Pasted%20image%2020240123150207.png)
+
+### Now that you have the encoded secret try to decode it and send a POST request with the decoded key as "key=DECODED_KEY"
+
+using hex decoding we can see the key: 
+
+![](Images/Pasted%20image%2020240123150356.png)
+
+then we can resend the request with the decoded key: 
+
+![](Images/Pasted%20image%2020240123151058.png)
 
