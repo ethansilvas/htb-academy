@@ -80,3 +80,46 @@ the further the code gets obfuscated the worse the performance gets
 some other encoders are `jj encode` and `aa encode` but these will likely impact performance  
 these may be useful for avoiding web filters or restrictions though
 
+## Deobfuscation 
+
+just as there are tools to obfuscate, there are tools to deobfuscate
+
+### Beautify 
+
+minified JS code is often in one line and there are tools to properly reformat the code 
+
+most basic way is to do this with the browser dev tools: 
+
+![](Images/Pasted%20image%2020240123124255.png)
+
+hitting the `{ }` button will pretty print all the code into proper formatting: 
+
+![](Images/Pasted%20image%2020240123124355.png)
+
+other online tools exist to do this like `prettier` and `beautifier`:
+
+![](Images/Pasted%20image%2020240123124656.png)
+
+in this example, secret.js is not only minified but also obfuscated to the better formatting only helps so much 
+
+### Deobfuscate 
+
+`unpacker` is a good online tool to try to deobfuscate: 
+
+![](Images/Pasted%20image%2020240123125213.png)
+
+**Note:** remember to not leave any empty lines before the script because it might affect the deobfuscation 
+
+another way to unpack is to find the `return` value and use console.log() to print it instead of executing it: 
+
+![](Images/Pasted%20image%2020240123125611.png)
+
+### Reverse engineering 
+
+when the code becomes more obfuscated and encoded it becomes much more difficult for auto tools to clean it up   
+this becomes more true when custom obfuscation tools are used 
+
+in these cases we will need to manually reverse engineer the code to understand how it was obfuscated 
+
+secure coding 101 module goes through more advanced JS deobfuscation such as this
+
