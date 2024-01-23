@@ -18,3 +18,15 @@ viewing this file reveals a complicated and hard to read JS file:
 
 ![](Images/Pasted%20image%2020240122182231.png)
 
+## Code Obfuscation 
+
+obfuscation is making code more difficult to read but allows it to function the same with possibly slower performance 
+
+basic methods might be to turn the code into a dictionary of all the words and symbols in the code to rebuild it during execution  
+
+use cases: 
+- prevent code from being reused or copied 
+- more difficult to reverse engineer 
+- security layer when dealing with auth or encryption to prevent attacks on vulnerabilities (even through these shouldn't be done on the client side)
+
+another common use is for malicious actions; common for attackers to obfuscate their code to prevent IDS/IPS tools from detecting their scripts 
