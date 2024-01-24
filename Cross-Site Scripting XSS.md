@@ -119,3 +119,64 @@ we can copy the url being sent:
 then modify it with our payload: 
 
 `http://94.237.53.58:36741/index.php?task=<script>alert(window.origin)</script>`
+
+## DOM XSS 
+
+occurs when JS is used to change the page source through the DOM 
+
+on our target server we can try the test string: 
+
+![](Images/Pasted%20image%2020240124141407.png)
+
+however, when we use the add button there are no requests being made: 
+
+![](Images/Pasted%20image%2020240124141452.png)
+
+in the url we can see that it is using `#`: 
+
+![](Images/Pasted%20image%2020240124141542.png)
+
+this means that it is a client-side parameter that is completely processed on the browser 
+
+we can also see in the pages source that our test string will not appear in it 
+
+### Source and sink 
+
+to understand DOM XSS we need to understand the concept of source and sink of the object displayed on the page  
+
+source = JS object that takes user input, could be anything like URL parameter or input field     
+sink = function that writes the user input to a DOM object on the page   
+
+if sink does not sanitize input then it will be vulnerable to XSS 
+
+some common JS functions to write to DOM objects: 
+- `document.write()`
+- `DOM.innerHTMl`
+- `DOM.outerHTMl`
+
+some jquery functions that write to DOM: 
+- `add()`
+- `after()` 
+- `append()`
+
+the above functions will not sanitize input and will output it exactly 
+
+viewing the page source we can see that the source is being taken from the task parameter: 
+
+![](Images/Pasted%20image%2020240124143017.png)
+
+we can see that .innerHTML is being used to write the task variable in the todo DOM 
+
+### DOM attacks
+
+innerHTML will not allow script tags as input but other payloads will work like: 
+
+`<img src="" onerror=alert(window.origin)>`
+
+this will create an image object with an onerror attribute that executes JS code when the image isn't found   
+our code will always be executed because we provide a blank image link
+
+to target users with this vulnerability we can again use the URL: 
+
+`http://83.136.251.235:49425/#task=%3Cimg%20src=%22%22%20onerror=alert(document.cookie)%3E`
+
