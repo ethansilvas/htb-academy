@@ -40,3 +40,38 @@ three main types:
 - reflected (non-persistent) XSS = user input is displayed on the page after being processed by the backend server but is not stored (search result or error message) 
 - DOM-based XSS = non-persistent; user input is directly shown in the browser and is completely processed on the client-side without reaching backend (through client-side http parameters or anchor tags)
 
+## Stored XSS 
+
+stored or persistent XSS that stores our payload on the backend database and is retrieved when the user visits the page means that our attack will affect any user   
+furthermore, the payload may need removing from the backend database
+
+for our target site we can see that our input is displayed back to us: 
+
+![](Images/Pasted%20image%2020240124112359.png)
+
+### XSS testing payloads 
+
+we can test if the page is vulnerable to XSS with a basic payload: 
+
+`<script>alert(window.origin)</script>`
+
+![](Images/Pasted%20image%2020240124112606.png)
+
+we can confirm that the page is vulnerable to XSS further by looking at the page source: 
+
+![](Images/Pasted%20image%2020240124112832.png)
+
+many modern web apps use cross-domain IFrames to handle user input so even if the form is vulnerable to XSS then it won't affect the main app    
+this is why in our example we are showing the value of `window.origin` in the alert box instead of a value like `1` because then the alert box reveals what URL it is being executed on   
+confirms what form is vulnerable in case an IFrame was being used 
+
+some browsers block `alert()` so another payload is to use `<plaintext>` which stops rendering the HTML code and displays it as plaintext    
+
+another easy payload is `<script>print()</script>` which pops up the browser print dialog which is unlikely to be blocked by any browsers 
+
+in our examples we can refresh the page and see our payloads again, which means that the XSS is in fact stored on the backend and will affect any users visiting the page 
+
+to find the flag for this target we can modify our script to get the cookie: 
+
+`<script>alert(document.cookie)</script>`
+
