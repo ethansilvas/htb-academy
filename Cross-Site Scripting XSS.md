@@ -180,3 +180,84 @@ to target users with this vulnerability we can again use the URL:
 
 `http://83.136.251.235:49425/#task=%3Cimg%20src=%22%22%20onerror=alert(document.cookie)%3E`
 
+## XSS Discovery 
+
+### Automated discovery 
+
+almost all web app vulnerability scanners have XSS detection   
+usually do two types of scanning, passive and active 
+
+active scans work by sending various XSS payloads into input fields and comparing the rendered page source to see if the payload can be found in it, which might indicate successful XSS 
+
+must always manually confirm any found injections 
+
+common open source tools for XSS discovery: 
+- XSS strike 
+- Brute XSS
+- XSSer
+
+can try XSS strike by cloning it: 
+
+```shell
+git clone https://github.com/s0md3v/XSStrike.git
+cd XSStrike
+pip install -r requirements.txt
+python xsstrike.py
+```
+
+then run the script and provide url with `-u`: 
+
+```shell
+python xsstrike.py -u "http://SERVER_IP:PORT/index.php?task=test" 
+```
+
+### Manual discovery 
+
+difficulty of finding XSS depends on level of security of the app   
+advanced XSS usually involves code review skills 
+
+#### XSS payloads
+
+most basic method of looking for vulnerabilities is manually testing various XSS payloads 
+
+can find lists of XSS payloads online like: 
+- payloadallthethings
+- payloadbox 
+
+XSS can be injected into any input in the HTML page like input fields or HTTP headers like Cookie or User-Agent
+
+many payloads will not work for all test cases because they are all designed to work with certain types of injections 
+
+### Code review 
+
+most reliable method of detecting XSS is code review   
+can write custom payloads based on how our input is being handled   
+
+unlikely to find any XSS through payload lists or XSS tools for advanced web apps 
+
+look into 
+- secure coding 101
+- whitebox pentesting 101: command injection 
+
+to try some of these techniques we can see our target has a registration form: 
+
+![](Images/Pasted%20image%2020240124152327.png)
+
+when filling out a dummy form we can capture the URL: 
+
+![](Images/Pasted%20image%2020240124152354.png)
+
+`http://94.237.54.75:32571/?fullname=test&username=e&password=asdf&email=g%40gmail.com`
+
+using this url we can run it through tools like XSStrike: 
+
+![](Images/Pasted%20image%2020240124153204.png)
+
+and we can see from the results that the email field looks to be vulnerable: 
+
+![](Images/Pasted%20image%2020240124153229.png)
+
+when normally using the UI any payloads will not be accepted, but by modifying the URL we can see our input being reflected: 
+
+![](Images/Pasted%20image%2020240124153323.png)
+
