@@ -75,3 +75,47 @@ to find the flag for this target we can modify our script to get the cookie:
 
 `<script>alert(document.cookie)</script>`
 
+## Reflected XSS 
+
+reflected XSS gets processed by the backend server and DOM-based is completely processed on the client-side   
+both are non-persistent XSS, meaning they are not persistent through page refreshes   
+attacks will only affect the target user and not all other users who visit the page
+
+reflected XSS occurs when the input reaches the backend and gets returned to us without being filtered or sanitized   
+many cases where our entire input might get returned to us, like error messages or confirmation messages 
+
+with our target we can retry our test string: 
+
+![](Images/Pasted%20image%2020240124135339.png)
+
+we can see that out input `test` is included in the error message   
+if this input is not filtered or sanitized then it might be vulnerable to XSS 
+
+we can then try the window.origin payload: 
+
+![](Images/Pasted%20image%2020240124135459.png)
+
+the resulting text says `Task ' '` because our script element does not get rendered by the browser 
+
+we can confirm in the source code that our payload worked: 
+
+![](Images/Pasted%20image%2020240124135629.png)
+
+then when we refresh the page we will not see our payload anymore, meaning that it is non-persistent 
+
+if the XSS is not persistent, how do we target victims with it?  
+this depends on the HTTP request being used to send our input to the server  
+
+for this target we can see that the site uses a GET request to perform the add task function: 
+
+![](Images/Pasted%20image%2020240124135909.png)
+
+so to target a user with this vulnerability we can send them a URL containing our payload 
+
+we can copy the url being sent: 
+
+`http://94.237.53.58:36741/index.php?task=test`
+
+then modify it with our payload: 
+
+`http://94.237.53.58:36741/index.php?task=<script>alert(window.origin)</script>`
