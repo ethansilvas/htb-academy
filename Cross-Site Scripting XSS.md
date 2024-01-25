@@ -570,3 +570,61 @@ then refreshing the page we can see that we have successfully logged in:
 ![](Images/Pasted%20image%2020240124210737.png)
 
 ## XSS Prevention 
+
+XSS vulnerabilities are mainly linked to two parts of the web app, a source that is input and a sink that displays the input data   
+these are what we want to focus on securing 
+
+the most important part of preventing XSS is sanitation and validation 
+
+### Front-end
+
+essential to sanitize and validate the user input  
+
+we saw in the previous exercise that emails needed to be in a certain format, the code that did this was: 
+
+```javascript
+function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test($("#login input[name=email]").val());
+}
+```
+
+we should also make sure that no input contains JS code in it by escaping any special characters 
+
+for this we can use things like = `DOMPurify`: 
+
+```javascript
+<script type="text/javascript" src="dist/purify.min.js"></script>
+let clean = DOMPurify.sanitize( dirty );
+```
+
+this will escape special characters with a backslash 
+
+we also don't want to use user input directly into HTML tags like: 
+- `<script>`
+- `<style>`
+- tag/attribute fields - `<div name='INPUT'>`
+- comments
+
+we should also avoid using JS functions that allow changing raw text of HTML fields like: 
+- `DOM.innerHTML`
+- `DOM.outerHTML`
+- `document.write()`
+- `document.writeln()`
+- `document.domain`
+
+or other jquery functions like: 
+- `html()`
+- `parseHTML()`
+- `add()`
+- `append()`
+- `prepend()`
+- `after()`
+- `insertAfter()`
+- `before()`
+- `insertBefore()`
+- `replaceAll()`
+- `replaceWith()`
+
+### Back-end
+
