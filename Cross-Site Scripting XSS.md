@@ -628,3 +628,33 @@ or other jquery functions like:
 
 ### Back-end
 
+XSS prevention on the back end would include measures like: 
+- I/O sanitation and validation
+- server config 
+- backend tools to prevent XSS
+
+validation is similar to frontend where it uses regex or library functions to ensure that the input field is what is expected 
+
+backend systems play a crucial role in input sanitation because frontend sanitation can be bypassed by using HTTP requests directly 
+
+for something like a PHP backend we could use `addlashes` to escape special characters: 
+
+`addlashes($_GET['email'])`
+
+another important aspect of backend is output encoding   
+this is encoding any special characters into their HTML codes   
+this helps if we need to display the entire user input without introducing XSS  
+
+for php you could use something like `htmlentities()` or `htmlspecialchars()` 
+
+there are also certain server configurations that might help in preventing XSS:
+- using HTTPS
+- using XSS prevention headers
+- using the appropriate Content-Type like `X-Content-Type-Options=nosniff`
+- using `Content-Security-Policy` options like `script-src 'self'` which only allows locally hosted scripts 
+- using `HttpOnly` and `Secure` cookie flags to prevent JS from reading cookies and only transport over HTTPS
+
+WAF also reduces chances of XSS   
+some frameworks like ASP.NET have built in XSS protections 
+
+
