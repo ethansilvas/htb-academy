@@ -722,4 +722,3 @@ then I again use the form with our vulnerable fields to load the script.js file:
 and on the php server I obtain the flag: 
 
 ![](Images/Pasted%20image%2020240125101851.png)
-
