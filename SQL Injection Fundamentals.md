@@ -37,3 +37,28 @@ another use case is to subvert intended web app logic like bypassing login witho
 
 attackers may also be able to read and write files directly on the back-end server 
 
+## Intro to Databases 
+
+### Database management systems
+
+DBMS helps create, define, host, and manage databases   
+many different kinds like file-based, relational, NoSQL, graph based, and key/value stores   
+can also interact with DBMS in different ways like cli, gui, or apis 
+
+essential features of DBMS: 
+- concurrency - makes sure that concurrent actions of people using it at the same time succeed without corrupting or losing data 
+- consistency - makes sure that data remains consistent and valid throughout the db 
+- security - security controls through user auth and permissions 
+- reliability - easy to backup databases and roll them back to previous states 
+- SQL - simplify user interaction with the database through an intuitive syntax
+
+two tiered structure:
+
+![](Images/Pasted%20image%2020240125153152.png)
+
+tier 1 = client-side apps like websites or gui programs; data from these are passed to tier 2 through API calls or othe requests   
+tier 2 = middleware; interprets events and puts them in a form that is understandable by the DBMS
+
+possible to host the app server and the DBMS on the same host, but DBMS with lots of data are typically separated 
+
+
