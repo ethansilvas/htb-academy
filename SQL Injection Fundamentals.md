@@ -356,3 +356,69 @@ the `%` will act as a wildcard that matches all characters after "admin", used t
 
 `SELECT * FROM logins WHERE username LIKE '___'` will match all usernames with exactly 3 characters in them 
 
+## SQL Operators 
+
+SQL supports logical operators to use multiple conditions at once  
+most common are `AND`, `OR`, and `NOT`
+
+### AND operator 
+
+takes two conditions and returns true or false based on both being satisfied 
+
+![](Images/Pasted%20image%2020240126140312.png)
+
+in SQL, any non-zero value is considered true, and usually returns 1 to signify true   
+0 is considered false 
+
+### OR operator 
+
+returns true when one of the conditions evaluates to true: 
+
+![](Images/Pasted%20image%2020240126140541.png)
+
+### NOT operator 
+
+`NOT` will toggle a boolean value: 
+
+![](Images/Pasted%20image%2020240126140641.png)
+
+### Symbol Operators 
+
+`AND`, `OR`, and `NOT` can also be represented as `&&`, `||`, and `!`: 
+
+![](Images/Pasted%20image%2020240126140856.png)
+
+### Operators in queries 
+
+we can use `NOT` to get all queries where username is not "john": 
+
+![](Images/Pasted%20image%2020240126141132.png)
+
+![](Images/Pasted%20image%2020240126141142.png)
+
+we can also select all users who have an id greater than 1 and username not equal to "john": 
+
+![](Images/Pasted%20image%2020240126141248.png)
+
+### Multiple operator precedence 
+
+SQL also supports other operations like addition, division, and bitwise operations 
+
+the order of these operations is decided by operator precedence, here are some common ones: 
+- division, multiplication, and modulus
+- addition and subtraction
+- comparison 
+- NOT
+- AND 
+- OR 
+
+operators at the top are evaluated before ones at the bottom 
+
+`SELECT * FROM logins WHERE username != 'tom' AND id > 3 - 2;`
+
+in the above statement we can derive the order as: 
+- 3 - 2 
+- the comparison operators `>` and `!=` will be evaluated together 
+- AND 
+
+
