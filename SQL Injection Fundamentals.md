@@ -90,3 +90,111 @@ four common storage models:
 - wide-column
 - graph
 
+## Intro to MySQL 
+
+### SQL 
+
+sql syntax can differ from different RDMBSs but they are all required to follow the ISO standard SQL language 
+
+sql can be used to perform: 
+- retrieve data
+- update data
+- delete data 
+- create new tables and databases
+- add / remove uses 
+- assign permissions to users 
+
+### Command line 
+
+`mysql` utility is used to interact with a MySQL or MariaDB database 
+
+`-u` for username and `-p` for password, but `-p` should be passed empty so we are prompted to enter the password instead of passing through command 
+
+can specify a host with `-h` and port with `-P`
+
+`mysql -u root -h 94.237.54.37 -P 45843 -p`
+
+the default mysql or mariadb port is 3306  
+
+### Creating a database 
+
+now that we are connected to the sql server we can create a database with `CREATE DATABASE`: 
+
+![](Images/Pasted%20image%2020240125171844.png)
+
+we can then view the list of databases with `SHOW DATABASES`: 
+
+![](Images/Pasted%20image%2020240125171939.png)
+
+then we can switch to the newly created users database with `USE`: 
+
+![](Images/Pasted%20image%2020240125172008.png)
+
+sql statements aren't case sensitive but database names are 
+
+### Tables
+
+rows, columns, and cells
+
+every table is created with a fix set of columns where each one is a certain data type  
+
+we can create a new table and specify the columns: 
+
+```
+CREATE TABLE logins (
+	id INT,
+	username VARCHAR(100),
+	password VARCHAR(100),
+	date_of_joining DATETIME
+)
+```
+
+![](Images/Pasted%20image%2020240125173016.png)
+
+this will create a table named logins with four columns: 
+- id = integer
+- username = 100 char string
+- password = 100 char string
+- date_of_joining = DATETIME 
+
+can then use `SHOW TABLES` to view the table and `DESCRIBE` to list the table structure with its fields and data types: 
+
+![](Images/Pasted%20image%2020240125173246.png)
+
+![](Images/Pasted%20image%2020240125173259.png)
+
+### Table properties 
+
+in `CREATE TABLE` there are many properties that can be set for the table and each column 
+
+we can set the id column to auto-increment using `AUTO-INCREMENT`: 
+
+`id INT NOT NULL AUTO_INCREMENT,`
+
+`NOT NULL` ensures that a column is never empty 
+
+we can also use `UNIQUE` to ensure that each item is unique: 
+
+`username VARCHAR(100) UNIQUE NOT NULL,`
+
+`DEFAULT` can be used to specify a default value, for example we can use `NOW()` to set a default DATETIME: 
+
+`date_of_joining DATETIME DEFAULT NOW()`
+
+`PRIMARY KEY` can be used to uniquely identify each record in the table: 
+
+`PRIMARY KEY (id)`
+
+the final CREATE TABLE would look like: 
+
+```sql
+CREATE TABLE logins (
+    id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    date_of_joining DATETIME DEFAULT NOW(),
+    PRIMARY KEY (id)
+    );
+```
+
+
