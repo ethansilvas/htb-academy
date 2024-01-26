@@ -198,3 +198,91 @@ CREATE TABLE logins (
 ```
 
 
+## SQL Statements 
+
+### INSERT statement 
+
+insert is used to add new records to a table: 
+
+`INSERT INTO table_name VALUES (col1_value, col2_value, col3_value, ...)`
+
+![](Images/Pasted%20image%2020240126124030.png)
+
+the above example can be modified to skip columns with default values by specifying the columns names to insert into: 
+
+`INSERT INTO table_name(col1, col3, ...) VALUES (col2_value, col3_value, ...);`
+
+skipping columns with `NOT NULL` specified will result in error 
+
+![](Images/Pasted%20image%2020240126124525.png)
+
+can also insert multiple records at once with commas: 
+
+`INSERT INTO logins(username, password) VALUES ('john', 'john123'), ('tom', 'tom123');`
+
+### SELECT statement 
+
+mostly used to retrieve data but has other purposes 
+
+general syntax: 
+
+`SELECT * FROM table_name;`
+
+`*` = wildcard to select all columns 
+
+`FROM` = selects the table to get from 
+
+also possible to view data from specific columns: 
+
+`SELECT col1, col2 FROM table_name;`
+
+![](Images/Pasted%20image%2020240126125454.png)
+
+### DROP statement 
+
+used to remove tables and databases from the server 
+
+`DROP TABLE logins;`
+
+![](Images/Pasted%20image%2020240126125756.png)
+
+note that DROP will permanently and completely delete a table with no confirmation 
+
+### ALTER statement 
+
+can be used to change the name of any table and any of its fields, or to delete or add a new column to an existing table 
+
+here we add a new column using `ADD`: 
+
+`ALTER TABLE logins ADD newColumn INT;`
+
+![](Images/Pasted%20image%2020240126130347.png)
+
+we can rename a column using `RENAME COLUMN` and `TO`: 
+
+`ALTER TABLE logins RENAME COLUMN newColumn TO oldColumn`
+
+![](Images/Pasted%20image%2020240126130608.png)
+
+can change a column's datatype with `MODIFY`: 
+
+`ALTER TABLE logins MODIFY oldColumn DATE;`
+
+![](Images/Pasted%20image%2020240126130819.png)
+
+we can drop a column with `DROP`: 
+
+`ALTER TABLE logins DROP oldColumn;`
+
+![](Images/Pasted%20image%2020240126130947.png)
+
+### UPDATE statement 
+
+while `ALTER` can be used to change a table's properties, `UPDATE` can be used to update records within a table 
+
+general syntax: 
+
+`UPDATE table_name SET col1=newValue1, col2=newValue2, ... WHERE <condition>'`
+
+![](Images/Pasted%20image%2020240126131309.png)
+
