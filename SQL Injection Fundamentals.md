@@ -286,3 +286,73 @@ general syntax:
 
 ![](Images/Pasted%20image%2020240126131309.png)
 
+## Query Results 
+
+### Sorting results 
+
+we can sort the results of a query using `ORDER BY` and specifying the column: 
+
+`SELECT * FROM logins ORDER BY password;`
+
+![](Images/Pasted%20image%2020240126132106.png)
+
+the sorting is done in ascending order by default, but we can specify with `ASC` or `DESC`: 
+
+`SELECT * FROM logins ORDER BY password DESC;`
+
+also possible to sort by multiple columns so that if there are duplicate values in the first column it will sort by the next: 
+
+`SELECT * FROM logins ORDER BY password DESC, id ASC;`
+
+### LIMIT results 
+
+we can use `LIMIT` to show a specific number of results in case a query will return a large amount: 
+
+`SELECT * FROM logins LIMIT 2;`
+
+![](Images/Pasted%20image%2020240126132553.png)
+
+we can also specify an offset before the `LIMIT` count to start at the specified row number: 
+
+`SELECT * FROM logins LIMIT 1, 2;`
+
+the offset marks the order of the first record to be **included**, starting from 0 (the first record in table)  
+for the above query it will start and include at the second record and return 2 values in total 
+
+![](Images/Pasted%20image%2020240126133232.png)
+
+### WHERE clause 
+
+can use `WHERE` to search for specific data: 
+
+`SELECT * FROM table_name WHERE <condition>;`
+
+we can get all rows and columns where the id is greater than 1: 
+
+`SELECT * FROM logins WHERE id > 1;`
+
+![](Images/Pasted%20image%2020240126133451.png)
+
+can also be more specific and grab a certain row: 
+
+`SELECT * FROM logins where username = 'admin'`
+
+![](Images/Pasted%20image%2020240126133825.png)
+
+Note that string and date data types need to be surrounded by quotes, but numbers can be used directly 
+
+### LIKE clause 
+
+`LIKE` can be used to select record by matching a certain pattern 
+
+we can retrieve all records with usernames starting with "admin": 
+
+`SELECT * FROM logins WHERE username LIKE 'admin%';`
+
+![](Images/Pasted%20image%2020240126134533.png)
+
+the `%` will act as a wildcard that matches all characters after "admin", used to match 0 or more characters   
+`_` can be used to match exactly one character
+
+`SELECT * FROM logins WHERE username LIKE '___'` will match all usernames with exactly 3 characters in them 
+
