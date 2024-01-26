@@ -421,4 +421,18 @@ in the above statement we can derive the order as:
 - the comparison operators `>` and `!=` will be evaluated together 
 - AND 
 
+## Intro to SQL Injections 
+
+### Use of SQL in web applications 
+
+once a DBMS is installed and setup on a back-end server, the web apps can start utilizing it to store and retrieve data 
+
+in PHP for example we can start using the mysql database: 
+
+```
+$conn = new mysqli("localhost", "root", "password", "users");
+$query = "select * from logins";
+$result = $conn->query($query);
+```
+
 
