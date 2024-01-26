@@ -61,4 +61,32 @@ tier 2 = middleware; interprets events and puts them in a form that is understan
 
 possible to host the app server and the DBMS on the same host, but DBMS with lots of data are typically separated 
 
+## Types of Databases 
+
+### Relational databases
+
+most common type of db   
+uses a schema to dictate the data structure stored in the database, like a template 
+
+tables in relational db are associated with keys that provide a quick db summary or access to a specific row or column 
+
+when processing an integrated db a concept is required to link one table to another using its key   
+this is relational database management system (RDBMS)   
+
+can link tables together without storing all of each other's data   
+each table can have more than one key  
+
+relationship between tables in a db is called a schema 
+
+### Non-relational databases
+
+NoSQL db don't use tables, rows, columns, prime keys, relationships, or schemas   
+instead uses various different storage models depending on types of data  
+very flexible and scalable; good for data with not well defined structure 
+
+four common storage models: 
+- key-value 
+- document-based
+- wide-column
+- graph
 
