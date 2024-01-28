@@ -429,10 +429,76 @@ once a DBMS is installed and setup on a back-end server, the web apps can start 
 
 in PHP for example we can start using the mysql database: 
 
-```
+```php
 $conn = new mysqli("localhost", "root", "password", "users");
 $query = "select * from logins";
 $result = $conn->query($query);
 ```
 
+then we can print all the output: 
+
+```php
+while($row = $result->fetch_assoc()) {
+	echo $row["name"]."<br>";
+}
+```
+
+typically apps will use user input to craft the search: 
+
+```php
+$searchInput = $_POST['findUser'];
+$query = "select * from logins where username like '%$searchInput'";
+$result = $conn->query($query);
+```
+
+### What is an injection
+
+in the above example we use direct input with no sanitation to use as a SQL query   
+injection occurs when an app misinterprets user input as actual code rather than a string, which results in the user input being executed as code 
+
+### SQL injection
+
+in the above example `searchInput` can include anything that the user provides, including malicious code 
+
+typically payloads will use `'` or `"` to terminate the internal SQL statement and start a new one:
+
+`%1'; DROP TABLE users;'`
+
+so then the full statement that gets executed is: 
+
+`select * from logins where username like '%1'; DROP TABLE users;'`
+
+however, in the above example we added another sql statement after the semi colon but this isn't actually possible in MySQL   
+possible in MSSQL and PostgreSQL 
+
+### Syntax errors 
+
+in the last statement there will be an error returned because of the trailing `'` 
+
+when we inject sql we need to consider where our code will be relative to the rest of the statement since it could be at the end or in the middle  
+one way to ensure that we avoid errors is by using comments to comment out any input that we don't need   
+another way is to pass multiple single quotes 
+
+### Types of SQL injections 
+
+sql injections are categorized by how and where we retrieve their output 
+
+![](Images/Pasted%20image%2020240128134233.png)
+
+**in-band** = the output of the intended and the new query may be printed directly to the front end  
+Union based and error based
+
+in union based we might have to specify the exact location (or column) which we can read, so query will direct output to be printed there 
+
+error based is when we can get the PHP or SQL errors in the frontend  
+we intentionally cause an error that returns the output of our query 
+
+**blind** = might not get the output printed so we use SQL logic to get the output character by character   
+boolean based and time based 
+
+boolean based we can use sql conditional statements to control whether the page returns output or not   
+
+time based sql injections use conditional statements to delay the page response if it returns true 
+
+**out-of-band** = might not have direct access to output at all so we have to direct output to a remote location like a DNS record and attempt to retrieve it there 
 
