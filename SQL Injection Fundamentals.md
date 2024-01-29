@@ -628,5 +628,52 @@ our new payload needs to be:
 
 `admin')-- `
 
+## Union Clause 
 
+so far we have only been manipulating the original query  
+now we will use another type of injection that will inject entire SQL queries executed alongside the original query   
+
+### Union 
+
+the union clause is used to combine results from multiple `SELECT` statements   
+through a `UNION` injection we can `SELECT` and dump data from all across the DBMS, meaning multiple tables and databases  
+
+we can combine `SELECT` statements like: 
+
+`SELECT * FROM ports UNION SELECT * FROM ships;`
+
+note that the data types of all the selected columns on all positions need to be the same 
+
+### Even columns
+
+a `UNION` statement can only operate on `SELECT` statements with equal number of columns 
+
+if the query is: 
+
+`SELECT * FROM products WHERE product_id = 'user_input'`
+
+we can inject a `UNION` query into that input so that rows from another table are returned: 
+
+`SELECT * FROM products WHERE product_id = '1' UNION SELECT username, password FROM passwords-- `
+
+assuming the products table has 2 columns, the query would return usernames and passwords from the passwords table 
+
+### Un-even columns
+
+usually won't have the same number of columns as the SQL query we want to execute   
+
+if we only had one column, we can put junk data for the remaining required columns so that the columns we are UNIONing remains the same as the original query 
+
+we can use any string as our junk data and the query will return the string as its output for that column: 
+
+`SELECT "junk" from passwords` 
+
+`SELECT 1 from passwords`
+
+we only need to make sure that the data type matches the data type of the column  
+for more advanced SQL injections we might want to use `NULL` because this will fit any data type 
+
+if we wanted to only get the username column from the products table, which has 2 columns, we could do: 
+
+`SELECT * FROM products WHERE product_id = '1' UNION SELECT username, 2 FROM passwords`
 
