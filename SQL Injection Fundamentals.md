@@ -502,3 +502,78 @@ time based sql injections use conditional statements to delay the page response 
 
 **out-of-band** = might not have direct access to output at all so we have to direct output to a remote location like a DNS record and attempt to retrieve it there 
 
+## Subverting Query Logic 
+
+we first need to learn to modify the original query by injecting `OR` and using comments to subvert the original logic 
+
+### Authentication bypass
+
+our target is an admin panel: 
+
+![](Images/Pasted%20image%2020240129110859.png)
+
+when we login we can see the underlying SQL query to better understand what our input is doing: 
+
+![](Images/Pasted%20image%2020240129110953.png)
+
+our goal is to login without using the credentials
+
+the page takes credentials and uses the `AND` operator to look for records with the given username and password 
+
+### SQLi discovery 
+
+to first see if our logic is vulnerable to injection we can try some basic payloads: 
+
+- `'` = `%27`
+- `"` = `%22`
+- `#` = `%23`
+- `;` = `%3B`
+- `)` = `%29`
+
+note that in some cases we may have to use the url encoded version, like if we want to inject directly into the URL 
+
+if we use the `'` payload we get a SQL error: 
+
+![](Images/Pasted%20image%2020240129111619.png)
+
+we could do a couple of things with this: 
+- comment out everything after the injected `'`
+- use another `'` to even out the number of them 
+
+### OR injection 
+
+to bypass the authentication we need the query to always return true   
+to do this we can use the `OR` operator 
+
+for MySQL order of precedence, `AND` is evaluated before `OR`   
+this means that if there is at least one true condition then the entire query will evaluate to true 
+
+so now to keep an even number of quotes we can use the payload: 
+
+`admin' or '1'='1`
+
+![](Images/Pasted%20image%2020240129112214.png)
+
+the above conditional logic is: 
+- if the username is admin OR 
+- if 1=1 return true AND 
+- password is password 
+
+![](Images/Pasted%20image%2020240129112354.png)
+
+can find many other payloads like this on PayloadAllTheThings
+
+### Auth bypass with OR operator 
+
+the above example worked because we knew a valid username, however if we didn't know one we would need an overall true query  
+this could be done by injecting an `OR` condition into the password field 
+
+we can input two payloads into the form: 
+
+`notadmin' OR '1'='1`
+
+`something' OR '1'='1`
+
+![](Images/Pasted%20image%2020240129113041.png)
+
+this will result in the table returning everything from the table and logging in to the first user returned 
