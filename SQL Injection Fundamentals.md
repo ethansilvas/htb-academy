@@ -577,3 +577,56 @@ we can input two payloads into the form:
 ![](Images/Pasted%20image%2020240129113041.png)
 
 this will result in the table returning everything from the table and logging in to the first user returned 
+
+## Using Comments 
+
+can use two types of line comments in MySQL: 
+- `--`
+- `#`
+
+there is also inline comments with `/**/`, though not normally used in sql injections 
+
+in SQL, using two dashes only is not enough for a comment, there has to be an empty space after them   
+the payload needs to be `-- `, and url encoded it would be `--+` because `+` is used for spaces in urls 
+
+if you are inputting your payload into the url, a `#` is usually considered as a tag and will not be passed as part of the url   
+instead we would need to use `%23` 
+
+### Auth bypass with comments 
+
+using comments will work for our target admin panel: 
+
+![](Images/Pasted%20image%2020240129114321.png)
+
+everything past the `username='admin'` will not be executed, therefore it only checks for rows where the username is admin 
+
+### Another example 
+
+![](Images/Pasted%20image%2020240129114517.png)
+
+in the above query, parenthesis are used to ensure that the username is admin and that the id is greater than 1, which prevents anyone from logging in as admin   
+we can also see that the password was hashed before being used, this will prevent us from injecting through the password field because the input will be converted to a hash 
+
+when we login with valid credentials: 
+
+![](Images/Pasted%20image%2020240129114712.png)
+
+this will not work because the admin account's id is equal to 1, and not greater than 
+
+if we try to login with another user like tom: 
+
+![](Images/Pasted%20image%2020240129114817.png)
+
+we successfully login because the tom user's id is greater than 1 
+
+if we try `admin'-- `:
+
+![](Images/Pasted%20image%2020240129114931.png)
+
+this will fail because we did not close the parenthesis  
+our new payload needs to be: 
+
+`admin')-- `
+
+
+
