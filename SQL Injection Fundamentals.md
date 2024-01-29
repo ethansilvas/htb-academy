@@ -677,3 +677,62 @@ if we wanted to only get the username column from the products table, which has 
 
 `SELECT * FROM products WHERE product_id = '1' UNION SELECT username, 2 FROM passwords`
 
+## Union Injection 
+
+in our target page we can see that our payloads will result in an error: 
+
+![](Images/Pasted%20image%2020240129122527.png)
+
+### Detect number of columns 
+
+there are two methods to detect the number of columns: 
+- `ORDER BY`
+- `UNION`
+
+### Using ORDER BY 
+
+we want to inject a query that sorts the results by a column we specified like column 1, column 2, ... until we get an error that the column specified does not exist
+
+we can start with `ORDER BY 1` to sort by the first column, then continue with `ORDER BY 2` and so on until we get the number of columns that doesn't exist 
+
+using `' ORDER BY 1-- ` we get results: 
+
+![](Images/Pasted%20image%2020240129122927.png)
+
+by continuing to do the same we can see that doing `ORDER BY 5` will not work, meaning that the table has 4 columns
+
+### Using UNION
+
+another method is to attempt `UNION` injections with different numbers of columns until we successfully get results back 
+
+can start with a 3 column query: 
+
+`' UNION SELECT 1, 2, 3-- `
+
+and continue to modify the number of columns selected until we get results 
+
+### Location of injection 
+
+while a query may return multiple columns, the frontend app may only display some of them  
+if we inject our query in a column that is not printed to the page, then we will not get its output   
+we need to determine which columns are printed to the page to determine where our injection needs to go 
+
+from our injection of `cn' UNION SELECT 1,2,3,4-- ` we can see that the first column is not printed: 
+
+![](Images/Pasted%20image%2020240129123743.png)
+
+therefore, we can't put our injection at the beginning 
+
+to test if we can get actual data from the database rather than just numbers, we can use `@@version` sql query in place of the second column: 
+
+`cn' UNION SELECT 1,@@version,3,4-- `
+
+![](Images/Pasted%20image%2020240129123901.png)
+
+now we know that we can do other things like: 
+
+`cn' UNION SELECT 1,user(),3,4-- `
+
+![](Images/Pasted%20image%2020240129124034.png)
+
+
