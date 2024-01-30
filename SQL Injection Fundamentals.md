@@ -989,4 +989,17 @@ note that if we want to make the output cleaner and only output the file content
 
 ### Writing a web shell
 
+we can use this php web shell to be able to execute commands on the back-end server: 
+
+![](Images/Pasted%20image%2020240129201944.png)
+
+so our `UNION` query will look like: 
+
+![](Images/Pasted%20image%2020240129202006.png)
+
+we can then execute our commands by inserting them into the `0`  parameter in our url: 
+
+`http://SERVER_IP:PORT/shell.php?0=ls`
+
+![](Images/Pasted%20image%2020240129202831.png)
 
