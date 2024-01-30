@@ -1052,3 +1052,49 @@ instead of raw input we use placeholders and fill them with PHP functions:
 
 ![](Images/Pasted%20image%2020240129210332.png)
 
+## Skills Assessment - SQL Injection Fundamentals 
+
+I am given access to a public facing site to perform a pen test for SQL injection vulnerabilities with the goal of using techniques to find a flag by using RCE
+
+our target site has a login form: 
+
+![](Images/Pasted%20image%2020240130114456.png)
+
+after a few basic payload tests I find that a simple `UNION` statement generates results out to the frontend: 
+
+![](Images/Pasted%20image%2020240130114650.png)
+
+![](Images/Pasted%20image%2020240130114657.png)
+
+I try to use the `' UNION SELECT 1,2,3-- ` payload to try some enumeration techniques but it does not yield any results  
+
+however, I notice that the search bar in the new `/dashboard/dashboard.php` page outputs results from payloads: 
+
+![](Images/Pasted%20image%2020240130115834.png)
+
+after testing different column numbers I get results with 5 columns, with 4 columns being output: 
+
+![](Images/Pasted%20image%2020240130120107.png)
+
+now I can try some basic enumeration about the database
+
+first I look for `SCHEMA_NAME` with `INFORMATION_SCHEMA.SCHEMATA`: 
+
+![](Images/Pasted%20image%2020240130120312.png)
+
+using `database()` I can see that I am in the "ilfreight" database: 
+
+![](Images/Pasted%20image%2020240130120447.png)
+
+using `user()` I can see that I am logged in as the root user: 
+
+![](Images/Pasted%20image%2020240130120602.png)
+
+using `super_priv` from `mysql.user` I can see that this user has super admin privileges: 
+
+![](Images/Pasted%20image%2020240130120711.png)
+
+then after looking for the `grantee` and `privilege_type` columns in `INFORMATION_SCHEMA.USER_PRIVILEGES` I can see that I have `FILE` permissions:
+
+![](Images/Pasted%20image%2020240130120920.png)
+
