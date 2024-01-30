@@ -1130,8 +1130,14 @@ we can confirm that it did with the `0` parameter:
 
 ![](Images/Pasted%20image%2020240130133842.png)
 
-the shell doesn't seem to work since we get the same results with every command, so now I try to instead change the contents of `/var/www/html/config.php` since it is in the directory that the shell would be in:
+the shell doesn't seem to work since we get the same results with every command, so after trying a few different php shells I found that echoing the output of backticks worked well: 
+
+![](Images/Pasted%20image%2020240130152827.png)
+
+![](Images/Pasted%20image%2020240130152841.png)
+
+so now I will use this shell to view the flag file: 
+
+![](Images/Pasted%20image%2020240130153504.png)
 
 
-
-![](Images/Pasted%20image%2020240130141155.png)
