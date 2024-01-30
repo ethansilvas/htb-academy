@@ -799,7 +799,7 @@ to find all the tables within a database we can use the `TABLES` table in the `I
 `TABLES` contains info about all tables throughout the database   
 we are interested in the `TABLE_SCHEMA` column for each database the table belongs to and `TABLE_NAME` for all table names
 
-`cn' UNION SELECT 1,TABLE_NAME,TABLE_SCHEMA,4 FROM INFORMATION_SCHEMA WHERE table_schema='dev'-- `
+`cn' UNION SELECT 1,TABLE_NAME,TABLE_SCHEMA,4 FROM INFORMATION_SCHEMA.TABLES WHERE table_schema='dev'-- `
 
 ![](Images/Pasted%20image%2020240129161417.png)
 
@@ -1104,9 +1104,13 @@ we can read files with `LOAD_FILE()`:
 
 then I try to read the file we are currently on, `/var/www/html/dashboard.php`: 
 
-![](Images/Pasted%20image%2020240130122121.png)
+![](Images/Pasted%20image%2020240130142440.png)
 
-nothing seems to be useful from the source so I move on to writing files
+I can see the file `var/www/html/config.php` which I then try to read out: 
+
+![](Images/Pasted%20image%2020240130142922.png)
+
+now I can do some basic enumeration
 
 first I look for `secure_file_priv` from `INFORMATION_SCHEMA.GLOBAL_VARIABLES`: 
 
@@ -1116,6 +1120,18 @@ the value of the variable is empty so we should have read/write permissions anyw
 
 trying to write the php shell we used earlier results in this error: 
 
-![](Images/Pasted%20image%2020240130122814.png)
+![](Images/Pasted%20image%2020240130145842.png)
+
+changing the script location to `/var/www/html/dashboard/shell.php` generates no results so it may have worked: 
+
+![](Images/Pasted%20image%2020240130133813.png)
+
+we can confirm that it did with the `0` parameter: 
+
+![](Images/Pasted%20image%2020240130133842.png)
+
+the shell doesn't seem to work since we get the same results with every command, so now I try to instead change the contents of `/var/www/html/config.php` since it is in the directory that the shell would be in:
 
 
+
+![](Images/Pasted%20image%2020240130141155.png)
