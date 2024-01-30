@@ -903,3 +903,90 @@ we can try to read the source code of the file that we are on with:
 
 ![](Images/Pasted%20image%2020240129184813.png)
 
+## Writing Files 
+
+modern DBMSs will disable file-write by default and require certain privileges for DBAs to write files 
+
+### Write file privileges
+
+to write files to the back-end server we require 3 things: 
+- user with `FILE` privilege enabled
+- MySQL global `secure_file_priv` variable not enabled 
+- write access to the location we want to write to on the back-end server 
+
+### secure_file_priv 
+
+this variable is used to determine where to read/write files from   
+an empty value lets us read files from the entire file system   
+if a directory is specified then we can only read from the folder specified   
+`NULL` means we can't read/write from any directory 
+
+MariaDB has the variable set to empty by default, which lets us read/write to any file if the user has the `FILE` privilege  
+
+MySQL uses `/var/lib/mysql-files` as the default folder, which means that reading files through MySQL injection isn't possible with default settings   
+some configs even default to `NULL` 
+
+we can obtain the value of `secure_file_priv` with: 
+
+`SHOW VARIABLES LIKE 'secure_file_priv';`
+
+if we are using a `UNION` statement then we will need a `SELECT` statement   
+MySQL global variables are stored in a table called `global_variables` that has two columns `variable_name` and `variable_value` 
+
+our query would be: 
+
+`SELECT variable_name, variable_value FROM INFORMATION_SCHEMA.GLOBAL_VARIABLES WHERE variable_name="secure_file_priv"`
+
+`cn' UNION SELECT 1, variable_name, variable_value, 4 FROM INFORMATION_SCHEMA.GLOBAL_VARIABLES WHERE variable_name="secure_file_priv"`
+
+![](Images/Pasted%20image%2020240129194553.png)
+
+if the value is empty, then we have read/write permissions to any location 
+
+### SELECT INTO OUTFILE
+
+`SELECT INTO OUTFILE` can be used to write data from select queries into files 
+
+`SELECT * FROM users INTO OUTFILE '/tmp/credentials';`
+
+it is possible to directly `SELECT` strings into files, which lets us write arbitrary files to the back-end server: 
+
+`SELECT 'this is a test' INTO OUTFILE '/tmp/test.txt';`
+
+the string "this is a test" will be written to the newly created test.txt file  
+note that the new file will be owned by the mysql user
+
+note that advanced file exports use `FROM_BASE64("base64_data")` to write long/advanced files, including binary data
+
+### Writing files through SQL injection 
+
+`SELECT 'file written successfully' INTO OUTFILE '/var/www/html/proof.txt'`
+
+to write a web shell, we will need to know the base web directory for the web server   
+one way to find this is to use `LOAD_FILE()` to read the server configuration 
+
+apache config = `/etc/apache2/apache2.conf`  
+nginx config = `/etc/nginx/nginx.conf`  
+IIS config = `%WinDir%\System32\Inetsrv\Config\ApplicationHost.config`  
+
+we could also try to run a fuzzing scan to write files to different possible web roots using: 
+- `/SecLists/Discovery/Web-Content/default-web-root-directory-linux.txt`
+-  `/SecLists/Discovery/Web-Content/default-web-root-directory-windows.txt`
+
+if none of the above works we can use server errors to try to find the web directory that way 
+
+a sample `UNION` payload would be: 
+
+`cn' UNION SELECT 1, 'file written successfully!', 3, 4 INTO OUTFILE '/var/www/html/proof.txt'-- `
+
+![](Images/Pasted%20image%2020240129200541.png)
+
+if we see no errors then our query succeeded and we can open the file: 
+
+![](Images/Pasted%20image%2020240129200646.png)
+
+note that if we want to make the output cleaner and only output the file contents we can use `""` instead of 1, 3, 4 when grabbing columns
+
+### Writing a web shell
+
+
