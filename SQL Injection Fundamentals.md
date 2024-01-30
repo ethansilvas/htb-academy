@@ -1003,3 +1003,52 @@ we can then execute our commands by inserting them into the `0`  parameter in ou
 
 ![](Images/Pasted%20image%2020240129202831.png)
 
+## Mitigating SQL Injection 
+
+### Input sanitation 
+
+![](Images/Pasted%20image%2020240129204610.png)
+
+injection can be avoided by sanitizing any user input 
+
+an example library for sanitation is `mysqli_real_escape_string()`   
+this will escape characters like `'` and `"` so they don't have special meaning 
+
+injections might end up looking like: 
+
+![](Images/Pasted%20image%2020240129204847.png)
+
+another library `pg_escape_string()` escapes PostgreSQL queries 
+
+### Input validation 
+
+we can validate our input into form fields and such to ensure that our input looks like how we expect it to be 
+
+we can ensure that an input is what we expect it to be by only allowing the required characters: 
+
+![](Images/Pasted%20image%2020240129205049.png)
+
+### User privileges 
+
+we need to ensure that the users querying the database only has minimum permissions 
+
+superusers and users with admin rights should never be used with web apps 
+
+![](Images/Pasted%20image%2020240129205638.png)
+
+the above command will make a new user "reader" who is granted only `SELECT` permissions on the ports table 
+
+### Web application firewall
+
+WAF will detect malicious input and reject any HTTP requests containing them 
+
+contains rules like blocking requests that contain `INFORMATION_SCHEMA`
+
+### Parameterized queries 
+
+parameterized queries contain placeholders for the input data which is then escaped and passed on the by drivers 
+
+instead of raw input we use placeholders and fill them with PHP functions: 
+
+![](Images/Pasted%20image%2020240129210332.png)
+
