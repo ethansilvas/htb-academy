@@ -1098,3 +1098,24 @@ then after looking for the `grantee` and `privilege_type` columns in `INFORMATIO
 
 ![](Images/Pasted%20image%2020240130120920.png)
 
+we can read files with `LOAD_FILE()`: 
+
+![](Images/Pasted%20image%2020240130121604.png)
+
+then I try to read the file we are currently on, `/var/www/html/dashboard.php`: 
+
+![](Images/Pasted%20image%2020240130122121.png)
+
+nothing seems to be useful from the source so I move on to writing files
+
+first I look for `secure_file_priv` from `INFORMATION_SCHEMA.GLOBAL_VARIABLES`: 
+
+![](Images/Pasted%20image%2020240130122423.png)
+
+the value of the variable is empty so we should have read/write permissions anywhere
+
+trying to write the php shell we used earlier results in this error: 
+
+![](Images/Pasted%20image%2020240130122814.png)
+
+
