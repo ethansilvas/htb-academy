@@ -75,3 +75,37 @@ if our input is not sanitized then we might be able to inject another command
 
 these operators can generally be used regardless of web app language, framework, or back-end server  
 there are some odd exceptions like `;` which won't work with windows command line (CMD) 
+
+## Injecting Commands 
+
+### Injecting our command 
+
+we can first try adding a semi-colon and appending our intended command to hopefully make the final command something like: 
+
+`ping -c 1 127.0.0.1; whoami`
+
+when we try to use our payload we get an error message: 
+
+![](Images/Pasted%20image%2020240131120433.png)
+
+however, this appears to only be for the frontend as we can see no requests are sent through: 
+
+![](Images/Pasted%20image%2020240131120513.png)
+
+## Bypassing front-end validation 
+
+the easiest method to customize HTTP requests is to use a web proxy 
+
+we can send a normal query and intercept it to then send it to the repeater: 
+
+![](Images/Pasted%20image%2020240131121044.png)
+
+we can then edit this request and URL encode it with `CTRL+U`: 
+
+![](Images/Pasted%20image%2020240131121151.png)
+
+then we can see our command worked in the response: 
+
+![](Images/Pasted%20image%2020240131121256.png)
+
+
