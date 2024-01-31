@@ -43,3 +43,35 @@ here is a nodejs example similar to the above PHP code:
 again, user input is being directly used with the touch command 
 
 command injection vulnerabilities are not unique to web apps and can also affect other binaries and thick clients 
+
+## Detection 
+
+the process of detecting basic OS command injections is the same process for exploiting them   
+we attempt to append our command through various injection methods   
+might not be true for advanced injections because we may use fuzzing methods or code reviews to identify them 
+
+### Command injection detection 
+
+our target site has input for pings: 
+
+![](Images/Pasted%20image%2020240131115033.png)
+
+from the output we can see that the `ping` command is being used, and it might be something like: 
+
+`ping -c 1 <input>`
+
+if our input is not sanitized then we might be able to inject another command 
+
+### Command injection methods 
+
+- `;` = `%3b` - executes both commands 
+- `\n` = `%0a` - both 
+- `&` = `%26` - both and typically second output shown first 
+- `|` = `%7c` = both but only second output shown 
+- `&&` = `%26%26` = both if first succeeds 
+- `||` = `%7c%7c` = second only if first fails 
+- backticks = `%60%60` = both for linux only 
+- `$()` = `%24%28%29` = both for linux only 
+
+these operators can generally be used regardless of web app language, framework, or back-end server  
+there are some odd exceptions like `;` which won't work with windows command line (CMD) 
