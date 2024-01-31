@@ -80,7 +80,7 @@ there are some odd exceptions like `;` which won't work with windows command lin
 
 ### Injecting our command 
 
-we can first try adding a semi-colon and appending our intended command to hopefully make the final command something like: 
+we can first try adding a semi-colon and appending our arbitrary command to hopefully make the final command something like: 
 
 `ping -c 1 127.0.0.1; whoami`
 
@@ -107,5 +107,36 @@ we can then edit this request and URL encode it with `CTRL+U`:
 then we can see our command worked in the response: 
 
 ![](Images/Pasted%20image%2020240131121256.png)
+
+## Other Injection Operators 
+
+### AND operator 
+
+`&&` will produce similar output by executing both commands: 
+
+![](Images/Pasted%20image%2020240131122115.png)
+
+### OR operator 
+
+`||` will only execute the second command if the first fails to execute   
+could be useful if our injection would break the original command without having a way for both commands to work 
+
+in bash, if the first command returns exit code 0 then execution is successful   
+the command would then stop and not try the other command after `||`   
+if the exit code is 1 then it will execute the the next command 
+
+we can intentionally try to break the intended command by not supplying an IP and only providing our arbitrary command: 
+
+![](Images/Pasted%20image%2020240131122624.png)
+
+now the response will only include our arbitrary command output: 
+
+![](Images/Pasted%20image%2020240131122813.png)
+
+many applications have operator types that produce the same types of results: 
+
+![](Images/Pasted%20image%2020240131122926.png)
+
+whitebox pentesting 101: command injection module goes further into indirect injections and blind injections 
 
 
