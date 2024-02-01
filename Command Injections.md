@@ -139,4 +139,52 @@ many applications have operator types that produce the same types of results:
 
 whitebox pentesting 101: command injection module goes further into indirect injections and blind injections 
 
+## Identifying Filters
+
+another type of injection mitigation is using blacklisted characters or words on the backend to detect injection attempts   
+WAF can also be used to prevent injection methods 
+
+### Filter/WAF detection 
+
+now our target has some extra functions, so when we try our previous payloads we see a new "invalid input" message: 
+
+![](Images/Pasted%20image%2020240201143842.png)
+
+instead of the previous tooltip message, we can now see that we have triggered a security mechanism that denied our request 
+
+we can see that the app used a field to output the error message, meaning that it was detected and prevented by the PHP app itself  
+if the error message displayed a different page entirely with info like our IP and our request, then it may have been denied by a WAF 
+
+if our payload looked like this: 
+
+`127.0.0.1; whoami` 
+
+then we can determine that there were 3 possible things that set off the error: 
+- `;`
+- space
+- `whoami`
+
+### Blacklisted characters 
+
+php code that looks for specific blacklisted characters could look like: 
+
+![](Images/Pasted%20image%2020240201144254.png)
+
+if any character in the input string matches a character in the blacklist then the request is denied 
+
+ideally we would like to see which character caused the request to be denied 
+
+### Identifying blacklisted character
+
+we can see that even just the `;` will set off the detection: 
+
+![](Images/Pasted%20image%2020240201144504.png)
+
+so now we can try all injection operators to see which ones might get past the filters
+
+using the url encoded new-line we can achieve our intended command output:
+
+![](Images/Pasted%20image%2020240201144812.png)
+
+## Bypassing Space Filters 
 
