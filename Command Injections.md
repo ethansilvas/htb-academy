@@ -188,3 +188,49 @@ using the url encoded new-line we can achieve our intended command output:
 
 ## Bypassing Space Filters 
 
+### Bypass blacklisted operators
+
+as we can see from the previous example, new line characters are typically not blacklisted  
+
+### Bypass blacklisted spaces 
+
+we can see that adding on to the accepted new line character will not be accepted: 
+
+`127.0.0.1%0a+whoami`
+
+![](Images/Pasted%20image%2020240202125044.png)
+
+there are many ways to add spaces without using the space character 
+
+#### Using tabs
+
+using tabs `%09` may work because linux and windows accept commands with tabs between arguments, and they are executed the same 
+
+we can see that using the tab character without our payload will be accepted: 
+
+![](Images/Pasted%20image%2020240202125331.png)
+
+#### Using $IFS
+
+$IFS is a linux environment variable that may work because its default value is a space and a tab, which would work between command arguments 
+
+`${IFS}` can be used where the spaces should be and the variable should be automatically replaced with a space 
+
+we can see that this will work on our target as well: 
+
+![](Images/Pasted%20image%2020240202125932.png)
+
+#### Using brace expansion 
+
+bash has a brace expansion feature which will add spaces between arguments between braces: 
+
+`{ls,-la}`
+
+we can use the same method in command injection to use brace expansion on our command arguments: 
+
+`127.0.0.1%0a{ls,-la}`
+
+![](Images/Pasted%20image%2020240202130541.png)
+
+PayloadAllTheThings also has more space filter bypasses 
+
