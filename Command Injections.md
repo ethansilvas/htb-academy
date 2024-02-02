@@ -299,3 +299,54 @@ if we wanted to see the name of the user in the `/home` directory we can use the
 
 ![](Images/Pasted%20image%2020240202134922.png)
 
+## Bypassing Blacklisted Commands 
+
+specific commands like `ls` or `whoami` will also be blacklisted   
+a command blacklist usually has a set or words but we can obfuscate our commands to make them look different 
+
+### Commands blacklist 
+
+a basic command blacklist filter could look like: 
+
+![](Images/Pasted%20image%2020240202140616.png)
+
+filters like this will match an exact word so if we send slightly different commands we could bypass it 
+
+### Linux and windows 
+
+one very command and easy obfuscation technique is inserting characters that are usually ignored by command shells like bash or powershell   
+some of these characters are `'` and `"` and some others 
+
+quotes are easiest to use and work on both windows and linux   
+if we wanted to obfuscate `whoami` we can use single quotes between characters: 
+
+`w'h'o'am'i`
+
+the same will work with double quotes 
+
+important to remember that we can't mix types of quotes and the number of quotes must be even 
+
+we can see that using quotes will execute our payload: 
+
+![](Images/Pasted%20image%2020240202141624.png)
+
+### Linux only 
+
+there are some other linux-only characters that bash will ignore: 
+- `\`
+- `$@` 
+
+these will work the same as quotes but the number of characters do not need to be even, and we can insert only one if we want to: 
+
+`who$@ami`
+
+### Windows only 
+
+characters like `^` will work the same for windows only: 
+
+`who^ami`
+
+adding to the previous command to find the user in the `/home` directory will allow us to view the flag file in their directory: 
+
+![](Images/Pasted%20image%2020240202142541.png)
+
