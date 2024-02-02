@@ -234,3 +234,68 @@ we can use the same method in command injection to use brace expansion on our co
 
 PayloadAllTheThings also has more space filter bypasses 
 
+## Bypassing Other Blacklisted Characters 
+
+besides injection operators and space characters, commonly blacklisted characters are `/` and `\` because they are necessary to specify directories in windows and linux 
+
+### Linux 
+
+many different ways to use slashes in our payload   
+
+one technique we can use to replace slashes or any character is through linux environment variables like we did with `${IFS}`   
+`${IFS}` is replaced with a space, but there's no variable for slashes or semi-colons  
+however, these characters can be used in an environment variable and we can specify start and length of our string to match this character 
+
+for example we can look at the `$PATH` environment variable: 
+
+![](Images/Pasted%20image%2020240202131709.png)
+
+with `$PATH` we can start at the 0 character and only take a string of length 1 to grab only the `/` character: 
+
+![](Images/Pasted%20image%2020240202131907.png)
+
+we can do the same with `$HOME` or `$PWD` and other commands to get characters like the semi-colon: 
+
+![](Images/Pasted%20image%2020240202132019.png)
+
+`printenv` will print all environment variables in linux so we can look at which ones have useful characters 
+
+now we can try to use environment variables to add a semi-colon and space to our payload: 
+
+![](Images/Pasted%20image%2020240202132612.png)
+
+### Windows 
+
+the same techniques will work in windows command line  
+we can `echo` a windows variable and specify a start position and a negative end position which would need to be the length of the username:
+
+![](Images/Pasted%20image%2020240202133024.png)
+
+we can do the same thing using the same variable in powershell   
+words are considered arrays in powershell, so we need to specify the index of the character we need: 
+
+`$env:HOMEPATH[0]`
+
+we can also `Get-ChildItem Env:` to print all environment variables   
+
+### Character shifting 
+
+linux commands can shift the character we pass by 1, so we just need to find the character in the ASCII table that is just before the character we need   
+we can get the ascii value with `man ascii` then add it instead of `[` in: 
+
+`echo $(tr '!-}' '"-~'<<<[)`
+
+`\` is on 92, before it is `[` on 91
+
+![](Images/Pasted%20image%2020240202134254.png)
+
+![](Images/Pasted%20image%2020240202134421.png)
+
+powershell can do the same thing but the command will be a bit longer than linux ones 
+
+if we wanted to see the name of the user in the `/home` directory we can use the following payload: 
+
+`127.0.0.1%0a{ls,${PATH:0:1}home}`
+
+![](Images/Pasted%20image%2020240202134922.png)
+
