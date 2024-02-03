@@ -500,3 +500,61 @@ encoding
 note that we can test this on a windows machine through linux machine with `pwsh`
 
 secure coding 101: javascript has more advanced obfuscation methods 
+
+## Command Injection Prevention 
+
+### System commands
+
+should always avoid using functions that execute system commands, especially with user input  
+even without user input a user may indirectly influence them 
+
+should instead use built-in functions that perform the needed functionality  
+for example if we wanted to test if a host is alive with PHP we can use `fsockopen`  
+
+### Input validation 
+
+should be performed on frontend and backend 
+
+in php and other languages there are built in filters for variety of standard formats like emails, urls, and IPs   
+can use these with `filter_var`: 
+
+![](Images/Pasted%20image%2020240202203734.png)
+
+if we wanted to validate a different, non-standard format then we can use a regex with `preg_match` function  
+javascript can do this with: 
+
+![](Images/Pasted%20image%2020240202203823.png)
+
+libraries like `is-ip` are also available to do these tasks 
+
+### Input sanitation 
+
+input sanitation always performed after validation  
+always good in case a bad regex   
+
+should generally use built-in functions to remove special characters instead of relying on blacklisting code like the example above   
+can use `preg_replace` and `replace` to remove special characters: 
+
+![](Images/Pasted%20image%2020240202204037.png)
+
+![](Images/Pasted%20image%2020240202204128.png)
+
+`DOMpurify` is another good library for NodeJS: 
+
+![](Images/Pasted%20image%2020240202204203.png)
+
+if we wanted to allow special characters then we can use `filter_var` and use `escapeshellcmd` filter to escape special characters   
+for NodeJS we can use `escape()`  
+however escaping characters is often not secure because it can be bypassed  
+
+### Server configuration 
+
+should always ensure that back-end server is configured to reduce the impact in the event of compromise 
+
+some configs are: 
+- use built in WAF like apache `mod_security` in addition to external WAF like `CloudFare`
+- principle of least privilege by running web server as low privileged user like `www-data` 
+- prevent certain functions from being executed by the server (PHP `disable_functions=system,...)
+- limit scope accessible by web app to its folder (PHP `open_basedir = '/var/www/html')
+- reject double-encoded requests and non-ASCII characters in URLs 
+- avoid using sensitive or outdated libraries and modules 
