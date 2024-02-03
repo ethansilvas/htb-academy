@@ -601,3 +601,17 @@ after trying a few different payload characters it seems that encoded `&` gets t
 
 ![](Images/Pasted%20image%2020240202213120.png)
 
+now I want to try to use an `ls -la` and to do this I base64 encode it: 
+
+![](Images/Pasted%20image%2020240202213459.png)
+
+then I use the sub-shell bash and base64 payload to decode and execute the command to get the results: 
+
+![](Images/Pasted%20image%2020240202213646.png)
+
+now I just have to keep looking around until I eventually find the flag file: 
+
+![](Images/Pasted%20image%2020240202214020.png)
+
+then use the same encoding on `cat ../../../flag.txt` to read the flag
+
