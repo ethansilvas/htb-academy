@@ -558,3 +558,46 @@ some configs are:
 - limit scope accessible by web app to its folder (PHP `open_basedir = '/var/www/html')
 - reject double-encoded requests and non-ASCII characters in URLs 
 - avoid using sensitive or outdated libraries and modules 
+
+## Skills Assessment 
+
+contracted to do a pen test for a company  
+found an interesting file manager web app   
+file managers tend to execute system commands so we need to test for injection vulnerabilities 
+
+use various techniques to detect a command injection vulnerability and then exploit it 
+
+our target site after logging in shows: 
+
+![](Images/Pasted%20image%2020240202210131.png)
+
+using the hamburger menu we can see two search bars for possible payload injection: 
+
+![](Images/Pasted%20image%2020240202210203.png)
+
+using these searches doesn't seem to produce any errors or requests we could inject on 
+
+looking around the page we can use many of the "Actions" that are listed for each file, and they appear to be executing OS commands like linux `mv`: 
+
+![](Images/Pasted%20image%2020240202210930.png)
+
+after submitting a successful request to move a file to the `tmp` folder I send it to the burp repeater to try a payload in the `to` parameter and get an error: 
+
+![](Images/Pasted%20image%2020240202211437.png)
+
+so now that it appears to have protections against injections I attempt to isolate the errors and see which injection characters can send a successful request: 
+
+![](Images/Pasted%20image%2020240202211630.png)
+
+using a character substitution I appear to get a valid request: 
+
+![](Images/Pasted%20image%2020240202211747.png)
+
+however using some encoded characters doesn't seem to work: 
+
+![](Images/Pasted%20image%2020240202212014.png)
+
+after trying a few different payload characters it seems that encoded `&` gets through and we can see our reversed and injected `whoami` command appear with a successful file transfer: 
+
+![](Images/Pasted%20image%2020240202213120.png)
+
