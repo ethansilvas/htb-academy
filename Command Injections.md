@@ -350,3 +350,34 @@ adding to the previous command to find the user in the `/home` directory will al
 
 ![](Images/Pasted%20image%2020240202142541.png)
 
+## Advanced Command Obfuscation 
+
+some apps like those with WAF will have more advanced filter solutions, and our previous techniques may not work   
+however there are more advanced methods to potentially bypass these filers as well 
+
+### Case manipulation 
+
+case manipulation inverts the character cases of a command like `WHOAMI` and `WhOaMi`  
+this may work if the command blacklist does not check for different case variations of a single word, and linux systems are case sensitive 
+
+in windows servers we can change the casing of characters and send it   
+powershell and CMD commands are case-insensitive: 
+
+![](Images/Pasted%20image%2020240202143608.png)
+
+however with linux we need to find a command that turns our payload into an all-lowercase word: 
+
+`$(tr "[A-Z]" "[a-z]"<<<"WhOaMi")`
+
+![](Images/Pasted%20image%2020240202143805.png)
+
+keep in mind though that if we were to use the above command in our payload that we would still need to use bypass methods to modify characters like the spaces: 
+
+![](Images/Pasted%20image%2020240202144108.png)
+
+there are many other commands to do similar things like: 
+
+`$(a="WhOaMi";printf %s "${a,,}")`
+
+![](Images/Pasted%20image%2020240202144301.png)
+
