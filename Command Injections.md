@@ -449,3 +449,54 @@ then use it in a sub-shell to get the output:
 
 ![](Images/Pasted%20image%2020240202185207.png)
 
+## Evasion Tools 
+
+if we are dealing with advanced security tools we might not be able to used basic, manual obfuscation techniques   
+
+### Linux (bashfuscator)
+
+can clone the github repo with: 
+
+```
+git clone https://github.com/Bashfuscator/Bashfuscator
+cd Bashfuscator
+pip3 install setuptools==65
+python3 setup.py install --user
+```
+
+we can provide any command we want with the `-c` flag: 
+
+`./bashfuscator -c 'cat /etc/passwd'`
+
+running the tool this way will randomly pick an obfuscation technique which could output a wide range of command lengths  
+we can fine tune the output with flags: 
+
+`./bashfuscator -c 'cat /etc/passwd/' -s 1 -t 1 --no-mangling --layers 1`
+
+we can test the output with `bash -c ''` to see if it works
+
+### Windows (DOSfuscation)
+
+interactive tool   
+can clone from github: 
+
+```
+git clone https://github.com/danielbohannon/Invoke-DOSfuscation.git
+cd Invoke-DOSfuscation
+Import-Module .\Invoke-DOSfuscation.psd1
+Invoke-DOSfuscation
+```
+
+can use `tutorial` to see an example of how the tool works 
+
+can start using the tool like: 
+
+```
+SET COMMAND type C:\Users\htb-student\Desktop\flag.txt
+encoding
+1
+```
+
+note that we can test this on a windows machine through linux machine with `pwsh`
+
+secure coding 101: javascript has more advanced obfuscation methods 
