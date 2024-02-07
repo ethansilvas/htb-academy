@@ -16,7 +16,7 @@ we enter fully qualified domain name as a uniform resource locator to reach the 
 
 resources over HTTP are accessed via URL: 
 
-![](../Images/Pasted%20image%2020240115151857.png)
+![](Images/Pasted%20image%2020240115151857.png)
 
 a url can have components like: 
 - Scheme - `http://` or `https://` - identifies the protocol being accessed by the client 
@@ -31,7 +31,7 @@ the main mandatory fields are the scheme and the host
 
 ### HTTP flow 
 
-![](../Images/Pasted%20image%2020240115153133.png)
+![](Images/Pasted%20image%2020240115153133.png)
 
 the first time a client enters the url into their browser it will send a request to the DNS server to get the matching IP address   
 however, browsers typically look in the respective /etc/hosts file first to see if the domain exists 
@@ -52,13 +52,13 @@ we can send a basic HTTP request to any url like:
 
 the result in our terminal will be the raw contents of the returned HTML, JS, and CSS code: 
 
-![](../Images/Pasted%20image%2020240115161346.png)
+![](Images/Pasted%20image%2020240115161346.png)
 
 we can also download a page or file and output the content to a file with `-O` or `-o` to specify the file name: 
 
 `curl -O inlanefreight.com/index.html` 
 
-![](../Images/Pasted%20image%2020240115161527.png)
+![](Images/Pasted%20image%2020240115161527.png)
 
 `-s` will silence any of the status text print out 
 
@@ -74,7 +74,7 @@ an encrypted DNS server like 8.8.8.8 or 1.1.1.1 is best, or use a VPN to ensure 
 
 ### HTTPS Flow 
 
-![](../Images/Pasted%20image%2020240115162842.png)
+![](Images/Pasted%20image%2020240115162842.png)
 
 if we type in `http://` instead of `https://` for a site that enforces https the browser will attempt to resolve it and then redirect the user to the webserver hosting the target site  
 the server will redirect the client to HTTPS port 443 even thought the original request was using 80, and this is done using the 301 Moved Permanently response code 
@@ -112,7 +112,7 @@ responses contain the response code and may contain the resource data if the req
 
 ### HTTP request
 
-![](../Images/Pasted%20image%2020240115171337.png)
+![](Images/Pasted%20image%2020240115171337.png)
 
 this is an HTTP GET request to `http://inlanefreight.com/users/login.html`
 
@@ -132,7 +132,7 @@ HTTP version 2.X sends requests in binary and in dictionary form
 
 ### HTTP response 
 
-![](../Images/Pasted%20image%2020240115174000.png)
+![](Images/Pasted%20image%2020240115174000.png)
 
 the first line of a response contains two fields separated by spaces: 
 - HTTP version 
@@ -147,11 +147,11 @@ the response body is typically HTML code but could also be types like JSON, reso
 
 cURL allows us to preview the full HTTP request and response with `-v`: 
 
-![](../Images/Pasted%20image%2020240115175407.png)
+![](Images/Pasted%20image%2020240115175407.png)
 
 you can see even more info with more verbosity levels: 
 
-![](../Images/Pasted%20image%2020240115175552.png)
+![](Images/Pasted%20image%2020240115175552.png)
 
 ## HTTP Headers 
 
@@ -269,11 +269,11 @@ browsers default to a GET request to obtain the remote resources hosted on a URL
 
 unlike usual login forms that use POST requests, basic HTTP authentication is handled directly by the webserver to protect specific pages and directories without directly interacting with the app  
 
-![](../Images/Pasted%20image%2020240116134840.png)
+![](Images/Pasted%20image%2020240116134840.png)
 
 trying to access the site with curl will show: 
 
-![](../Images/Pasted%20image%2020240116135234.png)
+![](Images/Pasted%20image%2020240116135234.png)
 
 with the `WWW-Authenticate: Basic realm="Access denied"` we can confirm that the page uses basic HTTP auth 
 
@@ -281,7 +281,7 @@ we can provide the credentials with `-u`:
 
 `curl -u admin:admin http://SERVER_IP:PORT`: 
 
-![](../Images/Pasted%20image%2020240116135457.png)
+![](Images/Pasted%20image%2020240116135457.png)
 
 we can also insert the credentials in the user info section of the URL: 
 
@@ -291,7 +291,7 @@ we can also insert the credentials in the user info section of the URL:
 
 when we do `-v` on the previous commands we can see: 
 
-![](../Images/Pasted%20image%2020240116135858.png)
+![](Images/Pasted%20image%2020240116135858.png)
 
 where the `Authorization: Basic` value is the base64 value of `admin:admin`   
 if we were using a modern method of auth like JWT, then the authorization would be of type `Bearer` and would contain a longer encrypted token 
@@ -300,7 +300,7 @@ we can manually set the authorization value by setting the header value in the c
 
 `curl -H 'Authorization: Basic YWRtaW46YWRtaW4= http://SERVER_IP:PORT` 
 
-![](../Images/Pasted%20image%2020240116140429.png)
+![](Images/Pasted%20image%2020240116140429.png)
 
 these are a few methods to authenticate to the page  
 most modern web apps use forms built with back-end logic to authenticate the users and then return a cookie to maintain their authentication 
@@ -309,25 +309,25 @@ most modern web apps use forms built with back-end logic to authenticate the use
 
 after logging in we can see a page that gives us city search results based on a term we provide: 
 
-![](../Images/Pasted%20image%2020240116141247.png)
+![](Images/Pasted%20image%2020240116141247.png)
 
 when the page returns our results it could be contacting a remote resource to obtain the info and display it to the page 
 
 we can use the devtools network tab to monitor for any of these types of requests while using the site: 
 
-![](../Images/Pasted%20image%2020240116145237.png)
+![](Images/Pasted%20image%2020240116145237.png)
 
 we can see that the search form uses a GET request to search.php with the parameter search=le  
 
 now we can use the same request in curl: 
 
-![](../Images/Pasted%20image%2020240116145833.png)
+![](Images/Pasted%20image%2020240116145833.png)
 
 if we were to copy the command from devtools it would contain a lot of headers that we might not need  
 
 selecting the request in devtools and using `Copy as fetch` we can then also use this in the javascript console to repeat the request: 
 
-![](../Images/Pasted%20image%2020240116150038.png)
+![](Images/Pasted%20image%2020240116150038.png)
 
 ## POST 
 
@@ -343,17 +343,17 @@ POST places user parameters in the HTTP request body which has 3 benefits:
 our target now has a login form to authenticate instead of HTTP basic auth  
 using the network tab and filtering with the target IP we can see the requests being made when we login: 
 
-![](../Images/Pasted%20image%2020240116160013.png)
+![](Images/Pasted%20image%2020240116160013.png)
 
 when we look at the initial POST request we made to login we can see the info transmitted in the `Request` tab: 
 
-![](../Images/Pasted%20image%2020240116160106.png)
+![](Images/Pasted%20image%2020240116160106.png)
 
 we can do this request with curl using the `-X POST` flag: 
 
 `curl -X POST -d 'username=admin&password=admin' http://SERVER_PORT:IP` 
 
-![](../Images/Pasted%20image%2020240116160347.png)
+![](Images/Pasted%20image%2020240116160347.png)
 
 many login forms will redirect us to a different page once authenticated and we can follow the redirection with `-L`
 
@@ -363,11 +363,11 @@ if we are successfully authenticated then we should receive a cookie so our brow
 
 using `-v` or `-i` we can see the `Set-Cookie` header with our cookie: 
 
-![](../Images/Pasted%20image%2020240116160610.png)
+![](Images/Pasted%20image%2020240116160610.png)
 
 with this cookie we should be able to access the site without doing the authentication process with the `-b` flag: 
 
-![](../Images/Pasted%20image%2020240116160837.png)
+![](Images/Pasted%20image%2020240116160837.png)
 
 we could also specify the cookie with the `-h` option: 
 
@@ -375,15 +375,15 @@ we could also specify the cookie with the `-h` option:
 
 if we logout on the page and look in our `storage` in devtools we can see our cookies for the page: 
 
-![](../Images/Pasted%20image%2020240116162059.png)
+![](Images/Pasted%20image%2020240116162059.png)
 
 the cookie shown will not be valid to skip the authentication process because we just logged out, but if we go in and manually edit or replicate this cookie with the previously known cookie: 
 
-![](../Images/Pasted%20image%2020240116162348.png)
+![](Images/Pasted%20image%2020240116162348.png)
 
 then we can refresh the page and be already logged in: 
 
-![](../Images/Pasted%20image%2020240116162417.png)
+![](Images/Pasted%20image%2020240116162417.png)
 
 for many web apps, a valid cookie may be enough to get authenticated   
 this can be essential for some web attacks like XSS
@@ -392,13 +392,13 @@ this can be essential for some web attacks like XSS
 
 for this target when we use the search form we can see that a POST request is sent: 
 
-![](../Images/Pasted%20image%2020240116162607.png)
+![](Images/Pasted%20image%2020240116162607.png)
 
 the data is in JSON so our request must have the specified `Content-Type` header to be `application/json` 
 
 lets try to do this request with curl: 
 
-![](../Images/Pasted%20image%2020240116164523.png)
+![](Images/Pasted%20image%2020240116164523.png)
 
 ## CRUD API 
 
@@ -431,11 +431,11 @@ for reading data we can simply specify the table name after the API and then spe
 
 `curl http://SERVER_IP:PORT/api.php/city/london`
 
-![](../Images/Pasted%20image%2020240116195128.png)
+![](Images/Pasted%20image%2020240116195128.png)
 
 we can use `jq` to pipe JSON data to and view it in readable format: 
 
-![](../Images/Pasted%20image%2020240116195226.png)
+![](Images/Pasted%20image%2020240116195226.png)
 
 ### Create 
 
@@ -445,7 +445,7 @@ since this api uses json we need to include the Content-Type again:
 
 `curl -X POST http://SERVER_IP:PORT/api.php/city/ -d '<json>' -H 'Content-Type: application/json'`
 
-![](../Images/Pasted%20image%2020240116195740.png)
+![](Images/Pasted%20image%2020240116195740.png)
 
 ### Update
 
@@ -459,7 +459,7 @@ PUT is similar to POST but we have to specify the name of the entity that we wan
 
 `curl -X PUT http://SERVER_IP:PORT/api.php/city/london -d '<json>' -H 'Content-Type: application/json'`
 
-![](../Images/Pasted%20image%2020240116200716.png)
+![](Images/Pasted%20image%2020240116200716.png)
 
 we can see from the output that we updated london to change the city and country  
 when we later check to see london it is no longer there but our new entry is 
@@ -472,7 +472,7 @@ deletes are as easy as reading:
 
 `curl -X DELETE http://SERVER_IP:PORT/api.php/city/New_HTB_City`
 
-![](../Images/Pasted%20image%2020240116201043.png)
+![](Images/Pasted%20image%2020240116201043.png)
 
 these kinds of actions are often not allowed for all users  
 to authenticate our user to use the API we would need to pass a cookie or authorization header like JWT 

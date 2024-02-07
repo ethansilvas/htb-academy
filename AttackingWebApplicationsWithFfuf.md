@@ -45,17 +45,17 @@ however, this isn't recommended because this can disrupt the site causing a DoS 
 
 with our target IP and port we see a blank home page: 
 
-![](../Images/Pasted%20image%2020231230164754.png)
+![](Images/Pasted%20image%2020231230164754.png)
 
 now lets form a ffuf command to find hidden directories: 
 
-![](../Images/Pasted%20image%2020231230165118.png)
+![](Images/Pasted%20image%2020231230165118.png)
 
 this command will result in finding the URLs `forum` and `blog` which are both seemingly empty but do not return a 404 or error: 
 
-![](../Images/Pasted%20image%2020231230165713.png)
+![](Images/Pasted%20image%2020231230165713.png)
 
-![](../Images/Pasted%20image%2020231230165651.png)
+![](Images/Pasted%20image%2020231230165651.png)
 
 ## Page Fuzzing 
 
@@ -96,11 +96,11 @@ now we want to use extension and page directories to find a flag hidden in one o
 
 first lets fuzz the extension of the /blog pages: 
 
-![](../Images/Pasted%20image%2020231230173109.png)
+![](Images/Pasted%20image%2020231230173109.png)
 
 now we know that the pages have the .php extension so now lets fuzz for pages under the /blog directory: 
 
-![](../Images/Pasted%20image%2020231230173833.png)
+![](Images/Pasted%20image%2020231230173833.png)
 
 since /blog/home is the only one that has a size over 0 I go there and the flag is in the page content 
 
@@ -127,7 +127,7 @@ ffuf -w /opt/useful/SecLists/Discovery/Web-Content/directory-list-2.3-small.txt:
 
 using this on the spawned target reveals a flag in the forum directory: 
 
-![](../Images/Pasted%20image%2020231230191218.png)
+![](Images/Pasted%20image%2020231230191218.png)
 
 ## DNS Records
 
@@ -144,17 +144,17 @@ to connecto to academy.htb we need to add it to our /etc/hosts file:
 
 if we use this command then we can go to our desired site and specify the port to get a response: 
 
-![](../Images/Pasted%20image%2020231230201621.png)
+![](Images/Pasted%20image%2020231230201621.png)
 
 however, this page is the same as the one when we go to the IP directly: 
 
-![](../Images/Pasted%20image%2020231230201757.png)
+![](Images/Pasted%20image%2020231230201757.png)
 
 so this means that academy.htb is the same domain as the ones we have been using in our testing so far  
 
 and to confirm this we can try some of the other domains we found like /blog/index.php: 
 
-![](../Images/Pasted%20image%2020231230201902.png)
+![](Images/Pasted%20image%2020231230201902.png)
 
 in our earlier scans we did not find any mention of admin or panels, and the admin page found when going directly to the IP noted that the admin page was moved to academy.htb  
 
@@ -181,7 +181,7 @@ so when ffuf looks for sub-domains it will not find them in the /etc/hosts list 
 
 here I can try to fuzz for sub-domains on inlanefreight: 
 
-![](../Images/Pasted%20image%2020231231141641.png)
+![](Images/Pasted%20image%2020231231141641.png)
 
 ## Vhost Fuzzing 
 
@@ -204,11 +204,11 @@ if the vhost does exist then we should get a different response size because we 
 
 if we still have academy.htb in our /etc/hosts we can run this command and get many results back: 
 
-![](../Images/Pasted%20image%2020240101163932.png)
+![](Images/Pasted%20image%2020240101163932.png)
 
 however if you grep to find all results where the size isn't the 986, there are only two results: 
 
-![](../Images/Pasted%20image%2020240101164150.png)
+![](Images/Pasted%20image%2020240101164150.png)
 
 ## Filtering Results 
 
@@ -218,17 +218,17 @@ with ffuf gives us many options to filter or match the results
 
 for the previous search for vhosts we can filter by size to get the same results we saw from grepping: 
 
-![](../Images/Pasted%20image%2020240101165013.png)
+![](Images/Pasted%20image%2020240101165013.png)
 
 ## Parameter Fuzzing - GET
 
 knowing that we have the admin.academy.htb sub-domain lets run a recursive scan on it: 
 
-![](../Images/Pasted%20image%2020240102141114.png)
+![](Images/Pasted%20image%2020240102141114.png)
 
 from the results we can find admin/admin.php which shows: 
 
-![](../Images/Pasted%20image%2020240102150135.png)
+![](Images/Pasted%20image%2020240102150135.png)
 
 we did not get prompted to login and there is no cookie that we have that can be verified  
 so maybe there is a key that we can pass to read the flag  
@@ -248,11 +248,11 @@ in this case we will pass the FUZZ for param1
 
 with the `burp-parameter-names.txt` list we can look for common parameter names: 
 
-![](../Images/Pasted%20image%2020240102151336.png)
+![](Images/Pasted%20image%2020240102151336.png)
 
 in these results we see that the user parameter is accepted so now lets visit it: 
 
-![](../Images/Pasted%20image%2020240102151434.png)
+![](Images/Pasted%20image%2020240102151434.png)
 
 ## Parameter Fuzzing - POST 
 
@@ -267,13 +267,13 @@ so now our POST ffuf command is slightly different than the GET request:
 
 `ffuf -w ... -u http://admin.academy.htb:PORT/admin/admin.php -X POST -d 'FUZZ=key' -H 'Content-Type: application/x-www-form-urlencoded'`: 
 
-![](../Images/Pasted%20image%2020240102152735.png)
+![](Images/Pasted%20image%2020240102152735.png)
 
 now we have found an additional parameter, `id`
 
 lets try sending a POST request with this parameter: 
 
-![](../Images/Pasted%20image%2020240102152928.png)
+![](Images/Pasted%20image%2020240102152928.png)
 
 we can see that we get an invalid id message
 
@@ -293,11 +293,11 @@ we can create this list with bash:
 
 now we create another ffuf command but replace the parameter value with FUZZ:  
 
-![](../Images/Pasted%20image%2020240102160632.png)
+![](Images/Pasted%20image%2020240102160632.png)
 
 then after doing a curl request with the id parameter set to 73 we can see the flag: 
 
-![](../Images/Pasted%20image%2020240102160917.png)
+![](Images/Pasted%20image%2020240102160917.png)
 
 ## Skills Assessment - Web Fuzzing 
 
@@ -311,15 +311,15 @@ then, I will conduct fuzzing on any found pages to see if any of them has parame
 
 to begin my testing, I check if the `academy.htb` domain is public: 
 
-![](../Images/Pasted%20image%2020240102162432.png)
+![](Images/Pasted%20image%2020240102162432.png)
 
 it is not public so I add the IP address and name to /etc/hosts: 
 
-![](../Images/Pasted%20image%2020240102162556.png)
+![](Images/Pasted%20image%2020240102162556.png)
 
 now I am ready to enumerate any sub-domains or vhosts for `*.academy.htb`, and to do this I will use the `subdomains-top1million-5000.txt` file: 
 
-![](../Images/Pasted%20image%2020240102164629.png)
+![](Images/Pasted%20image%2020240102164629.png)
 
 ### Extension fuzzing 
 
@@ -327,11 +327,11 @@ for each of the found sub-domains I now should check for what extensions they us
 
 first I will add each of the found sub-domains to /etc/hosts: 
 
-![](../Images/Pasted%20image%2020240102164920.png)
+![](Images/Pasted%20image%2020240102164920.png)
 
 then I can check each sub-domain for accepted extensions with `web-extensions.txt`: 
 
-![](../Images/Pasted%20image%2020240102165311.png)
+![](Images/Pasted%20image%2020240102165311.png)
 
 the following results were found: 
 - academy.htb = .php .phps
@@ -352,7 +352,7 @@ there are a few index.php files found in the home directories of each sub-domain
 
 the recursive fuzzing found index.php and index.php7 files for this directory, but one page of importance was the `/courses/linux-security.php7`: 
 
-![](../Images/Pasted%20image%2020240102175042.png)
+![](Images/Pasted%20image%2020240102175042.png)
 
 ### Parameter fuzzing 
 
@@ -360,21 +360,21 @@ now that we have a page that we know is looking for some sort of authentication 
 
 first, lets fuzz the GET parameters: 
 
-![](../Images/Pasted%20image%2020240102180208.png)
+![](Images/Pasted%20image%2020240102180208.png)
 
 attempting to use the user parameter I get: 
 
-![](../Images/Pasted%20image%2020240102180335.png)
+![](Images/Pasted%20image%2020240102180335.png)
 
 next, I will fuzz the POST parameters: 
 
-![](../Images/Pasted%20image%2020240102180543.png)
+![](Images/Pasted%20image%2020240102180543.png)
 
 so now I know that there are two parameters, `username` and `user` that I can fuzz, I know that user is no longer used so I try a curl request with username: 
 
-![](../Images/Pasted%20image%2020240102180817.png)
+![](Images/Pasted%20image%2020240102180817.png)
 
 I then fuzz both of the parameters and ended up finding a valid username `harry`, after sending a POST request with this as the data I find the flag: 
 
-![](../Images/Pasted%20image%2020240102182339.png)
+![](Images/Pasted%20image%2020240102182339.png)
 

@@ -101,9 +101,9 @@ even worth testing top 3-5 common combos manually
 
 using the command on the target produces valid credentials: 
 
-![](../Images/Pasted%20image%2020231210190239.png)
+![](Images/Pasted%20image%2020231210190239.png)
 
-![](../Images/Pasted%20image%2020231210190325.png)
+![](Images/Pasted%20image%2020231210190325.png)
 
 ## Username Brute Force
 
@@ -139,7 +139,7 @@ use the same flag but lowercase
 
 using this method on the previously found target of admin:admin results in the admin username being found with the static password: 
 
-![](../Images/Pasted%20image%2020231227144218.png)
+![](Images/Pasted%20image%2020231227144218.png)
 
 ## Hydra Modules 
 
@@ -162,7 +162,7 @@ first we need to find out if the form is GET or POST by attempting one login and
 
 the url did not paste any of the input into the url when attempting to login, so this means that it is a POST form: 
 
-![](../Images/Pasted%20image%2020231227150848.png)
+![](Images/Pasted%20image%2020231227150848.png)
 
 now we can form our hydra http-post-form command: 
 `/login.php:[user parameter]=^USER^&[password parameter]=^PASS^:[FAIL/SUCCESS]=[success/failed string]` 
@@ -177,7 +177,7 @@ we can provide either string and it will keep trying until the fail string is no
 
 there is unfortunately no found string that we can use for the failed state: 
 
-![](../Images/Pasted%20image%2020231227152643.png)
+![](Images/Pasted%20image%2020231227152643.png)
 
 and we can't use "Admin Panel" because if that string exists in the success page then hydra won't be able to tell the difference 
 
@@ -200,7 +200,7 @@ we can find the POST parameters by intercepting the login request with Burp Suit
 
 a simple way to get the POST request is to use the browser's built in network tools to view the request after attempting to login: 
 
-![](../Images/Pasted%20image%2020231227194250.png)
+![](Images/Pasted%20image%2020231227194250.png)
 
 this will reveal the post parameters: 
 
@@ -216,15 +216,15 @@ if the site uses a lot of HTTP requests, it might be easier to use Burp to go th
 
 first we open Burp Suite and go to the proxy tab: 
 
-![](../Images/Pasted%20image%2020231227200838.png)
+![](Images/Pasted%20image%2020231227200838.png)
 
 enable the Burp proxy with FoxyProxy: 
 
-![](../Images/Pasted%20image%2020231227200916.png)
+![](Images/Pasted%20image%2020231227200916.png)
 
 then after trying another login we can see the captured login on Burp: 
 
-![](../Images/Pasted%20image%2020231227201010.png)
+![](Images/Pasted%20image%2020231227201010.png)
 
 now with the information we need, we can add it to the hydra command: 
 
@@ -236,7 +236,7 @@ first lets use the full hydra command with a list of default usernames and passw
 
 `hydra -C /opt/useful/SecLists/Passwords/Default-Credentials/ftp-betterdefaultpasslist.txt 94.237.62.195 -s 41370 http-post-form "/login.php:username=^USER^&password=^PASS^:F=<form name='login'"`
 
-![](../Images/Pasted%20image%2020231227204223.png)
+![](Images/Pasted%20image%2020231227204223.png)
 
 this did not find any working credentials but at least we ruled out a lot of default credentials 
 
@@ -247,11 +247,11 @@ now we can try with the rockyou.txt list:
 
 `hydra -l admin -P /usr/share/wordlists/rockyou.txt -f 94.237.62.195 -s 41370 http-post-form "/login.php:username=^USER^&password=^PASS^:F=<form name='login'"`
 
-![](../Images/Pasted%20image%2020231227205301.png)
+![](Images/Pasted%20image%2020231227205301.png)
 
 with the found password we can login: 
 
-![](../Images/Pasted%20image%2020231227205800.png)
+![](Images/Pasted%20image%2020231227205800.png)
 
 ## Personalized Wordlists 
 
@@ -261,7 +261,7 @@ tool to generate wordlists based on information on the target
 
 using `cupp -i` you can generate a list: 
 
-![](../Images/Pasted%20image%2020231228165054.png)
+![](Images/Pasted%20image%2020231228165054.png)
 
 you can filter the generated list to 
 - remove shorter than 8 characters
@@ -274,11 +274,11 @@ sed -ri '/[!-/:-@\[-`\{-~]+/!d' william.txt # remove no special chars
 sed -ri '/[0-9]+/!d' william.txt            # remove no numbers
 ```
 
-![](../Images/Pasted%20image%2020231228165655.png)
+![](Images/Pasted%20image%2020231228165655.png)
 
 the file is now much shorter: 
 
-![](../Images/Pasted%20image%2020231228165736.png)
+![](Images/Pasted%20image%2020231228165736.png)
 
 ### Mangling 
 
@@ -292,7 +292,7 @@ can use tools like **Username Anarchy**
 
 using username anarchy we can create a list of specialized usernames: 
 
-![](../Images/Pasted%20image%2020231228170214.png)
+![](Images/Pasted%20image%2020231228170214.png)
 
 ## Service Authentication Brute Forcing 
 
@@ -340,35 +340,35 @@ what is the flag found in the home dir of the user b.gates?
 
 first make sure we have our personalized password list: 
 
-![](../Images/Pasted%20image%2020231228174726.png)
+![](Images/Pasted%20image%2020231228174726.png)
 
 make the hydra ssh command using a static username of b.gates and our personalized password list: 
 
-![](../Images/Pasted%20image%2020231228174806.png)
+![](Images/Pasted%20image%2020231228174806.png)
 
 we have found the password **4dn1l3m!$** that we can use to ssh with 
 
 use ssh to connect on the specified port and verify that I am logged in as b.gates: 
 
-![](../Images/Pasted%20image%2020231228174934.png)
+![](Images/Pasted%20image%2020231228174934.png)
 
 look around in the directories and find the flag in b.gates home directory: 
 
-![](../Images/Pasted%20image%2020231228175016.png)
+![](Images/Pasted%20image%2020231228175016.png)
 
 since the user has hydra and the shorter version of rockyou.txt, try to brute force the FTP login for the other user, m.gates
 
 using the loopback IP I can brute force the password for the m.gates user: 
 
-![](../Images/Pasted%20image%2020231228180159.png)
+![](Images/Pasted%20image%2020231228180159.png)
 
 then I switch to that user: 
 
-![](../Images/Pasted%20image%2020231228180251.png)
+![](Images/Pasted%20image%2020231228180251.png)
 
 then in the home directory I can see the flag: 
 
-![](../Images/Pasted%20image%2020231228180338.png)
+![](Images/Pasted%20image%2020231228180338.png)
 
 ## Skills Assessment - Website
 
@@ -378,27 +378,27 @@ there is one single TCP port open and there is likely weak credentials that can 
 
 we have our target IP and port but it is username and password authenticated: 
 
-![](../Images/Pasted%20image%2020231228200101.png)
+![](Images/Pasted%20image%2020231228200101.png)
 
 to start, I wanted to try a very quick scan and only did the top 17 usernames and top 15 passwords:
 
-![](../Images/Pasted%20image%2020231228201228.png)
+![](Images/Pasted%20image%2020231228201228.png)
 
 luckily this worked with the `top-usernames-shortlist.txt` and `best15.txt` files and it resulted in the credentials of user and password 
 
 using this to login you can get past the first authentication check: 
 
-![](../Images/Pasted%20image%2020231228201503.png)
+![](Images/Pasted%20image%2020231228201503.png)
 
 ### Admin panel 
 
 the next login reveals a similar admin panel that we have done in the previous exercises: 
 
-![](../Images/Pasted%20image%2020231228201616.png)
+![](Images/Pasted%20image%2020231228201616.png)
 
 first lets see if this is a POST or GET form: 
 
-![](../Images/Pasted%20image%2020231228202209.png)
+![](Images/Pasted%20image%2020231228202209.png)
 
 this is a post form so now we want to form our hydra command  
 
@@ -408,7 +408,7 @@ we want our command to look something like this:
 
 so now lets open the POST call in Burp Suite: 
 
-![](../Images/Pasted%20image%2020231228202539.png)
+![](Images/Pasted%20image%2020231228202539.png)
 
 from this we can see our username and password structure and now we can form our command: 
 
@@ -418,7 +418,7 @@ now all we need is a unique string from the source code to determine if the logi
 
 we can see in the source HTML the login form element: 
 
-![](../Images/Pasted%20image%2020231228202924.png)
+![](Images/Pasted%20image%2020231228202924.png)
 
 so now we can finalize our command to: 
 
@@ -426,7 +426,7 @@ so now we can finalize our command to:
 
 first we will try with a short list of common admin passwords `ftp-betterdefaultpasslist.txt`:
 
-![](../Images/Pasted%20image%2020231228203343.png)
+![](Images/Pasted%20image%2020231228203343.png)
 
 this did not reveal any passwords so lets increase our username and password list lengths
 
@@ -434,17 +434,17 @@ the approach I took for this next task was to run one longer brute force with ro
 
 my long search didn't actually take that long and I found the credentials with `top-usernames-shortlist.txt` and rockyou.txt: 
 
-![](../Images/Pasted%20image%2020231228205122.png)
+![](Images/Pasted%20image%2020231228205122.png)
 
 another search I ran that did not get results was trying a static admin username with `cirt-deafult-passwords.txt`: 
 
-![](../Images/Pasted%20image%2020231228205237.png)
+![](Images/Pasted%20image%2020231228205237.png)
 
 I also tried smaller searches like the ftp-betterdefaultpasslist.txt list, but the rockyou.txt search just didn't take that long to find the credentials 
 
 with the found credentials I can login and see the flag: 
 
-![](../Images/Pasted%20image%2020231228205932.png)
+![](Images/Pasted%20image%2020231228205932.png)
 
 ## Skills Assessment - Service Login
 
@@ -458,7 +458,7 @@ from the previous exercise we know that the user in this case is Harry Potter, s
 
 first lets use CUPP to generate a specified wordlist for Harry Potter: 
 
-![](../Images/Pasted%20image%2020231228213356.png)
+![](Images/Pasted%20image%2020231228213356.png)
 
 we know from after logging into the admin panel that the password must be
 - 8 characters or more 
@@ -467,37 +467,37 @@ we know from after logging into the admin panel that the password must be
 
 lets do the same filters that we did last time: 
 
-![](../Images/Pasted%20image%2020231228214009.png)
+![](Images/Pasted%20image%2020231228214009.png)
 
 so now instead of 28k passwords we have 10k that fit the password requirements
 
 now lets create a list of specialized usernames with Username Anarchy: 
 
-![](../Images/Pasted%20image%2020231228214548.png)
+![](Images/Pasted%20image%2020231228214548.png)
 
 ### Service brute force 
 
 doing a quick nmap scan with our known source port reveals that SSH is open: 
 
-![](../Images/Pasted%20image%2020231228214912.png)
+![](Images/Pasted%20image%2020231228214912.png)
 
 so now lets see if we can brute force into ssh with our specialized usernames and passwords: 
 
-![](../Images/Pasted%20image%2020231228221626.png)
+![](Images/Pasted%20image%2020231228221626.png)
 
 this ended up taking too long so instead I followed the hint to shorten my search by trying CUPP with less information than the full thing I filled out previously 
 
 for this search I instead did first and last name with special characters and numbers: 
 
-![](../Images/Pasted%20image%2020231228223336.png)
+![](Images/Pasted%20image%2020231228223336.png)
 
 then with the same list of generated usernames I tried a brute force and it worked very quickly: 
 
-![](../Images/Pasted%20image%2020231228223431.png)
+![](Images/Pasted%20image%2020231228223431.png)
 
 now I can successfully connect to SSH with the credentials: 
 
-![](../Images/Pasted%20image%2020231228223618.png)
+![](Images/Pasted%20image%2020231228223618.png)
 
 viewing the current directory I can see the flag.txt file with the first flag
 
@@ -505,17 +505,17 @@ viewing the current directory I can see the flag.txt file with the first flag
 
 while logged into the harry.potter account in SSH I can see that there is another user I can access: 
 
-![](../Images/Pasted%20image%2020231228223838.png)
+![](Images/Pasted%20image%2020231228223838.png)
 
 we can see that ftp is open again with netstat: 
 
-![](../Images/Pasted%20image%2020231228224056.png)
+![](Images/Pasted%20image%2020231228224056.png)
 
 using the loopback IP we can try to brute force the other user with the rockyou-30.txt list which is in the harry.potter user's home directory: 
 
-![](../Images/Pasted%20image%2020231228224807.png)
+![](Images/Pasted%20image%2020231228224807.png)
 
 then with these credentials I can switch to the user and grab the flag from their home directory: 
 
-![](../Images/Pasted%20image%2020231228225317.png)
+![](Images/Pasted%20image%2020231228225317.png)
 

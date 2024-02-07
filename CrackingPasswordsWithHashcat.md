@@ -46,11 +46,11 @@ increases the hashing time but does not prevent brute forcing altogether
 
 if we look at the md5 hash for "p@ssw0rd": 
 
-![](../Images/Pasted%20image%2020240103122236.png)
+![](Images/Pasted%20image%2020240103122236.png)
 
 then we can add random salt and compare: 
 
-![](../Images/Pasted%20image%2020240103122321.png)
+![](Images/Pasted%20image%2020240103122321.png)
 
 a completely new hash is generated and attackers will need to spend extra time to try to guess the salt 
 
@@ -69,9 +69,9 @@ use a key or secret to encrypt the data and use the same key to decrypt
 
 XOR is a simple example: 
 
-![](../Images/Pasted%20image%2020240103123522.png)
+![](Images/Pasted%20image%2020240103123522.png)
 
-![](../Images/Pasted%20image%2020240103123532.png)
+![](Images/Pasted%20image%2020240103123532.png)
 
 in the example above the plaintext is p@ssw0rd and the key is secret  
 anyone that has the key can decrypt any of its ciphertext  
@@ -101,11 +101,11 @@ when a client connects to a servers hosting an HTTPS website, a public key excha
 
 generate an MD5 hash of HackTheBox123!: 
 
-![](../Images/Pasted%20image%2020240103124600.png)
+![](Images/Pasted%20image%2020240103124600.png)
 
 create an XOR cipher of the password opens3same using the key academy: 
 
-![](../Images/Pasted%20image%2020240103124805.png)
+![](Images/Pasted%20image%2020240103124805.png)
 
 ## Identifying Hashes 
 
@@ -130,13 +130,13 @@ open and closed source software can use many different forms of hashing
 
 hashid is a python tool that can be used to detect various kinds of hashes:
 
-![](../Images/Pasted%20image%2020240103131927.png)
+![](Images/Pasted%20image%2020240103131927.png)
 
 you can also provide a file of hashes for hashid to identify line by line 
 
 it can also provide the corresponding hashcat hash mode with `-m`: 
 
-![](../Images/Pasted%20image%2020240103132155.png)
+![](Images/Pasted%20image%2020240103132155.png)
 
 ### Context is important 
 
@@ -153,9 +153,9 @@ this can be helpful because hashid may return many results for a given hash, but
 
 identify the following hash: `$S$D34783772bRXEx1aCsvY.bqgaaSu75XmVlKrW9Du8IQlvxHlmzLc`
 
-![](../Images/Pasted%20image%2020240103132813.png)
+![](Images/Pasted%20image%2020240103132813.png)
 
-![](../Images/Pasted%20image%2020240103132912.png)
+![](Images/Pasted%20image%2020240103132912.png)
 
 ## Hashcat Overview 
 
@@ -173,7 +173,7 @@ you can also view the example hashes with: `hashcat --example-hashes | less`
 
 the benchmark test or performance test for a hash type can be performed with `-b`: 
 
-![](../Images/Pasted%20image%2020240103145005.png)
+![](Images/Pasted%20image%2020240103145005.png)
 
 hashcat has two main ways to optimize speed: 
 - optimized kernels = `-O` which means enable optimized kernels (limits password length)
@@ -201,12 +201,12 @@ reads from a wordlist and tries to crack the supplied hashes
 
 here we set up a SHA-256 hash of !academy: 
 
-![](../Images/Pasted%20image%2020240103165135.png)
+![](Images/Pasted%20image%2020240103165135.png)
 
 and hashcat is able to crack it with rockyou.txt: 
 
-![](../Images/Pasted%20image%2020240103165205.png)
-![](../Images/Pasted%20image%2020240103165220.png)
+![](Images/Pasted%20image%2020240103165205.png)
+![](Images/Pasted%20image%2020240103165220.png)
 
 Bcrypt is based on blowfish, uses salt, and can have many rounds of the algorithm applied  
 it is very resistant to password cracking even with a large password cracking rig 
@@ -228,9 +228,9 @@ now lets try to crack the hash `0c352d5b2f45217c57bef9f8452ce376`
 
 judging by the size of it, it appears to be an MD5 hash so I will specify the mode as 0, add the hash to hash.txt, and use rockyou.txt: 
 
-![](../Images/Pasted%20image%2020240103171716.png)
+![](Images/Pasted%20image%2020240103171716.png)
 
-![](../Images/Pasted%20image%2020240103171745.png)
+![](Images/Pasted%20image%2020240103171745.png)
 
 ## Combination Attack 
 
@@ -247,26 +247,26 @@ the full combo attack syntax is:
 
 first we create a md5 hash of secretpassword:
 
-![](../Images/Pasted%20image%2020240103190301.png)
+![](Images/Pasted%20image%2020240103190301.png)
 
 then use the following wordlists: 
 
-![](../Images/Pasted%20image%2020240103190416.png)
+![](Images/Pasted%20image%2020240103190416.png)
 
 we can then crack the password with attack method 1: 
 
-![](../Images/Pasted%20image%2020240103190437.png)
+![](Images/Pasted%20image%2020240103190437.png)
 
 now lets find the cleartext of the md5 hash `19672a3f042ae1b592289f8333bf76c5`
 
 first we create our wordlists: 
 
-![](../Images/Pasted%20image%2020240103190648.png)
+![](Images/Pasted%20image%2020240103190648.png)
 
 then we can add our hash to a file and crack it: 
 
-![](../Images/Pasted%20image%2020240103190847.png)
-![](../Images/Pasted%20image%2020240103190900.png)
+![](Images/Pasted%20image%2020240103190847.png)
+![](Images/Pasted%20image%2020240103190900.png)
 
 ## Mask Attack
 
@@ -287,7 +287,7 @@ placeholders:
 
 these placeholders can be combined with options `-1` to `-4` which can be used for custom placeholders: 
 
-![](../Images/Pasted%20image%2020240103205325.png)
+![](Images/Pasted%20image%2020240103205325.png)
 
 consider a company inlane freight which has passwords with the scheme `ILFREIGHT<userid><year>`
 
@@ -297,13 +297,13 @@ the mask `ILFREIGHT?l?l?l?l?l20[0-1]?d` can be used to crack passwords where:
 
 first lets make a hash of the password: 
 
-![](../Images/Pasted%20image%2020240103210547.png)
+![](Images/Pasted%20image%2020240103210547.png)
 
-![](../Images/Pasted%20image%2020240103210511.png)
+![](Images/Pasted%20image%2020240103210511.png)
 
 then lets craft a mask attack command: 
 
-![](../Images/Pasted%20image%2020240103211043.png)
+![](Images/Pasted%20image%2020240103211043.png)
 
 here we use the following parameters: 
 - `-a 3` for attack mode 3 for brute force mask attack 
@@ -312,17 +312,17 @@ here we use the following parameters:
 
 we are then able to crack the password: 
 
-![](../Images/Pasted%20image%2020240103211410.png)
+![](Images/Pasted%20image%2020240103211410.png)
 
 `--increment` can be used to increment the mask automatically with a length limit of `--increment-max`
 
 to find the password from a hash I start by adding it to a file and creating my mask command: 
 
-![](../Images/Pasted%20image%2020240103212650.png)
+![](Images/Pasted%20image%2020240103212650.png)
 
 then the password can be found: 
 
-![](../Images/Pasted%20image%2020240103212728.png)
+![](Images/Pasted%20image%2020240103212728.png)
 
 ## Hybrid Mode
 
@@ -334,13 +334,13 @@ mode 6
 
 using the password football1$ lets create a wordlist and a mask: 
 
-![](../Images/Pasted%20image%2020240103213053.png)
+![](Images/Pasted%20image%2020240103213053.png)
 
 now we can make our command, and in it we will specify the rockyou.txt wordlist and a mask of `?d?s` which hashcat will append to the end of each word in rockyou.txt: 
 
-![](../Images/Pasted%20image%2020240103213337.png)
+![](Images/Pasted%20image%2020240103213337.png)
 
-![](../Images/Pasted%20image%2020240103213409.png)
+![](Images/Pasted%20image%2020240103213409.png)
 
 if we wanted to prepend characters we can instead use attack mode 7, for example: 
 
@@ -350,15 +350,15 @@ now lets try to crack the plaintext of `978078e7845f2fb2e20399d9e80475bc1c275e06
 
 first lets find our what type of hash it is: 
 
-![](../Images/Pasted%20image%2020240103214039.png)
+![](Images/Pasted%20image%2020240103214039.png)
 
 it appears to be a SHA-1 hash so now lets try to use rockyou.txt with the supplied mask of ?d?s:
 
-![](../Images/Pasted%20image%2020240103214619.png)
+![](Images/Pasted%20image%2020240103214619.png)
 
 we get the password from appending the mask: 
 
-![](../Images/Pasted%20image%2020240103214645.png)
+![](Images/Pasted%20image%2020240103214645.png)
 
 ## Creating Custom Wordlists
 
@@ -565,20 +565,20 @@ also, corporate passwords are often prepended or appended by a year
 
 lets now store the rule and password in their own files: 
 
-![](../Images/Pasted%20image%2020240104160030.png)
+![](Images/Pasted%20image%2020240104160030.png)
 
 you can debug a rule with `-r` to specify the rule, followed by the wordlist: 
 
-![](../Images/Pasted%20image%2020240104160413.png)
+![](Images/Pasted%20image%2020240104160413.png)
 
 now lets look at the password St@r5h1p2019, first lets make a SHA1 hash: 
 
-![](../Images/Pasted%20image%2020240104160824.png)
+![](Images/Pasted%20image%2020240104160824.png)
 
 now we can then use the custom rule we created and the rockyou.txt file to crack the hash: 
 
-![](../Images/Pasted%20image%2020240104161043.png)
-![](../Images/Pasted%20image%2020240104161052.png)
+![](Images/Pasted%20image%2020240104161043.png)
+![](Images/Pasted%20image%2020240104161052.png)
 
 hashcat supports the use of multi-rules with repeated use of the `-r` flag 
 
@@ -598,12 +598,12 @@ now lets try cracking the hash of 46244749d1e8fb99c37ad4f14fccb601ed4ae283
 
 first we modify our rule to append 2020 to the end of each word in the wordlist: 
 
-![](../Images/Pasted%20image%2020240104163143.png)
+![](Images/Pasted%20image%2020240104163143.png)
 
 then we use that rule with rockyou.txt to crack the hash: 
 
-![](../Images/Pasted%20image%2020240104163057.png)
-![](../Images/Pasted%20image%2020240104163205.png)
+![](Images/Pasted%20image%2020240104163057.png)
+![](Images/Pasted%20image%2020240104163205.png)
 
 ## Cracking Common Hashes 
 
@@ -615,14 +615,14 @@ MD5, SHA1, and bcrypt hashes are often seen in database dumps
 
 lets create a list of SHA1 hashes: 
 
-![](../Images/Pasted%20image%2020240104164738.png)
+![](Images/Pasted%20image%2020240104164738.png)
 
-![](../Images/Pasted%20image%2020240104164725.png)
+![](Images/Pasted%20image%2020240104164725.png)
 
 then lets use it with rockyou to crack the passwords: 
 
-![](../Images/Pasted%20image%2020240104164821.png)
-![](../Images/Pasted%20image%2020240104164710.png)
+![](Images/Pasted%20image%2020240104164821.png)
+![](Images/Pasted%20image%2020240104164710.png)
 
 these passwords were simple and easy to crack  
 if they had variations or leet replacements then it might require hybrid or rule attacks  
@@ -647,8 +647,8 @@ the rest is the actual hash
 
 we can crack it with rockyou: 
 
-![](../Images/Pasted%20image%2020240104171012.png)
-![](../Images/Pasted%20image%2020240104170951.png)
+![](Images/Pasted%20image%2020240104171012.png)
+![](Images/Pasted%20image%2020240104170951.png)
 
 ### Example 3 - common active directory password hash types 
 
@@ -666,12 +666,12 @@ cleartext is needed so that we can connect to the server via RDP
 
 lets create an NTLM hash of Password01: 
 
-![](../Images/Pasted%20image%2020240104171920.png)
+![](Images/Pasted%20image%2020240104171920.png)
 
 then we can crack it with rockyou: 
 
-![](../Images/Pasted%20image%2020240104172032.png)
-![](../Images/Pasted%20image%2020240104172043.png)
+![](Images/Pasted%20image%2020240104172032.png)
+![](Images/Pasted%20image%2020240104172043.png)
 
 #### NetNTLMv2 
 
@@ -686,20 +686,20 @@ sqladmin::INLANEFREIGHT:f54d6f198a7a47d4:7FECABAE13101DAAA20F1B09F7F7A4EA:010100
 
 now lets run it with rockyou: 
 
-![](../Images/Pasted%20image%2020240104173046.png)
-![](../Images/Pasted%20image%2020240104173127.png)
+![](Images/Pasted%20image%2020240104173046.png)
+![](Images/Pasted%20image%2020240104173127.png)
 
 now lets try an unknown hash 7106812752615cdfe427e01b98cd4083 
 
 it appears to be an NTLM hash so now lets try using rockyou.txt: 
 
-![](../Images/Pasted%20image%2020240104175024.png)
-![](../Images/Pasted%20image%2020240104175036.png)
+![](Images/Pasted%20image%2020240104175024.png)
+![](Images/Pasted%20image%2020240104175036.png)
 
 just a wordlist did not crack the password so now lets try with a hashcat default rule rockyou-30000.rule: 
 
-![](../Images/Pasted%20image%2020240104175119.png)
-![](../Images/Pasted%20image%2020240104175143.png)
+![](Images/Pasted%20image%2020240104175119.png)
+![](Images/Pasted%20image%2020240104175143.png)
 
 ## Cracking Miscellaneous Files and Hashes 
 
@@ -729,8 +729,8 @@ for a word document we can first extract the hash:
 
 then we can crack it with one of hashcats office modes: 
 
-![](../Images/Pasted%20image%2020240104194756.png)
-![](../Images/Pasted%20image%2020240104194932.png)
+![](Images/Pasted%20image%2020240104194756.png)
+![](Images/Pasted%20image%2020240104194932.png)
 
 ### Example 2 - cracking password protected zip files 
 
@@ -740,8 +740,8 @@ hashcat has modes for many types of compressed files such as 7-zip and winzip
 
 we can create a password protected zip file and then use zip2john to get the hash: 
 
-![](../Images/Pasted%20image%2020240104200923.png)
-![](../Images/Pasted%20image%2020240104201537.png)
+![](Images/Pasted%20image%2020240104200923.png)
+![](Images/Pasted%20image%2020240104201537.png)
 
 ### Example 3 - cracking password protected keepass files 
 
@@ -767,16 +767,16 @@ we can extract the hash with:
 
 we know have a password protected 7-zip file, so lets use johntheripper to get the hash: 
 
-![](../Images/Pasted%20image%2020240104210344.png)
+![](Images/Pasted%20image%2020240104210344.png)
 
 now we can use rockyou.txt to crack the password: 
 
-![](../Images/Pasted%20image%2020240104210704.png)
-![](../Images/Pasted%20image%2020240104210652.png)
+![](Images/Pasted%20image%2020240104210704.png)
+![](Images/Pasted%20image%2020240104210652.png)
 
 and now we can use the password to see the hidden flag: 
 
-![](../Images/Pasted%20image%2020240104210627.png)
+![](Images/Pasted%20image%2020240104210627.png)
 
 ## Cracking Wireless (WPA/WPA2) Handshakes with Hashcat
 
@@ -795,7 +795,7 @@ then when the client reauthenticates (usually automatically) the attacker can th
 the handshake is a collection of keys exchanged during the authentication process between the client and the AP   
 these keys are used to create a common key called the Message Integrity Check (MIC) used by an AP to verify that each packet has not been compromised 
 
-![](../Images/Pasted%20image%2020240105135021.png)
+![](Images/Pasted%20image%2020240105135021.png)
 
 we can capture handshakes with tools like airodump-ng and then we need to convert it to a format that hashcat can crack  
 the format required is `hccapx`  
@@ -830,7 +830,7 @@ PMKID located in the first packet of the 4-way handshake, does not require captu
 
 PMKID calcualted with HMAC-SHA1 with the PMK (wireless network password) used as the key, the string "PMK Name", MAC address of the AP, and the MAC address of the station: 
 
-![](../Images/Pasted%20image%2020240105142601.png)
+![](Images/Pasted%20image%2020240105142601.png)
 
 need to obtain the PMKID hash by first getting it from the capture file using a tool like hcxpcaptool from hcxtools 
 
@@ -864,21 +864,21 @@ first we start with an MIC capture file
 
 lets get the hash using cap2hccapx: 
 
-![](../Images/Pasted%20image%2020240105144431.png)
+![](Images/Pasted%20image%2020240105144431.png)
 
 then use rockyou with mode 22000: 
 
-![](../Images/Pasted%20image%2020240105145002.png)
-![](../Images/Pasted%20image%2020240105145015.png)
+![](Images/Pasted%20image%2020240105145002.png)
+![](Images/Pasted%20image%2020240105145015.png)
 
 now with a PMKID pcap we can extract the hash with hcxpcaptool: 
 
-![](../Images/Pasted%20image%2020240105145750.png)
+![](Images/Pasted%20image%2020240105145750.png)
 
 then use the same mode to get the password: 
 
-![](../Images/Pasted%20image%2020240105145819.png)
-![](../Images/Pasted%20image%2020240105145827.png)
+![](Images/Pasted%20image%2020240105145819.png)
+![](Images/Pasted%20image%2020240105145827.png)
 
 ## Skills Assessment 
 
@@ -890,12 +890,12 @@ hash = 0c67ac18f50c5e6b9398bfe1dc3e156163ba10ef
 
 first lets see what type of hash it could be: 
 
-![](../Images/Pasted%20image%2020240105162254.png)
+![](Images/Pasted%20image%2020240105162254.png)
 
 first I will try a basic SHA-1 crack: 
 
-![](../Images/Pasted%20image%2020240105162446.png)
-![](../Images/Pasted%20image%2020240105162537.png)
+![](Images/Pasted%20image%2020240105162446.png)
+![](Images/Pasted%20image%2020240105162537.png)
 
 ### Now you are given a NetNTLMv2 hash to crack 
 
@@ -904,8 +904,8 @@ bjones::INLANEFREIGHT:699f1e768bd69c00:5304B6DB9769D974A8F24C4F4309B6BC:01010000
 
 we know what type of hash it is so now we can use the 5600 attack mode to crack it: 
 
-![](../Images/Pasted%20image%2020240105163216.png)
-![](../Images/Pasted%20image%2020240105163227.png)
+![](Images/Pasted%20image%2020240105163216.png)
+![](Images/Pasted%20image%2020240105163227.png)
 
 ### Now your colleague has given you a kerberos TGS ticket for a user that is a member of a local admin group
 
@@ -914,8 +914,8 @@ $krb5tgs$23$*sql_svc$INLANEFREIGHT.LOCAL$mssql/inlanefreight.local~1443*$80be357
 
 using the hashcat example hashes it appears to be mode 13100: 
 
-![](../Images/Pasted%20image%2020240105163858.png)
-![](../Images/Pasted%20image%2020240105163908.png)
+![](Images/Pasted%20image%2020240105163858.png)
+![](Images/Pasted%20image%2020240105163908.png)
 
 ### Your colleague has now given you the local SAM database's hashes of the Domain Cached credentials for a domain admin user
 
@@ -923,20 +923,20 @@ hash: `$DCC2$10240#backup_admin#62dabbde52af53c75f37df260af1008e`
 
 from the hash example list this will be mode 2100: 
 
-![](../Images/Pasted%20image%2020240105164413.png)
-![](../Images/Pasted%20image%2020240105164513.png)
+![](Images/Pasted%20image%2020240105164413.png)
+![](Images/Pasted%20image%2020240105164513.png)
 
 ### With the last password your colleague found the NTDS database containing password hashes of all users within the AD domain. Try to crack as many as possible, and find the cleartext password that appears 5 times
 
 first lets just try a dictionary attack with mode 1000 and rockyou.txt: 
 
-![](../Images/Pasted%20image%2020240105173539.png)
-![](../Images/Pasted%20image%2020240105173548.png)
+![](Images/Pasted%20image%2020240105173539.png)
+![](Images/Pasted%20image%2020240105173548.png)
 
 there are many results so lets do some grep, sort, and uniq filtering to get the most common values: 
 
-![](../Images/Pasted%20image%2020240105174615.png)
-![](../Images/Pasted%20image%2020240105174543.png)
+![](Images/Pasted%20image%2020240105174615.png)
+![](Images/Pasted%20image%2020240105174543.png)
 
 from using rockyou alone we can see that freight1 is the most common password, and we get 533 results 
 
@@ -944,13 +944,13 @@ lets try to find more by using some of the hashcat rules available to us
 
 first lets try the rockyou-30000 rule: 
 
-![](../Images/Pasted%20image%2020240105175111.png)
-![](../Images/Pasted%20image%2020240105175129.png)
+![](Images/Pasted%20image%2020240105175111.png)
+![](Images/Pasted%20image%2020240105175129.png)
 
 with this rule alone it will take around 5 hours to complete so I pause it after a while and try the leet speak rule to see if there are any others: 
 
 this only found 2 more that the previous rockyou-30000 had found: 
 
-![](../Images/Pasted%20image%2020240105182122.png)
+![](Images/Pasted%20image%2020240105182122.png)
 
 

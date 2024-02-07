@@ -31,7 +31,7 @@ then you can run sqlmap with:
 
 there are many supported databases: 
 
-![](../Images/Pasted%20image%2020240105185232.png)
+![](Images/Pasted%20image%2020240105185232.png)
 
 you can see the supported SQL injections with `sqlmap -hh`
 
@@ -356,48 +356,48 @@ however we can again use `-r` for longer ones
 
 with our target IP and port we can see a page with different exercises: 
 
-![](../Images/Pasted%20image%2020240107184822.png)
+![](Images/Pasted%20image%2020240107184822.png)
 
 for this section lets start with case 2: 
 
-![](../Images/Pasted%20image%2020240107184903.png)
+![](Images/Pasted%20image%2020240107184903.png)
 
 we have a text field and submit button that we want to inject on with a POST request 
 
 lets grab the POST request and use it as our command: 
 
-![](../Images/Pasted%20image%2020240107185106.png)
+![](Images/Pasted%20image%2020240107185106.png)
 
 we know that we want to inject on the id parameter so I use `*` to specify it  
 I also use `--batch` and `--dump` to get output files  
 
 we get our first flag: 
 
-![](../Images/Pasted%20image%2020240107185323.png)
+![](Images/Pasted%20image%2020240107185323.png)
 
 for case 3 we are looking to inject on the id cookie value: 
 
-![](../Images/Pasted%20image%2020240107185458.png)
+![](Images/Pasted%20image%2020240107185458.png)
 
 for this I add an `*` to the cookie field for id:
 
-![](../Images/Pasted%20image%2020240107185610.png)
+![](Images/Pasted%20image%2020240107185610.png)
 
 we can then find the flag for case 3: 
 
-![](../Images/Pasted%20image%2020240107185844.png)
+![](Images/Pasted%20image%2020240107185844.png)
 
 for case 4 we want to inject on the JSON value of id: 
 
-![](../Images/Pasted%20image%2020240107190238.png)
+![](Images/Pasted%20image%2020240107190238.png)
 
 since the JSON data is simple I just add the content to the `--data` parameter: 
 
-![](../Images/Pasted%20image%2020240107190639.png)
+![](Images/Pasted%20image%2020240107190639.png)
 
 and we can see the flag for case 4: 
 
-![](../Images/Pasted%20image%2020240107190626.png)
+![](Images/Pasted%20image%2020240107190626.png)
 
 ## Handling SQLMap Errors 
 
@@ -503,44 +503,44 @@ using the wrong FROM appendix automatically may be due to the inability to detec
 
 for the next set of questions we start with case 5 which we need to exploit an OR SQLi with the id parameter: 
 
-![](../Images/Pasted%20image%2020240108145026.png)
+![](Images/Pasted%20image%2020240108145026.png)
 
 I use the `--risk` option to use the higher risk payloads which will include OR statements: 
 
-![](../Images/Pasted%20image%2020240108145511.png)
+![](Images/Pasted%20image%2020240108145511.png)
 
 from this I can get the flag: 
 
-![](../Images/Pasted%20image%2020240108145543.png)
+![](Images/Pasted%20image%2020240108145543.png)
 
 I could have also used the `-T flag5` option to specify only the table I want to see  
 also the `--no-cast` flag to ensure that the correct content is displayed
 
 for flag 6 we want to use non-standard boundaries and inject on the col parameter: 
 
-![](../Images/Pasted%20image%2020240108145735.png)
+![](Images/Pasted%20image%2020240108145735.png)
 
 for this I use `--level` to use the non-standard boundaries, and set the level to 5  
 however, this did not get the flag on it's own  
 in order to get the flag I needed to specify a prefix: 
 
-![](../Images/Pasted%20image%2020240108151348.png)
+![](Images/Pasted%20image%2020240108151348.png)
 
 then I was able to get the flag: 
 
-![](../Images/Pasted%20image%2020240108151415.png)
+![](Images/Pasted%20image%2020240108151415.png)
 
 for flag 7 we want to use UNION SQLi injections on the id parameter: 
 
-![](../Images/Pasted%20image%2020240108151536.png)
+![](Images/Pasted%20image%2020240108151536.png)
 
 to start I specified the `--technique=U` to only use UNION payloads: 
 
-![](../Images/Pasted%20image%2020240108152403.png)
+![](Images/Pasted%20image%2020240108152403.png)
 
 which resulted in the flag: 
 
-![](../Images/Pasted%20image%2020240108152351.png)
+![](Images/Pasted%20image%2020240108152351.png)
 
 I also tried specifying the `--union-cols=9` to match the table output
 
@@ -600,15 +600,15 @@ in these cases, users are suggested to use the `--exclude-sysdbs`, which will sk
 
 for this module we will look at case 1 which wants us to exploit the parameter id: 
 
-![](../Images/Pasted%20image%2020240108210359.png)
+![](Images/Pasted%20image%2020240108210359.png)
 
 we are looking for a flag in the testdb database so first lets check for vulnerabilities: 
 
-![](../Images/Pasted%20image%2020240108210753.png)
+![](Images/Pasted%20image%2020240108210753.png)
 
 we know that we are looking for the testdb database and flag1 table so when we specify them we can see the flag: 
 
-![](../Images/Pasted%20image%2020240108210831.png)
+![](Images/Pasted%20image%2020240108210831.png)
 
 ## Advanced Database Enumeration 
 
@@ -640,27 +640,27 @@ this means that it will do all enumeration steps and display them, but this will
 
 for this module's questions we will look at case 1 again: 
 
-![](../Images/Pasted%20image%2020240109155911.png)
+![](Images/Pasted%20image%2020240109155911.png)
 
 first I want to find the column with "style" in it's name
 
 for this I will use `--search -C style` to look for columns with the keyword in it: 
 
-![](../Images/Pasted%20image%2020240109160125.png)
+![](Images/Pasted%20image%2020240109160125.png)
 
 by searching using LIKE I can see the resulting column: 
 
-![](../Images/Pasted%20image%2020240109160241.png)
+![](Images/Pasted%20image%2020240109160241.png)
 
 next I want to find the user Kimberly's password
 
 for this I simply use `--dump` and allow for the dictionary password crack attempts:
 
-![](../Images/Pasted%20image%2020240109161129.png)
+![](Images/Pasted%20image%2020240109161129.png)
 
 and I then search the dump file for the specific user to see the cracked password: 
 
-![](../Images/Pasted%20image%2020240109161808.png)
+![](Images/Pasted%20image%2020240109161808.png)
 
 ## Bypassing Web Application Protections 
 
@@ -755,7 +755,7 @@ some platforms will concatenate these, like ASP
 
 to start this module's questions I will look for a flag in case 8: 
 
-![](../Images/Pasted%20image%2020240109174328.png)
+![](Images/Pasted%20image%2020240109174328.png)
 
 for this I will need to first look for a csrf token to specify in my sqlmap commands
 
@@ -767,42 +767,42 @@ looking at the above request that I captured from the page, I can see that the n
 
 now I can specify that in my sqlmap command: 
 
-![](../Images/Pasted%20image%2020240109175125.png)
+![](Images/Pasted%20image%2020240109175125.png)
 
 this will reveal the flag for table 8: 
 
-![](../Images/Pasted%20image%2020240109175322.png)
+![](Images/Pasted%20image%2020240109175322.png)
 
 now for flag 9 I need to randomize unique values for a parameter: 
 
-![](../Images/Pasted%20image%2020240109175500.png)
+![](Images/Pasted%20image%2020240109175500.png)
 
 with `--randomize` I specify the uid parameter and get the flag: 
 
-![](../Images/Pasted%20image%2020240109181336.png)
+![](Images/Pasted%20image%2020240109181336.png)
 
-![](../Images/Pasted%20image%2020240109181317.png)
+![](Images/Pasted%20image%2020240109181317.png)
 
 for flag 10 there is primitive protection in place: 
 
-![](../Images/Pasted%20image%2020240109181301.png)
+![](Images/Pasted%20image%2020240109181301.png)
 
 for basic protection I can try some tamper scripts like `between`: 
 
-![](../Images/Pasted%20image%2020240109181706.png)
+![](Images/Pasted%20image%2020240109181706.png)
 
 with these I can see the flag: 
 
-![](../Images/Pasted%20image%2020240109181815.png)
+![](Images/Pasted%20image%2020240109181815.png)
 
 case 11 will require to bypass a filter of common XSS characters < and >: 
 
-![](../Images/Pasted%20image%2020240109181916.png)
+![](Images/Pasted%20image%2020240109181916.png)
 
 for this we can again try the `between` tamper script: 
 
-![](../Images/Pasted%20image%2020240109182154.png)
-![](../Images/Pasted%20image%2020240109182420.png)
+![](Images/Pasted%20image%2020240109182154.png)
+![](Images/Pasted%20image%2020240109182420.png)
 
 ## OS Exploitation 
 
@@ -860,33 +860,33 @@ now for the final questions we start by trying to find the file `/var/www/html/f
 
 using the `--file-read` command I look for the specified file: 
 
-![](../Images/Pasted%20image%2020240109203916.png)
+![](Images/Pasted%20image%2020240109203916.png)
 
 the file is found and I can open it locally to view the flag within it: 
 
-![](../Images/Pasted%20image%2020240109203957.png)
+![](Images/Pasted%20image%2020240109203957.png)
 
 next we want to get an interactive OS shell on the remote host and try to find another flag within it
 
 lets run the command again but with `--os-shell` enabled: 
 
-![](../Images/Pasted%20image%2020240109204616.png)
+![](Images/Pasted%20image%2020240109204616.png)
 
 we can see that the UNION based injection will not let us use commands: 
 
-![](../Images/Pasted%20image%2020240109204755.png)
+![](Images/Pasted%20image%2020240109204755.png)
 
 now lets retry the command but specify an error based technique: 
 
-![](../Images/Pasted%20image%2020240109204831.png)
+![](Images/Pasted%20image%2020240109204831.png)
 
 with the new technique we get working commands: 
 
-![](../Images/Pasted%20image%2020240109204944.png)
+![](Images/Pasted%20image%2020240109204944.png)
 
 I am not able to move around in the directories but using `ls` I am able to find the flag and view it with `cat`: 
 
-![](../Images/Pasted%20image%2020240109205601.png)
+![](Images/Pasted%20image%2020240109205601.png)
 
 ## Skills Assessment
 
@@ -896,17 +896,17 @@ find the hidden flag
 
 going to the provided IP and port I can see a web app with lots of content: 
 
-![](../Images/Pasted%20image%2020240109205916.png)
+![](Images/Pasted%20image%2020240109205916.png)
 
 after looking around the site I found a form to submit a purchase: 
 
-![](../Images/Pasted%20image%2020240109210132.png)
+![](Images/Pasted%20image%2020240109210132.png)
 
 unfortunately, any attempts to place an order and view the cURL request does not work so I move on
 
 next, in the blog page I see a search bar that I again want to try to look for a cURL request I can use: 
 
-![](../Images/Pasted%20image%2020240109210540.png)
+![](Images/Pasted%20image%2020240109210540.png)
 
 I get a request and use this as my first test to see if I can inject on it: 
 
@@ -916,19 +916,19 @@ curl 'http://83.136.251.235:37451/blog.html?#' -H 'User-Agent: Mozilla/5.0 (Wind
 
 using this as a basic command and not specifying any parameters doesn't provide any results but SQLmap tells me to try using `--forms --crawl=2` so I try that: 
 
-![](../Images/Pasted%20image%2020240109211858.png)
+![](Images/Pasted%20image%2020240109211858.png)
 
 this finds two potential parameters in forms that can be injected on: 
 
-![](../Images/Pasted%20image%2020240109211942.png)
+![](Images/Pasted%20image%2020240109211942.png)
 
-![](../Images/Pasted%20image%2020240109211951.png)
+![](Images/Pasted%20image%2020240109211951.png)
 
 neither work, either due to them truly not being injectable or because of the protection in place
 
 these did point in directions to look for more injectable parameters and I find another one in the shop.html page when using the "add to cart" button: 
 
-![](../Images/Pasted%20image%2020240109212146.png)
+![](Images/Pasted%20image%2020240109212146.png)
 
 the action.php POST request has an `id` parameter: 
 
@@ -938,24 +938,24 @@ curl 'http://83.136.251.235:37451/action.php' -X POST -H 'User-Agent: Mozilla/5.
 
 I start by looking at the above action.php POST request and injecting on the `id` parameter: 
 
-![](../Images/Pasted%20image%2020240109212443.png)
+![](Images/Pasted%20image%2020240109212443.png)
 
 while this command is running I get the warning about basic XSS protections: 
 
-![](../Images/Pasted%20image%2020240109213219.png)
+![](Images/Pasted%20image%2020240109213219.png)
 
 so then I rerun it with the between tamper script and the randomcase one: 
 
-![](../Images/Pasted%20image%2020240109214317.png)
+![](Images/Pasted%20image%2020240109214317.png)
 
 the command takes a while but during it I see the database `final_flag`: 
 
-![](../Images/Pasted%20image%2020240109214308.png)
+![](Images/Pasted%20image%2020240109214308.png)
 
 so to hopefully save time I retry the command and specify the database and table: 
 
-![](../Images/Pasted%20image%2020240109215129.png)
+![](Images/Pasted%20image%2020240109215129.png)
 
 from this I get the final flag: 
 
-![](../Images/Pasted%20image%2020240109215120.png)
+![](Images/Pasted%20image%2020240109215120.png)
