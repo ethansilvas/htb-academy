@@ -1,3 +1,4 @@
+# Using Web Proxies
 
 ## Intro to Web Proxies 
 
