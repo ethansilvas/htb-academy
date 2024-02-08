@@ -161,3 +161,55 @@ code like this we can simply remove via editing the HTML:
 
 however these changes will not persist through page refresh 
 
+## Blacklist Filters 
+
+if type validation controls on the back-end server are not securely coded then there are still ways to bypass back-end protections 
+
+### Blacklisting extensions 
+
+with our new target if we try to use the previous methods of bypassing the front-end ocde we will still get an error: 
+
+![](Images/Pasted%20image%2020240208093600.png)
+
+there are generally two forms of validating file extensions on the back-end: 
+- testing against a blacklist of types 
+- testing against a whitelist of types 
+
+the validation may also check the file type or file content for type matching  
+
+the weakest form of these checks is using a blacklist   
+this is because many other types of extensions can still be used to execute code for languages that may have their extensions blacklisted 
+
+note that windows servers have case insensitive file names so we can try uploading files with mixed cases like `.pHp`
+
+### Fuzzing extensions
+
+since the app seems to be testing the file extension, we can first try to fuzz the upload functionality with a list of potential extensions 
+
+payloadallthethings has a list of extensions for PHP and .NET   
+SecLists has web extensions 
+
+first we can send a valid upload request and send to burp intruder, then we can clear any positions that were created automatically and instead use the file extension position: 
+
+![](Images/Pasted%20image%2020240208094636.png)
+
+then we can upload the payloadallthethings PHP list into our payload options: 
+
+![](Images/Pasted%20image%2020240208094830.png)
+
+also make sure to uncheck URL encoding: 
+
+![](Images/Pasted%20image%2020240208094901.png)
+
+then based on the lengths of the responses we can see which extensions are valid: 
+
+![](Images/Pasted%20image%2020240208095012.png)
+
+### Non-blacklisted extensions 
+
+even though we have many accepted extensions, they may not all work with the web server configs 
+
+we can first try `phtml` which some php web servers will allow for code execution rights: 
+
+![](Images/Pasted%20image%2020240208095610.png)
+
