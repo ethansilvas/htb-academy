@@ -213,3 +213,75 @@ we can first try `phtml` which some php web servers will allow for code executio
 
 ![](Images/Pasted%20image%2020240208095610.png)
 
+## Whitelist Filters 
+
+### Whitelisting extensions
+
+now our target has a whitelist filter that will block our previous payloads with uncommon php extensions like `phtml`: 
+
+![](Images/Pasted%20image%2020240208101254.png)
+
+now when we fuzz we see most uploads are blocked but some malicious extensions are still accepted: 
+
+![](Images/Pasted%20image%2020240208101814.png)
+
+if we look at an example of whitelist code: 
+
+![](Images/Pasted%20image%2020240208101849.png)
+
+we can see that a regex is used to test if the filename contains any of the valid extension names  
+however, code like this only tests if the valid extension is contained, and doesn't check if it actually ends with the extension 
+
+### Double extensions 
+
+simply adding a valid extension before our desired extension may bypass above configured whitelists 
+
+`shell.jpg.php`
+
+### Reverse double extension 
+
+sometimes the upload functionality itself won't be vulnerable, but the web server config  
+the target may use an open source web app which has upload functionality, but even with a strict regex whitelist there still may be insecure configs 
+
+the `/etc/apache2/mods-enabled/php7.4.conf` for the apache2 web server may have this config: 
+
+![](Images/Pasted%20image%2020240208102938.png)
+
+it determines which files allow php code execution, and for this example allows `.phar`, `.php`, and `.phtml`   
+however this makes the same mistake in not checking the end of the filename   
+in this case the file that contains any of the above extensions will be allowed PHP code execution, even if it doesn't end with the PHP extension
+
+therefore payloads like `shell.php.jpg` will pass the previous whitelist for image files, and will be given PHP execution rights because it contains `.php` 
+
+### Character injection 
+
+we can inject several characters before or after the final extension to cause it to misinterpret the filename and execute the uploaded file as a PHP script 
+
+- `%20`
+- `%0a`
+- `%00`
+- `%0d0a`
+- `/`
+- `.\`
+- `.`
+- `...`
+- `:`
+
+`shell.php%00.jpg` for example will cause the web server to end the file name after `%00` and store it as `shell.php` but will still pass the whitelist   
+the same works on windows servers with `:` before the extension like `shell.aspx:.jpg` 
+
+this bash script will generate all permutations of the file name where the above characters will be injected before and after the jpg and php extensions: 
+
+```bash
+for char in '%20' '%0a' '%00' '%0d0a' '/' '.\\' '.' '…' ':'; do
+    for ext in '.php' '.phps' '.phar' '.phtml'; do
+        echo "shell$char$ext.jpg" >> wordlist.txt
+        echo "shell$ext$char.jpg" >> wordlist.txt
+        echo "shell.jpg$char$ext" >> wordlist.txt
+        echo "shell.jpg$ext$char" >> wordlist.txt
+    done
+done
+```
+
+![](Images/Pasted%20image%2020240208104509.png)
+
