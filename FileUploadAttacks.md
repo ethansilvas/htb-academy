@@ -285,3 +285,69 @@ done
 
 ![](Images/Pasted%20image%2020240208104509.png)
 
+## Type Filters
+
+sometimes we can use some allowed extensions to perform other types of attacks   
+most modern servers will also test the content of the file to ensure it matches the specified type   
+
+content filters usually specify a single category (images, videos, documents) which means they don't typically use whitelists or blacklists   
+web servers provide functions to check for the file content type 
+
+two common methods for validating file content: 
+- `Content-Type`
+- `File Content`
+
+### Content-Type
+
+we can see an example of how a php web app might test the Content-Type header: 
+
+![](Images/Pasted%20image%2020240208141801.png)
+
+our browsers will automatically set the `Content-Type` header, which means that this is a client-side operation that we can manipulate 
+
+SecLists has the content-type wordlist, and we can limit the list to only certain types like images with: 
+
+```shell
+wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Miscellaneous/web/content-type.txt
+cat content-type.txt | grep 'image/' > image-content-types.txt
+```
+
+we can see that even changing the `image/png` header to `/jpg` will work: 
+
+![](Images/Pasted%20image%2020240208142725.png)
+
+a file upload HTTP request has two Content-Type headers, one for the attached file at the bottom and one for the full request   
+usually only need to modify the files header but in some cases the request will only contain the main Content-Type header, in which case we would need to edit it 
+
+### MIME-Type
+
+a more common type of file content validation is testing the file's Multipurpose Internet Mail Extensions (MIME) type   
+
+MIME determines the type of the file through its general format and byte structure   
+this is usually checked by inspecting the first few bytes of the file's content which contain the `File signature` and `Magic Bytes`   
+ex: `GIF87a` and `GIF89A` indicate a GIF image, and plaintext is usually a text file 
+
+changing the first bytes of any file to the GIF magic bytes will change the entire MIME type 
+
+note that many image types have non-printable bytes for their file signatures while GIF starts with ASCII
+
+the `file` command on unix systems finds the file type through MIME: 
+
+![](Images/Pasted%20image%2020240208145517.png)
+
+we can see above that the file is recognized as ASCII text even with the `.jpg` extension 
+
+if we instead use `GIF8` at the beginning then it will be considered a GIF: 
+
+![](Images/Pasted%20image%2020240208145623.png)
+
+a PHP sever might check for MIME type like: 
+
+![](Images/Pasted%20image%2020240208145703.png)
+
+we can use a combination of MIME type and Content-Type to bypass more robust content filters   
+for example we could try: 
+- allowed MIME type with disallowed Content-Type
+- Allowed MIME/Content-Type with a disallowed extension 
+- Disallowed MIME/Content-Type with an allowed extension 
+
