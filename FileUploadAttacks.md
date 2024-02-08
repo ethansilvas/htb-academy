@@ -114,3 +114,50 @@ then we can again set up a listener with netcat and visit the uploaded file
 
 reverse shells are always preferred over web shells because they have the most interactive method for controlling the compromised server, but they might not always work  
 
+## Client-Side Validation 
+
+can easily bypass apps with only client-side validation by interacting with the server or by modifying the front-end code through the browser's dev tools
+
+### Client-side validation 
+
+now our target specifies a list of accepted file extensions, even if we select all file types: 
+
+![](Images/Pasted%20image%2020240208090209.png)
+
+no requests seem to be made and the page does not refresh  
+we also have control over any client-side code executed in our browser  
+
+### Back-end request modification 
+
+when we upload a normal file and capture it with burp we can see the png request: 
+
+![](Images/Pasted%20image%2020240208090956.png)
+
+so now we can modify the filename and content to be our shell script and get a successful upload: 
+
+![](Images/Pasted%20image%2020240208091258.png)
+
+we could have also changed the `Content-Type` of the file but at this stage this shouldn't be too important 
+
+we can revisit the site and see our uploaded script: 
+
+![](Images/Pasted%20image%2020240208091800.png)
+
+### Disabling front-end validation 
+
+client-side code can be modified or disabled entirely 
+
+in our example we can see an input element with `onchange` and `accept` attributes: 
+
+![](Images/Pasted%20image%2020240208092324.png)
+
+the `accept` isn't necessary to change because through the UI we can select "All Files"
+
+with any function like the the one in `onchange` we can type the function name in the devtools console to get its details 
+
+code like this we can simply remove via editing the HTML: 
+
+![](Images/Pasted%20image%2020240208092639.png)
+
+however these changes will not persist through page refresh 
+
