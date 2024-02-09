@@ -418,3 +418,52 @@ an app that tries to display the image would crash
 
 some upload functions are vulnerable to directory traversal 
 
+## Other Upload Attacks
+
+### Injections in file name 
+
+a common file upload attack uses the file name for the payload  
+this may get executed or processed if the uploaded file name is displayed  
+app could also use file name in OS command which we could inject commands into  
+
+- `file$(whoami).jpg`
+- `file.jpg||whoami`
+
+could also use XSS in the file name for files names that are displayed to screen 
+
+SQL queries would also work: 
+
+`file';select+sleep(5);--.jpg`
+
+### Upload directory disclosure 
+
+in some forms like feedback or submission forms we might not have access to the link of our uploaded file and may not know the uploads directory  
+could use fuzzing or LFI/XXE to find where the uploaded files are through the source code  
+
+can also force errors to expose uploads directory  
+could cause error by uploading file name that already exists or sending two identical requests at the same time 
+
+could try uploading file with really long name 
+
+### Windows-specific attacks 
+
+could use reserved characters like `|`, `<`, `>`, `*`, or `?` which are usually used for special uses like wildcards  
+these could be used to refer to another file that may not exist and cause an error to disclose upload directory  
+
+use windows reserved names for the upload file names like `CON, COM1, LPT1, NUL` 
+
+can also use the windows 8.3 filename convention to overwrite existing files or refer to files that don't exist   
+
+older versions of windows used `~` to complete file names  
+
+to refer to a file called `hackthebox.txt` we could use `HAC~1.TXT` or `HAC~2.TXT` where the digit is the order of the matching files that start with `HAC`  
+
+windows still supports this naming convention so we could also write a file called `WEB~.CONF` to overwrite the `web.conf` file  
+
+
+### Advanced file upload attacks 
+
+any auto processing that occurs to an uploaded file like encoding a video, compressing a file, or renaming a file may be exploited
+
+some commonly used libraries may have public exploits for these types of vulnerabilities like the AVI upload vulnerability leading to XXE in `ffmpeg`
+
