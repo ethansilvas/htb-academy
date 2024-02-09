@@ -467,3 +467,14 @@ any auto processing that occurs to an uploaded file like encoding a video, compr
 
 some commonly used libraries may have public exploits for these types of vulnerabilities like the AVI upload vulnerability leading to XXE in `ffmpeg`
 
+## Preventing File Upload Vulnerabilities
+
+### Extension validation 
+
+need to make sure that out file upload functions can securely handle extension validation 
+
+recommended to use both whitelisting for allowed extensions and blacklisting for dangerous extensions   
+blacklist will prevent uploading malicious scripts if the whitelist is ever bypassed 
+
+![](Images/Pasted%20image%2020240209142052.png)
+
