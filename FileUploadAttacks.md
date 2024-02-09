@@ -351,3 +351,70 @@ for example we could try:
 - Allowed MIME/Content-Type with a disallowed extension 
 - Disallowed MIME/Content-Type with an allowed extension 
 
+## Limited File Uploads
+
+even if we are dealing with a very limited file upload form that doesn't allow many of the previous methods we have tried previously, there are still ways to exploit the form
+
+certain file types like SVG, HTML, and XML (and also some image and document files) may allow us to introduce new vulnerabilities to the web app  
+this is why fuzzing allowed file extensions is so important 
+
+### XSS 
+
+many file types allow us to introduce a stored XSS vulnerability by uploading malicious versions of them 
+
+most basic example is uploading HTML files that use JS code to carry an XSS or CSRF attack on whoever visits the uploaded HTML page 
+
+another example is when an app displays an image's metadata after its upload   
+we can include an XSS payload in one of the metadata parameters that accept raw text like the `Comment` or `Artist` parameters: 
+
+```
+exiftool -Comment=' "><img src=1 onerror=alert(window.origin)>' HTB.jpg
+exiftool HTB.jpg
+```
+
+also if we change the image's MIME-Type to `text/html` some web apps might show it as an HTML doc instead of an image, which will remove the need for the metadata to be displayed
+
+SVG images can also be used for XSS  
+SVG are XML-based and describe 2D vector graphics that the browser renders into an image, so we can modify the data to include an XSS payload: 
+
+![](Images/Pasted%20image%2020240208163701.png)
+
+### XXE 
+
+similar attacks can be carried to lead to XXE exploitation   
+SVGs can include malicious XML data to leak the source code of the web app and other internal docs within the server
+
+![](Images/Pasted%20image%2020240208163852.png)
+
+the above payload would get the info of `/etc/passwd` when the SVG image is uploaded and viewed  
+the same attack could be done if the web app allows XML uploads
+
+reading system files like `/etc/passwd` would give us information like the web app's source files   
+for file upload exploitation it might let us: 
+- locate the upload directory 
+- identify allowed extensions 
+- find the file naming scheme 
+
+we could read source code with XXE with: 
+
+![](Images/Pasted%20image%2020240208164157.png)
+
+once the payload is displayed we would get the base64 encoded content of `index.php`  
+
+XML can also be used by PDF, Word, PowerPoint, etc.   
+if a web app used a document viewer that is vulnerable to XXE then we could modify the XML data to include XXE elements to carry a blind XXE attack on the back-end server 
+
+we could also use XXE to enumerate hidden services or APIs to perform private actions that could lead to SSRF
+
+### DoS 
+
+many file upload attacks can lead to DoS 
+
+can use a decompression bomb with file types that use data compression like ZIP and if the app auto-unzips then you could upload an archive with nested ZIP archives within it which can lead to petabytes of data 
+
+a pixel flood attack might be possible with some image files that use image compression like JPG or PNG   
+we can create a JPG file with any image size then manually modify it to be something like `0xFFFF x 0xFFFF` which results in an image of perceived size of 4 gigapixels  
+an app that tries to display the image would crash 
+
+some upload functions are vulnerable to directory traversal 
+
