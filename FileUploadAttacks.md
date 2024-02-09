@@ -478,3 +478,51 @@ blacklist will prevent uploading malicious scripts if the whitelist is ever bypa
 
 ![](Images/Pasted%20image%2020240209142052.png)
 
+we can see that the blacklist will check if the extension exists anywhere within the file name  
+the whitelist checks if the file name ends with the extension 
+
+remember that both front-end and back-end validation should be done  
+
+### Content validation 
+
+usually extension validation is not enough so we also need to validate the file content   
+always need to make sure that the file extension matches the file's content   
+
+![](Images/Pasted%20image%2020240209151630.png)
+
+the above makes sure that the `Content-Type` and MIME type work 
+
+### Upload disclosure 
+
+another thing we need to avoid doing is disclosing the uploads directory or providing direct access to the uploaded file  
+recommended to hide the uploads directory and only allow users to download uploaded files through download page 
+
+we might write a `download.php` script to get the requested file from the uploads directory then download the file for the end-user  
+this way the app hides the upload directory and prevents the user from directly accessing the uploaded file 
+
+if we do use a download page, then we also need to make sure that users can only download files that belong to them (avoid `IDOR/LFI`) and that users don't have direct access to the uploads directory   
+this can be done by using the `Content-Disposition` and `nosniff` headers and using an accurate `Content-Type` header 
+
+we should also randomize the names of the uploaded files in storage and store their "sanitized" original names in the db   
+when the `download.php` script needs to download the file it fetches the original name from the db and provides it at download time for the user  
+
+we can also store the uploaded files in a separate server or container   
+if an attacker compromises the server and gains RCE then it only affects the uploads server and not the entire back-end server   
+web servers could also be configured to prevent apps from accessing files outside their directories by using configs like `open_basedir` in PHP 
+
+### Further security 
+
+we can take a few more steps to ensure that the back-end server is not compromised   
+
+a critical config we can add is disabling functions that may be used to execute system commands   
+PHP has `disable_functions` config in `php.ini` 
+
+we could also disable showing any system or server errors to avoid sensitive info disclosure   
+should always handle errors at the web app level and print out simple errors  
+
+a few other misc tips: 
+- limit file size 
+- update any used libs 
+- scan uploaded files for malware or malicious strings 
+- use WAF 
+
