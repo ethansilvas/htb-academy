@@ -526,3 +526,27 @@ a few other misc tips:
 - scan uploaded files for malware or malicious strings 
 - use WAF 
 
+## Skills Assessment - File Upload Attacks 
+
+you are contracted to perform a pen test for a company's e-commerce web app   
+try to use the methods in this module to gain RCE on the back-end server 
+
+**Extra Exercise** - try to note down the main security issues found and the necessary security measures to mitigate them 
+
+### Try to exploit the upload form to read the flag in the root directory 
+
+looking through the site I can see a file upload form in the contact-us section: 
+
+![](Images/Pasted%20image%2020240209154254.png)
+
+I can see that it might only accept image file types: 
+
+![](Images/Pasted%20image%2020240209154439.png)
+
+now lets try to capture a successful upload in burp to analyze the request: 
+
+
+
+on the front-end we don't seem to have any helpful output after submitting the form: 
+
+![](Images/Pasted%20image%2020240209154950.png)
