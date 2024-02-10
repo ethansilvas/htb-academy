@@ -545,8 +545,94 @@ I can see that it might only accept image file types:
 
 now lets try to capture a successful upload in burp to analyze the request: 
 
+![](Images/Pasted%20image%2020240209170522.png)
+
+we can see that when we upload an image it gets output in the form: 
+
+![](Images/Pasted%20image%2020240209172638.png)
+
+we can try using the request to submit a malicious shell and see what the response is: 
+
+![](Images/Pasted%20image%2020240209170639.png)
+
+using a simple double extension won't work: 
+
+![](Images/Pasted%20image%2020240209170710.png)
+
+using the same payload but adding `GIF8` for MIME will also not work: 
+
+![](Images/Pasted%20image%2020240209170753.png)
+
+after many attempts to submit the php payload I keep getting an "only images allowed" error
+
+for now I will try to use a valid image content but fuzz with different file names to see which get past the filters in place
+
+first lets try double extensions using the PayloadAllTheThings php extension wordlist: 
+
+![](Images/Pasted%20image%2020240209172216.png)
+
+from this I can see that character injections might work, and that some extensions like .phar may have code execution 
+
+now I will try a reverse double extension: 
+
+![](Images/Pasted%20image%2020240209172745.png)
+
+with reverse double extensions I get successful uploads for multiple PHP extensions that may give code execution
+
+now lets try using this to insert a payload: 
+
+![](Images/Pasted%20image%2020240209172832.png)
+
+even trying an image `Content-Type` wordlist with this payload will not result in a successful upload: 
+
+![](Images/Pasted%20image%2020240209173350.png)
+
+next I try to use the double extension filename with a valid PNG payload, but fuzz for valid `Content-Type`: 
+
+![](Images/Pasted%20image%2020240209175842.png)
+
+![](Images/Pasted%20image%2020240209175904.png)
+
+given that XML seems to work I will now try to use some form of XXE attack: 
+
+![](Images/Pasted%20image%2020240209180245.png)
+
+now I know that XML payloads will work so lets try to look at some of the source code available
+
+from the front-end source code I know that `/contact/submit.php` is the script to submit the contact us form, so I use a payload to view that: 
+
+![](Images/Pasted%20image%2020240209180915.png)
+
+![](Images/Pasted%20image%2020240209180953.png)
+
+after decoding the results, nothing useful was found so I then found that there is also a `/contact/upload.php` file I can view: 
+
+![](Images/Pasted%20image%2020240209181313.png)
+
+![](Images/Pasted%20image%2020240209181433.png)
+
+this gives me lots of results including directories and algorithms to implement the whitelist and blacklist 
+
+one thing I can see in this code is where the file uploads are stored and the naming convention: 
+
+![](Images/Pasted%20image%2020240209185907.png)
+
+this tells me that the files are uploaded to `/contact/user_feedback_submissions` and have the output of `date('ymd')` and a `_` prepended to the file name 
+
+using PHP I can see what the date is: 
+
+![](Images/Pasted%20image%2020240209190046.png)
+
+then I use the previous SVG payload to add on my PHP payload: 
+
+![](Images/Pasted%20image%2020240209190134.png)
+
+now I try to visit the uploaded file using the naming convention `/contact/user_feedback_submissions/240210_file.phar.svg` and can see that I have successfully executed PHP code: 
+
+![](Images/Pasted%20image%2020240209190314.png)
+
+then I can traverse the directories to find the flag: 
+
+![](Images/Pasted%20image%2020240209190450.png)
 
 
-on the front-end we don't seem to have any helpful output after submitting the form: 
-
-![](Images/Pasted%20image%2020240209154950.png)
