@@ -47,3 +47,62 @@ then install the docker package in your local machine and start the apache tomca
 sudo apt install docker.io
 sudo docker run -it --rm -p 8009:8009 -v `pwd`/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml --name tomcat "tomcat:8.0"
 ```
+
+## Nginx Reverse Proxy & AJP 
+
+when we find an open AJP proxy port 8009 we can use nginx with an `ajp_module` to access the hidden tomcat manager   
+
+we can compile the nginx source code and add the required module by doing: 
+- download the nginx source 
+- download the required module 
+- compile nginx source code with `ajp_module` 
+- create config file pointing to AJP port 
+
+download the nginx source code: 
+
+```shell
+wget https://nginx.org/download/nginx-1.21.3.tar.gz
+tar -xzvf nginx-1.21.3.tar.gz
+```
+
+compile the nginx source code with the ajp module: 
+
+```shell
+git clone https://github.com/dvershinin/nginx_ajp_module.git
+cd nginx-1.21.3
+sudo apt install libpcre3-dev
+./configure --add-module=`pwd`/../nginx_ajp_module --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules
+make
+sudo make install
+nginx -V
+```
+
+note that the following will setup on port 8009 which is what we normally will use but for the exercise purposes we will need to use the spawned target's IP and port 
+
+comment out the entire `server` block and append the following lines to the `http` block in `/etc/nginx/conf/nginx.conf`: 
+
+```
+upstream tomcats {
+	server <TARGET_SERVER>:8009;
+	keepalive 10;
+	}
+server {
+	listen 80;
+	location / {
+		ajp_keep_conn on;
+		ajp_pass tomcats;
+	}
+}
+```
+
+![](Images/Pasted%20image%2020240212115855.png)
+
+![](Images/Pasted%20image%2020240212120927.png)
+
+![](Images/Pasted%20image%2020240212120355.png)
+
+note that in the above we also changed `listen 80` to 8080
+
+start nginx and check if everything is working correctly with a curl request to your local host: 
+
+![](Images/Pasted%20image%2020240212120856.png)
