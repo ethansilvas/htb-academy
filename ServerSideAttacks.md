@@ -166,3 +166,26 @@ note that with this configuration we will also be able to view this in our web b
 
 ![](Images/Pasted%20image%2020240212122807.png)
 
+## Server-Side Request Forgery (SSRF) Overview 
+
+SSRF attacks let us abuse server functionality to perform internal or external resource requests on behalf of the server   
+to do this we usually need to supply or modify urls used by the target app to read or submit data 
+
+exploiting SSRF can lead to: 
+- interacting with known internal systems 
+- discovering internal services with port scans 
+- disclosing local/sensitive data 
+- including files in the target app 
+- leaking NetNTLM hashes using UNC paths (windows)
+- achieving RCE 
+
+we can usually find SSRF in apps that fetch remote resources  
+when looking for SSRF we should look for: 
+- parts of HTTP requests, including URLs 
+- file imports such as HTML, PDFs, images, etc. 
+- remote server connections to fetch data 
+- API specification imports 
+- dashboards including ping and similar functionalities to check server statuses 
+
+fuzzing can be extended to parts of the HTTP-request like the `User-Agent` to help find SSRF 
+
