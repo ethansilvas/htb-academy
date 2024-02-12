@@ -106,3 +106,63 @@ note that in the above we also changed `listen 80` to 8080
 start nginx and check if everything is working correctly with a curl request to your local host: 
 
 ![](Images/Pasted%20image%2020240212120856.png)
+
+## Apache Reverse Proxy and AJP 
+
+connecting to AJP with apache is much simpler because the AJP module is precompiled for us but we will still need to install it 
+
+we can configure the AJP-proxy in our apache server as follows: 
+- install the `libapache2-mod-jk` package
+- enable the module 
+- create the config file pointing to the AJP-proxy port 
+
+again, apache will default use port 80 but we can change this in `/etc/apache2/ports.conf`   
+if we are doing this on port 8080 remember that we just ran nginx on there so we would also need to do `sudo nginx -s stop`  
+and again in the following exercise we would normally use port 8009 but will instead use the spawned target's IP and port 
+
+listen on 8080: 
+
+![](Images/Pasted%20image%2020240212122526.png)
+
+setup the required commands and config files: 
+
+```shell
+sudo apt install libapache2-mod-jk
+sudo a2enmod proxy_ajp
+sudo a2enmod proxy_http
+export TARGET="<TARGET_IP>"
+echo -n """<Proxy *>
+Order allow,deny
+Allow from all
+</Proxy>
+ProxyPass / ajp://$TARGET:8009/
+ProxyPassReverse / ajp://$TARGET:8009/""" | sudo tee /etc/apache2/sites-available/ajp-proxy.conf
+sudo ln -s /etc/apache2/sites-available/ajp-proxy.conf /etc/apache2/sites-enabled/ajp-proxy.conf
+sudo systemctl start apache2
+```
+
+for the example it would be: 
+
+```shell
+sudo apt install libapache2-mod-jk
+sudo a2enmod proxy_ajp
+sudo a2enmod proxy_http
+export TARGET="83.136.253.251"
+echo -n """<Proxy *>
+Order allow,deny
+Allow from all
+</Proxy>
+ProxyPass / ajp://$TARGET:41513/
+ProxyPassReverse / ajp://$TARGET:41513/""" | sudo tee /etc/apache2/sites-available/ajp-proxy.conf
+sudo ln -s /etc/apache2/sites-available/ajp-proxy.conf /etc/apache2/sites-enabled/ajp-proxy.conf
+sudo systemctl start apache2
+```
+
+then curl to localhost (with alternative port if necessary): 
+
+![](Images/Pasted%20image%2020240212122656.png)
+
+note that with this configuration we will also be able to view this in our web browser: 
+
+![](Images/Pasted%20image%2020240212122807.png)
+
