@@ -189,3 +189,5 @@ when looking for SSRF we should look for:
 
 fuzzing can be extended to parts of the HTTP-request like the `User-Agent` to help find SSRF 
 
+## SSRF Exploitation Example 
+
