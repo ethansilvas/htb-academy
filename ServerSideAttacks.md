@@ -502,3 +502,30 @@ we then can get RCE in our listener
 
 ![](Images/Pasted%20image%2020240212204148.png)
 
+## Time-Based SSRF 
+
+we can also determine the existence of an SSRF vulnerability by observing the time differences between responses  
+this is also useful discovering internal services 
+
+if we submit this html doc to the app: 
+
+```html
+<html>
+    <body>
+        <b>Time-Based Blind SSRF</b>
+        <img src="http://blah.nonexistent.com">
+    </body>
+</html>
+```
+
+we can see that it took a certain amount of time to respond: 
+
+![](Images/Pasted%20image%2020240212210134.png)
+
+if we submit a valid URL inside the HTML doc then it will take less time to respond  
+`internal.app.local` was a valid internal app that we could access through SSRF 
+
+![](Images/Pasted%20image%2020240212210240.png)
+
+in some cases the app may fail immediately instead of taking more time to respond so we still need to observe the time differences between requests carefully 
+
