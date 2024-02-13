@@ -529,3 +529,47 @@ if we submit a valid URL inside the HTML doc then it will take less time to resp
 
 in some cases the app may fail immediately instead of taking more time to respond so we still need to observe the time differences between requests carefully 
 
+## Server-Side Includes Overview 
+
+server-side includes (SSI) is a tech used by web apps to create dynamic content on HTML pages before loading or during the rendering process by evaluating SSI directives 
+
+some SSI directives: 
+
+```html
+// Date
+<!--#echo var="DATE_LOCAL" -->
+
+// Modification date of a file
+<!--#flastmod file="index.html" -->
+
+// CGI Program results
+<!--#include virtual="/cgi-bin/counter.pl" -->
+
+// Including a footer
+<!--#include virtual="/footer.html" -->
+
+// Executing commands
+<!--#exec cmd="ls" -->
+
+// Setting variables
+<!--#set var="name" value="Rich" -->
+
+// Including virtual files (same directory)
+<!--#include virtual="file_to_include.html" -->
+
+// Including files (same directory)
+<!--#include file="file_to_include.html" -->
+
+// Print all variables
+<!--#printenv -->
+```
+
+you can identify the use of SSI on a web app by checking for extensions like `.shtml`, `.shtm`, or `.stm`  
+non-default server configs exist that allow other extensions like `html` to process SSI directives 
+
+need to send our payloads through input fields to test for SSI injection   
+web server will parse and execute directives before rendering the page if a vulnerability is present   
+vulnerabilities can be blind as well 
+
+successful SSI injection can lead to extracting sensitive info from local files or executing commands on the target server 
+
