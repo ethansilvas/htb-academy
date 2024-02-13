@@ -639,3 +639,17 @@ some useful tags are:
 <esi:debug/>
 ```
 
+in some cases we can get RCE when the app processing ESI directives supports XSLT, a dynamic language used to transform XML files  
+in this case we can pass `dca=xslt` to the payload and the xml file will be processed with the possibility of performing XML external entity injection attacks XXE
+
+`GoSecure` has a table for possible attacks that we can try against ESI-capable software 
+
+![](Images/Pasted%20image%2020240213140037.png)
+
+the columns are: 
+- Includes = supports the `<esi:includes>` directive 
+- Vars = supports the `<esi:vars>` directive, useful for bypassing XSS filters
+- Cookie = document cookies are accessible to the ESI engine
+- Upstream Headers Required = surrogate applications will not process ESI statements unless the upstream app provides the headers 
+- Host Allowlist = ESI includes are only possible from allowed server hosts, making something like SSRF only possible against those hosts 
+
