@@ -834,3 +834,35 @@ we could have also automated this with tplmap:
 
 one thing to note is that if we successfully evaluate the math expressions, then the app may also be vulnerable to XSS 
 
+## SSTI Exploitation Example 2 
+
+our new target is also a form: 
+
+![](Images/Pasted%20image%2020240214111302.png)
+
+we can see that the data is sent through a POST request to `/jointheteam` in the `email` parameter: 
+
+![](Images/Pasted%20image%2020240214111407.png)
+
+using the payload `{{7*7}}` we can again get successful evaluation: 
+
+![](Images/Pasted%20image%2020240214111521.png)
+
+then we try `{{7*'7'}}` and it also works: 
+
+![](Images/Pasted%20image%2020240214111610.png)
+
+however, if we try any specific payload for either twig or jinja2 we get an internal server error: 
+
+![](Images/Pasted%20image%2020240214111744.png)
+
+at this point we now have to fuzz with different types of payloads to discover what template engine we are working with   
+again we can automate this with tplmap and find that it is using tornado: 
+
+![](Images/Pasted%20image%2020240214112021.png)
+
+we can also use payloads like: 
+
+`curl -X POST -d "email={% import os %}{{os.system('whoami')}}" http://<TARGET IP>:<PORT>/jointheteam`
+
+
