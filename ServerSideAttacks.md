@@ -733,3 +733,36 @@ in this case we can inject a template expression directly and the server will ev
 
 `curl -gis 'http://127.0.0.1:5000/hello?name={{7*7}}`
 
+## SSTI Identification 
+
+can detect SSTI by injecting tags in inputs to see if they are evaluated   
+don't necessarily need to see the reflected response, sometimes it is blind and evaluated on different pages 
+
+easiest way to detect injections is to supply math expressions in curly brackets: 
+
+```html
+{7*7}
+${7*7}
+#{7*7}
+%{7*7}
+{{7*7}}
+```
+
+the most difficult way is to inject combos of special characters used in template expressions: 
+
+`${{<%[%'"}}%\`
+
+if an exception is caused then we have some control over what the server interprets 
+
+we can use tools like `tplmap` or `J2EE Scan` (burp pro) to auto test for SSTI or create a payload list to use with burp intruder 
+
+this diagram can help us identify if we are dealing with SSTI and also identify the underlying template engine: 
+
+![](Images/Pasted%20image%2020240213203902.png)
+
+can also try these to recognized the technology we are dealing with: 
+- check verbose errors for technology names. Sometimes just copying the error in google can give us answer
+- check for extensions. For example, .jsp for java 
+- send expressions with unclosed curly brackets to see if verbose errors generated. Do not try on prod systems as it may crash the server 
+
+
