@@ -915,4 +915,9 @@ now lets enumerate the builtins from this class:
 
 ![](Images/Pasted%20image%2020240214115411.png)
 
-we have found the import function by walking the hierarchy, this means that we can load `os` and use the `system` function to execute code from a string object 
+we have found the import function by walking the hierarchy, this means that we can load `os` and use the `system` function to execute code from a string object: 
+
+`''.__class__.__mro__[1].__subclasses__()`
+
+![](Images/Pasted%20image%2020240214115948.png)
+
