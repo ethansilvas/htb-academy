@@ -765,4 +765,51 @@ can also try these to recognized the technology we are dealing with:
 - check for extensions. For example, .jsp for java 
 - send expressions with unclosed curly brackets to see if verbose errors generated. Do not try on prod systems as it may crash the server 
 
+## SSTI Exploitation Example 1
+
+our target is a simple form: 
+
+![](Images/Pasted%20image%2020240214102937.png)
+
+lets try using basic math expressions to test for SSTI: 
+
+`{{7*7}}`
+
+![](Images/Pasted%20image%2020240214103157.png)
+
+now we need to identify what sort of template engine the app is using   
+now that we know `{{7*7}}` works, the next step in the portswigger diagram suggests trying `{{7*'7'}}`: 
+
+![](Images/Pasted%20image%2020240214103442.png)
+
+this was also successfully evaluated so according to the diagram the app is using either Jinja2 or Twig 
+
+so now lets try a Twig-specific payload: 
+
+`{{_self.env.display("TEST")}}`
+
+![](Images/Pasted%20image%2020240214103639.png)
+
+for more specific template engine payloads look at: 
+- payloadallthethings template injection 
+- hacktricks - SSTI 
+
+could also automate the engine identification with `tplmap`   
+in this example the user input is submitted through the `name` parameter and through a POST request: 
+
+```shell
+git clone https://github.com/epinna/tplmap.git
+cd tplmap
+pip install virtualenv
+virtualenv -p python2 venv
+source venv/bin/activate
+pip install -r requirements.txt
+./tplmap.py -u 'http://<TARGET IP>:<PORT>' -d name=john
+```
+
+the next step is to gain RCE   
+the Twig variable `_self` makes a few of the internal APIs public   
+we can use `getFilter` to execute a user-defined function via: 
+- register a function as a filter callback via `registerUndefinedFilterCallback`
+- invoke `_self.env.getFilter()` to execute the function we have just registered 
 
