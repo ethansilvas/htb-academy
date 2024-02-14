@@ -653,3 +653,45 @@ the columns are:
 - Upstream Headers Required = surrogate applications will not process ESI statements unless the upstream app provides the headers 
 - Host Allowlist = ESI includes are only possible from allowed server hosts, making something like SSRF only possible against those hosts 
 
+## Introduction to Template Engines
+
+template engines read tokenized strings from template docs and produce rendered strings with actual values in the output doc   
+commonly used as intermediary format to create dynamic website content   
+
+server-side template injection SSTI is injecting malicious template directives inside a template 
+
+if we have the following files: 
+
+```python
+#/usr/bin/python3
+from flask import *
+
+app = Flask(__name__, template_folder="./")
+
+@app.route("/")
+def index():
+	title = "Index Page"
+	content = "Some content"
+	return render_template("index.html", title=title, content=content)
+
+if __name__ == "__main__":
+	app.run(host="127.0.0.1", port=5000)
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>{{title}}</h1>
+    <p>{{content}}</p>
+</body>
+</html>
+```
+
+when we visit the site we will see the page with actual values for `title` and `content` 
