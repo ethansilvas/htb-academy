@@ -865,4 +865,54 @@ we can also use payloads like:
 
 `curl -X POST -d "email={% import os %}{{os.system('whoami')}}" http://<TARGET IP>:<PORT>/jointheteam`
 
+## SSTI Exploitation Example 3 
 
+this time the user input is submitted in the `cmd` parameter in a GET request: 
+
+![](Images/Pasted%20image%2020240214113124.png)
+
+the `{{7*7}}` payload will be evaluated: 
+
+![](Images/Pasted%20image%2020240214113228.png)
+
+with `{{7*'7'}}` we again get results: 
+
+![](Images/Pasted%20image%2020240214113314.png)
+
+we can tell from this output that the engine is jinja2, but we could have also automated to find this: 
+
+![](Images/Pasted%20image%2020240214113523.png)
+
+### Python primer for SSTI 
+
+fatalerrors.org has a dictionary to refer to for jinja2 payload development: 
+
+![](Images/Pasted%20image%2020240214113627.png)
+
+in python we can look at some of these with a string variable: 
+
+![](Images/Pasted%20image%2020240214113849.png)
+
+we looked at the variable's `type()`, `.__class__`, and then used `dir()` to look at all the methods and attributes it has 
+
+then using `__mro__` or `mro()` we can go up the tree of inherited objects in the python env
+
+![](Images/Pasted%20image%2020240214114400.png)
+![](Images/Pasted%20image%2020240214114327.png)
+
+now we can look for useful classes that can facilitate RCE: 
+
+![](Images/Pasted%20image%2020240214114823.png)
+
+![](Images/Pasted%20image%2020240214115034.png)
+
+we search for `warning` because this class imports python's `sys` module and from it we can reach the `os` module   
+also os modules are all from `warnings.catch_`
+
+now lets enumerate the builtins from this class: 
+
+![](Images/Pasted%20image%2020240214115402.png)
+
+![](Images/Pasted%20image%2020240214115411.png)
+
+we have found the import function by walking the hierarchy, this means that we can load `os` and use the `system` function to execute code from a string object 
