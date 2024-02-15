@@ -1343,3 +1343,30 @@ below are some more advanced tech stack identification:
 
 this is also a wordlist for brute-forcing functionality: https://github.com/carlospolop/Auto_Wordlists/blob/main/wordlists/xslt.txt
 
+## Server-Side Attacks - Skills Assessment 
+
+we are participating in a bug bounty hunting program and are interested in server-side attacks  
+perform all of the footprinting activities to obtain as much info as possible about the target's tech then apply any server-side attacks to gain the content of flag.txt without registering an account
+
+first lets see what ports are open: 
+
+![](Images/Pasted%20image%2020240214204008.png)
+
+our target has a few forms like the log in form that sends a post request: 
+
+![](Images/Pasted%20image%2020240214204056.png)
+
+sending some basic curl requests does not result in any redirects: 
+
+![](Images/Pasted%20image%2020240214213332.png)
+
+we know from the rules of engagement that we don't need to register a user, and there isn't anything else on the site besides the log in form  
+so for now I will focus on this form 
+
+setting up an Apache reverse proxy AJP attack I do not get any results: 
+
+![](Images/Pasted%20image%2020240214213017.png)
+
+even though I won't be needing to register an account, I still do so to test some manual SSTI payloads with no good results: 
+
+![](Images/Pasted%20image%2020240214210403.png)
