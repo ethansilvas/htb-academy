@@ -1370,3 +1370,12 @@ setting up an Apache reverse proxy AJP attack I do not get any results:
 even though I won't be needing to register an account, I still do so to test some manual SSTI payloads with no good results: 
 
 ![](Images/Pasted%20image%2020240214210403.png)
+
+eventually the flag was found by looking at the loaded javascript file: 
+
+![](Images/Pasted%20image%2020240215140908.png)
+
+then deciphering that to find that there is a hidden directory and parameter open to a server side attack: 
+
+`http://94.237.54.48:57081/G3tTh4tF1l34M3?l33t=http://127.0.0.1:8080/flag.txt`
+
