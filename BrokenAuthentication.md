@@ -118,3 +118,26 @@ companies that sell biometric smart locks have been breached to release all of i
 we will deal with this in this module  
 
 things that the user knows like a username and password in methods like FBA 
+
+## Default Credentials 
+
+it is common to find devices with default credentials due to human error or a breakdown in or lack of proper process  
+
+Rapid7's under the hoodie report said that known default credentials resulting in unauthorized access were 21% of their engagements 
+
+systems like ICS environments even prefer known credentials because it makes it easier than storing a complex set of credentials securely   
+this however does not justify default credentials 
+
+it is a mandatory step of security hardening to change default passwords at an early stage of app development 
+
+another common thing is vendors use hardcoded hidden accounts in their products   
+https://nvd.nist.gov/vuln/detail/CVE-2020-29583 - researchers found a hardcoded account with admin privileges and an unchangeable password 
+
+CIRT.net and SecLists have databases used to collect default credentials split by vendors   
+
+https://github.com/scadastrangelove/SCADAPASS/blob/master/scadapass.csv - SCADA StrangeLove published list of well-known ICS passwords, both default and hardcoded 
+
+always good to test known passwords against systems with lists like these, for example if you found a Cisco device then you could use https://www.cirt.net/passwords?criteria=cisco
+
+### Hands-on example 
+
