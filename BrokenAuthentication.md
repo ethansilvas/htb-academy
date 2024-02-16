@@ -85,4 +85,36 @@ a typical scenario for home banking authentication:
 - user must provide an OTP 
 - app checks if the ID, password, and OTP are valid 
 
+## Overview of Attacks Against Authentication 
 
+auth attacks can take place against the three domains: 
+- has
+- is
+- knows
+
+### Attacking the HAS domain 
+
+this can seem simple because it looks like it comes down to if we have the hardware token or not  
+things can be more complicated though: 
+- a badge could be cloned without taking it over
+- a crypto algorithm used to generate OTP could be broken
+- a physical device could be stolen 
+
+a long-range antenna can easily cover a distance of 50cm and clone a classic NFC badge   
+there are also many other social-engineering based methods to clone a card 
+
+### Attacking the IS domain 
+
+this may seem as the most difficult to attack  
+if something relies on something to prove their identity and that something gets compromised, then they lose that method because there is no way to change that part of them   
+
+retina, fingerprint, and facial recognition have all been proved to be breakable   
+these can be broken through third-party leak, high-definition picture, a skimmer or even someone who might steal the right glass you drank from 
+
+companies that sell biometric smart locks have been breached to release all of its users fingerprints and facial patterns 
+
+### Attacking the knows domain 
+
+we will deal with this in this module  
+
+things that the user knows like a username and password in methods like FBA 
