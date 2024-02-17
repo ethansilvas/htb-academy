@@ -141,3 +141,30 @@ always good to test known passwords against systems with lists like these, for e
 
 ### Hands-on example 
 
+https://academy.hackthebox.com/storage/modules/80/scripts/basic_bruteforce_py.txt
+https://academy.hackthebox.com/storage/modules/80/scripts/basic_bruteforce_php.txt
+
+first we need to capture the request parameters being used to login: 
+
+![](Images/Pasted%20image%2020240216175336.png)
+
+we can see from the title that the target is SCADA: 
+
+![](Images/Pasted%20image%2020240216175540.png)
+
+in our default script we can see that we are using the default passwords CSV:
+
+![](Images/Pasted%20image%2020240216180525.png)
+
+I also need to modify the `unpack()` method to accommodate for the `scada-pass.csv` format: 
+
+![](Images/Pasted%20image%2020240216185942.png)
+
+then modify the data being sent in the POST requests to match the captured request: 
+
+![](Images/Pasted%20image%2020240216181957.png)
+
+then we can find valid credentials:
+
+![](Images/Pasted%20image%2020240216185927.png)
+
