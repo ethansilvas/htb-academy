@@ -168,3 +168,90 @@ then we can find valid credentials:
 
 ![](Images/Pasted%20image%2020240216185927.png)
 
+## Weak Bruteforce Protections 
+
+some of the most common mechanisms to prevent automated attacks are: 
+- CAPTCHA
+- rate limits 
+
+there are also custom web dev security mechanisms that could be less robust and may contain bugs that we could exploit 
+
+### Captcha 
+
+completely automated public turing test to tell computers and humans apart   
+typing a word, audio sample, matching an image, math operations 
+
+has been bypassed in the past but still pretty effective against automated attacks   
+an app should at least require a user to solve after a few failed attempts   
+
+having weak versions like name of image made up of chars contained within the image is still better than no protections 
+
+for example really weak protections would be like having the answer in the `id` attribute: 
+
+![](Images/Pasted%20image%2020240219125922.png)
+
+these types of weak setups are rare but still always worth checking the source code for them 
+
+### Rate limiting 
+
+having a counter that increments after each failed attempt lets the app block a user that has failed multiple times within a certain amount of time 
+
+when the tool used isn't aware of these types of protections, like basic brute forces, they will just try username and password combos that aren't actually validated   
+a simple workaround is to modify tool to understand messages related to rate-limiting 
+
+https://academy.hackthebox.com/storage/modules/80/scripts/rate_limit_check_py.txt
+
+![](Images/Pasted%20image%2020240219130533.png)
+
+in the above code we configure a wait time and a lock message to look for 
+
+after being blocked the app might also require some manual operation like a confirmation code sent by email or text   
+rate limiting doesn't always have a cool-down period   
+could also implement questions for the user to answer 
+
+most standard rate-limiting implementations impose a delay after `N` failed attempts   
+this can be improved by increasing the delay and clustering requests by username, source IP, browser user-agent, etc. 
+
+mature frameworks have brute-force protections built-in or use external plugins   
+as a last resort major webservers like apache httpd or nginx could be used to perform rate-limiting on a given login page 
+
+### Insufficient protections 
+
+when an attacker can tamper with data taken into consideration to increase security they can bypass all or some protections   
+changing the user-agent is easy  
+some web apps or WAF leverage headers like `X-Forwarded-For` to guess the actual source IP address; done because many ISP hide users behind a NAT   
+blocking an IP without the help of `X-Forwarded-For` may result in blocking all users behind the specific NAT  
+
+an example vulnerable app would be like: 
+
+```php
+<?php
+// get IP address
+if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+	$realip = array_map('trim', explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))[0];
+} else if (array_key_exists('HTTP_CLIENT_IP', $_SERVER)) {
+	$realip = array_map('trim', explode(',', $_SERVER['HTTP_CLIENT_IP']))[0];
+} else if (array_key_exists('REMOTE_ADDR', $_SERVER)) {
+	$realip = array_map('trim', explode(',', $_SERVER['REMOTE_ADDR']))[0];
+}
+
+echo "<div>Your real IP address is: " . htmlspecialchars($realip) . "</div>";
+?>
+```
+
+these can be bypassed by simply crafting an `X-Forwarded-For` header: 
+
+```python
+headers = {
+  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36",
+  "X-Forwarded-For": "1.2.3.4"
+}
+```
+
+the same would work for web apps that grant access based on the user's source IP   
+
+no web app should rely on a single, tamperable element as a security protection   
+there is no reliable way to identify an actual IP address of a user behind a NAT   
+therefore it is better to implement protections that slow down the attacker as much as possible   
+stronger captchas and lockouts work well but generally MFA is still the best 
+
