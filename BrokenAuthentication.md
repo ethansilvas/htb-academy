@@ -255,3 +255,9 @@ there is no reliable way to identify an actual IP address of a user behind a NAT
 therefore it is better to implement protections that slow down the attacker as much as possible   
 stronger captchas and lockouts work well but generally MFA is still the best 
 
+our target looks to have no lockout but we can try to avoid the IP filters by changing our `X-Forwarded-For` header to be the localhost IP: 
+
+![](Images/Pasted%20image%2020240219161332.png)
+
+![](Images/Pasted%20image%2020240219161442.png)
+
