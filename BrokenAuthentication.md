@@ -261,3 +261,176 @@ our target looks to have no lockout but we can try to avoid the IP filters by ch
 
 ![](Images/Pasted%20image%2020240219161442.png)
 
+## Brute Forcing Usernames 
+
+many web apps allow us to identify usernames and often they are reused to access other services like FTP, RDP, and SSH 
+
+usernames are often much less complicated than passwords  
+with a list of valid usernames an attacker can narrow down the scope of a brute force attack and carry out targeted attacks   
+also a common password can be sprayed against a list of valid accounts 
+
+usernames can also be harvested by web crawlers and using public info like company profiles and social networks 
+
+protection against username enumeration can harm UX because letting the user know whether or not their username is valid could help attackers: 
+
+![](Images/Pasted%20image%2020240219172915.png)
+
+![](Images/Pasted%20image%2020240219172927.png)
+
+### User unknown attack
+
+attackers can brute force for error messages like "the password you entered for the username X is incorrect"   
+always make sure to look for usernames like helpdesk, tech, admin, demo, guest, etc. 
+
+if our target has an "unknown username" message we can do a brute force attack with `wfuzz` and a reverse string match against the response text with `--hs "Unknown username"`:
+
+![](Images/Pasted%20image%2020240219175538.png)
+
+```shell
+wfuzz -c -z file,/opt/useful/SecLists/Usernames/top-usernames-shortlist.txt -d "Username=FUZZ&Password=dummypass" --hs "Unknown username" http://brokenauthentication.hackthebox.eu/user_unknown.php
+```
+
+remember that we aren't concerned with the password right now so we used a dummy one in the above command
+
+### Username existence inference 
+
+sometimes the web app doesn't explicitly say that it doesn't know a username but you can still infer it   
+for example some sites will prefill the username input if it is valid; quite common on mobile websites 
+
+although uncommon, it is also possible for cookies are set when a username is valid   
+for example, to check for password attempts using client-side controls the app could set a cookie named failed_login 
+
+### Timing attack 
+
+some authentication functions can contain flaws, for example if a function checks the username and password sequentially 
+
+an example of vulnerable code would be: 
+
+```php
+<?php
+// connect to database
+$db = mysqli_connect("localhost", "dbuser", "dbpass", "dbname");
+
+// retrieve row data for user
+$result = $db->query('SELECT * FROM users WHERE username="'.safesql($_POST['user']).'" AND active=1');
+
+// $db->query() replies True if there are at least a row (so a user), and False if there are no rows (so no users)
+if ($result) {
+  // retrieve a row. don't use this code if multiple rows are expected
+  $row = mysqli_fetch_row($result);
+
+  // hash password using custom algorithm
+  $cpass = hash_password($_POST['password']);
+  
+  // check if received password matches with one stored in the database
+  if ($cpass === $row['cpassword']) {
+	echo "Welcome $row['username']";
+  } else {
+    echo "Invalid credentials.";
+  } 
+} else {
+  echo "Invalid credentials.";
+}
+?>
+```
+
+in the above example, if the username matches the requested one then it will hash the provided password and compare it   
+however if the username isn't valid then the function ends with a generic message 
+if the hashing algo is strong enough then there is timing differences between a valid and invalid username  
+this can be avoided by checking the username and password at the same time so they have similar time for both valid and invalid usernames 
+
+https://academy.hackthebox.com/storage/modules/80/scripts/timing_py.txt
+https://academy.hackthebox.com/storage/modules/80/scripts/timing_php.txt
+
+if we use the above script on the php app: 
+
+```shell
+python3 timing.py /opt/useful/SecLists/Usernames/top-usernames-shortlist.txt
+```
+
+we can see the differences in response times: 
+
+![](Images/Pasted%20image%2020240219181804.png)
+
+if hashing algos are faster then the differences will be less noticeable but the attack would still be possible by repeating a large number of requests to create a model   
+modern apps will likely have robust algorithms that make offline brute force attacks as slow as possible 
+
+many apps still need to consider the CPU time and RAM usage to calculate these hashes for the amount of users they have   
+for example LinkedIn using bcrypt would need six servers just to let all of their users log in 
+
+### Enumerate through password reset 
+
+reset forms are often less protected than login ones   
+very often leak info about valid or invalid usernames, for example it might send messages like "you should receive a message shortly" and "username unknown, check your data" 
+
+noisy because valid users will probably receive an email that asks for password reset 
+
+### Enumerate through registration form 
+
+registration forms typically tell the user that a username already exists or provides other tells   
+attackers can register common usernames like admin, administrator, and tech to enumerate valid ones   
+
+a secure registration form should implement a captcha before checking if the selected username exists   
+
+an interesting feature of email addresses is `sub-addressing`  
+https://tools.ietf.org/html/rfc5233  
+
+any `+tag` in the left part of an email should be ignored by the mail transport agent MTA   
+writing to an email like `student+htb@hackthebox.eu` will deliver the email to `student@hackthebox.eu` and if filters are supported and properly configed it will be placed in the folder `htb`   
+
+very few web apps respect this RFC which leads to the possibility of registering almost infinite users by using a tag and only one actual email address 
+
+### Predictable usernames 
+
+in web apps with fewer UX requirements we may see usernames created sequentially 
+
+may run into accounts like `user1000`, `user1001`, etc.  
+same with admin users like `support.it`, `support.fr`, etc. 
+
+an attacker can infer the algorithm used to create users and guess existing accounts starting from some known ones 
+
+### Find a valid username Q1
+
+our target uses the message "Invalid username." when attempting to login 
+
+we can see that the site uses a GET request and running a simple wfuzz command to fuzz the username parameter results in the "puppet" username being found based on word length: 
+
+![](Images/Pasted%20image%2020240219191108.png)
+![](Images/Pasted%20image%2020240219191118.png)
+
+### Find a valid username Q2
+
+this target appears to send a request parameter `wronguser` when using invalid credentials: 
+
+![](Images/Pasted%20image%2020240219191419.png)
+
+you can also see that they are hidden form fields: 
+
+![](Images/Pasted%20image%2020240219192910.png)
+
+in the responses you can also see the `wronguser` field being filled: 
+
+![](Images/Pasted%20image%2020240219193328.png)
+
+but with a valid username you can see it instead set to `validuser`: 
+
+![](Images/Pasted%20image%2020240219193411.png)
+
+### Find a valid username Q3
+
+in this example there is vague error text and no such descriptive request parameters or hidden form fields so now it might be appropriate to try the `timing.py` script to compare hashing times for the provided credentials: 
+
+from this you can see that the user "vagrant" took a much longer time to respond: 
+
+![](Images/Pasted%20image%2020240219193941.png)
+
+### Find a valid username Q4 
+
+this target has a registration form that after registering an account will provide a "thanks for registering" message: 
+
+![](Images/Pasted%20image%2020240219194206.png)
+
+then in burp intruder you can see that the response length of an already registered user is much longer: 
+
+![](Images/Pasted%20image%2020240219194352.png)
+
