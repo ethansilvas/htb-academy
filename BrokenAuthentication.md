@@ -434,3 +434,29 @@ then in burp intruder you can see that the response length of an already registe
 
 ![](Images/Pasted%20image%2020240219194352.png)
 
+## Brute Forcing Passwords 
+
+after successful username enumeration, the attacker is usually one step away from bypassing authentication   
+passwords are the primary security measure for most apps   
+
+### Password issues 
+
+often people think that a password is just a word and not a phrase  
+users mostly only set passwords that are easy to remember   
+many passwords saved in cleartext or post-it note   
+also not uncommon to find password written in the hint field 
+
+NIST modified its guidelines: 
+
+```
+Verifiers SHOULD NOT impose other composition rules (e.g., requiring mixtures of different character types or prohibiting consecutively repeated characters) for memorized secrets. Verifiers SHOULD NOT require memorized secrets to be changed arbitrarily (e.g., periodically).
+```
+
+it is also common for users to reuse passwords on multiple services - credential stuffing 
+
+password managers are a good solution  
+
+some places like ATMs use weak measures like PINs but are balanced by limitations on total attempts 
+
+### Policy inference
+
