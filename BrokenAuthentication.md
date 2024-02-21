@@ -663,3 +663,47 @@ in the other example we are given a long token that we can try different decodin
 we can do the reverse of this string with the admin account to get a valid temp password: 
 
 ![](Images/Pasted%20image%2020240221134644.png)
+
+## Authentication Credentials Handling
+
+how an app operates on passwords (password reset, password recovery, password change) 
+
+three ways to get a new password when no external auth factor is used: 
+- request a new one via email 
+- request url that will allow them to set a new one
+- answering prefilled questions as proof of identity 
+
+we want to look for login flaws in "forgot password" and "password change"
+
+## Guessable Answers 
+
+the questions presented to the user during registration phase are often hardcoded and can't be chosen by them   
+
+questions like mothers maiden name or city you were born in can easily be cracked with OSINT or a brute force attack 
+
+theses questions are not suggested to be used by one way to increase security is to keep repeating the first question until the user answers correctly   
+this way an attacker needs to know one they might not know 
+
+some apps will rotate the questions so we should keep repeating to collect the ones that are easiest to guess 
+
+https://academy.hackthebox.com/storage/modules/80/scripts/predictable_questions_php.txt
+https://academy.hackthebox.com/storage/modules/80/scripts/predictable_questions_py.txt
+
+if we have a reset page like this: 
+
+![](Images/Pasted%20image%2020240221152839.png)
+
+we can first try reloading the page multiple times to see that the questions change: 
+
+![](Images/Pasted%20image%2020240221152916.png)
+
+we can also see that we can choose in the request which answer we want to use: 
+
+![](Images/Pasted%20image%2020240221153115.png)
+
+favorite color seems to be easiest to brute force so we can try that: 
+
+![](Images/Pasted%20image%2020240221153641.png)
+
+![](Images/Pasted%20image%2020240221153628.png)
+
