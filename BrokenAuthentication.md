@@ -537,4 +537,77 @@ can also consider answers to security questions tokens as well
 
 ### Reset token by email 
 
+if the app sends temp passwords by email then it should contain a robust token generation function 
+
+most frameworks have built in functions to generate tokens but sometimes developers create their own which is more susceptible to attacks 
+
+### Weak token generation 
+
+some apps create tokens using known or predictable values like the local time or the username to then be hashed or encoded   
+bad practice because a token doesn't need to contain any relevant info and should be completely random 
+
+we should try to brute force any weak hash using known combos like time+username or time+email when a reset token is requested for a given user 
+
+```php
+<?php
+function generate_reset_token($username) {
+  $time = intval(microtime(true) * 1000);
+  $token = md5($username . $time);
+  return $token;
+}
+```
+
+from code like the above the attacker can get the server time by reading the `Date header`   
+then you can brute force the `$time` value in a matter of seconds to get a valid reset token 
+
+https://academy.hackthebox.com/storage/modules/80/scripts/reset_token_time_php.txt
+https://academy.hackthebox.com/storage/modules/80/scripts/reset_token_time_py.txt
+
+in the above examples the app generates a token with an md5 hash of the current seconds since epoch and we can use the python script to brute force it 
+
+sometimes the headers could be stripped or altered by reverse proxies but we can infer the time in different ways like the time of a sent or received in-app message, an email header, or last login time   
+
+some apps don't check for the token age which gives attackers plenty of time   
+sometimes the tokens aren't even invalidated or expired   
+
+### Short tokens 
+
+another bad practice is the use of short tokens   
+usually to help mobile users, an app might generate a token of 5/6 chars   
+
+no need to use short tokens because they are received by email and could be embedded in an HTTP link that could be validated with a get request like: 
+
+`https://127.0.0.1/reset.php?token=any_random_sequence`
+
+using wfuzz to fuzz a token of 5 digits we can test all digits between 00000-99999 and if the app responds with a message then we could do a reverse string match to filter responses that contain "Invalid token" with `--hs`: 
+
+```shell
+wfuzz -z range,00000-99999 --ss "Valid" "https://brokenauthentication.hackthebox.eu/token.php?user=admin&token=FUZZ"
+```
+
+### Weak cryptography 
+
+sometimes developers try to create their own crypto routine which can lead to weak token randomness 
+
+for example an app was found to be using `mt_rand()` in php which is known to be vulnerable due to lack of sufficient entropy   
+having access to some insecure tokens makes it possible to identify the seed, which can lead to predicting any past and future token 
+
+### Reset token as temp password 
+
+some apps use reset tokens as actual temp passwords   
+any temp password should be invalidated as soon as the user logs in and changes it   
+
+always check if any reset tokens being used as temp passwords can be reused 
+
+higher chances that temp passwords are being generated with predictable algorithms like mt_rand(), md5(), etc. so make sure to test the algorithm's security by looking at captured tokens 
+
+if we have a vulnerable app that generates tokens: 
+
+![](Images/Pasted%20image%2020240221105320.png)
+
+attempting a fake token you can get the error message: 
+
+![](Images/Pasted%20image%2020240221105415.png)
+
+then in the reset_token_time.py script you can brute force a valid token for another user "htbadmin": 
 
