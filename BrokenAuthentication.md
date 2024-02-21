@@ -511,14 +511,18 @@ first to find the policy by testing different combinations:
 - `Qwertyiop` - invalid 
 - `qwertyiop123` - invalid 
 - `Qwertyiop1` - valid 
+- `QWERTYUIOP123` - valid
 
-now that I can tell that uppercase and numbers are required I can look for any length requirements: 
+now that I can tell that uppercase and numbers are required but not lowercase, I can look for any length requirements: 
 - `Qwertyuiopasdf123` - 17 chars valid
 - `Q1` - valid
 
 from this I can assume that the only real requirements are that the password have 1 uppercase and 1 number so I can now filter out the passwords list: 
 
-`grep '[[:upper:]]' rockyou.txt | grep '[[:lower:]]' | grep '[0-9]'`: 
+`grep '[[:upper:]]' rockyou.txt | grep '[0-9]'`: 
 
-![](Images/Pasted%20image%2020240220150558.png)
+![](Images/Pasted%20image%2020240220175834.png)
 
+then with the specified list list you can find the password: 
+
+![](Images/Pasted%20image%2020240220191803.png)
