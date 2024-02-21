@@ -460,3 +460,65 @@ some places like ATMs use weak measures like PINs but are balanced by limitation
 
 ### Policy inference
 
+the chances of executing a successful brute force attack increase after a policy evaluation   
+knowing min password requirements lets the attacker only test compliant passwords   
+strong password policies can make brute forces almost impossible  
+
+as a developer, always choose long passwords over short+complex ones 
+
+pretty much always possible to infer the password policy by registering a new user 
+
+![](Images/Pasted%20image%2020240220141225.png)
+
+policies define how many different families of characters are needed and the length of the password itself 
+
+famillies: 
+- lowercase characters (a-z)
+- uppercase characters (A-Z)
+- digits (0-9)
+- special characters like `,./?! `
+
+to guess policy requirements we can start with something like: 
+
+`Qwertyiop123!@#`
+
+then we can one by one remove families like special characters, numbers, etc. 
+
+some limit length by forcing users to have password between 8-15 chars   
+prone to error and possible that some combos will not be tested while others will be tested twice   
+
+recommended to use a table like: 
+
+![](Images/Pasted%20image%2020240220143306.png)
+
+then once we have isolated the policy we can filter our dictionaries like with: 
+
+```shell
+grep '[[:upper:]]' rockyou.txt | grep '[[:lower:]]' | grep -E '^.{8,12}$' | wc -l
+```
+
+https://academy.hackthebox.com/storage/modules/80/password_policy_php.txt
+
+always make sure to check if an anti-csrf token protects the form and modify the script to send such a token 
+
+our target is a basic login form: 
+
+![](Images/Pasted%20image%2020240220144125.png)
+
+first to find the policy by testing different combinations: 
+- `Qwertyiop123!@#` - valid 
+- `Qwertyiop123` - valid 
+- `Qwertyiop` - invalid 
+- `qwertyiop123` - invalid 
+- `Qwertyiop1` - valid 
+
+now that I can tell that uppercase and numbers are required I can look for any length requirements: 
+- `Qwertyuiopasdf123` - 17 chars valid
+- `Q1` - valid
+
+from this I can assume that the only real requirements are that the password have 1 uppercase and 1 number so I can now filter out the passwords list: 
+
+`grep '[[:upper:]]' rockyou.txt | grep '[[:lower:]]' | grep '[0-9]'`: 
+
+![](Images/Pasted%20image%2020240220150558.png)
+
