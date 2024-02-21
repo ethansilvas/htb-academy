@@ -526,3 +526,15 @@ from this I can assume that the only real requirements are that the password hav
 then with the specified list list you can find the password: 
 
 ![](Images/Pasted%20image%2020240220191803.png)
+
+## Predictable Reset Token 
+
+reset tokens in the form of a code or temp password are pieces of data generated mainly by the app when a password reset is requested  
+must be provided to prove user's identity 
+can also consider answers to security questions tokens as well 
+
+![](Images/Pasted%20image%2020240220205001.png)
+
+### Reset token by email 
+
+
