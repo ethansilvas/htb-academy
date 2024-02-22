@@ -707,3 +707,46 @@ favorite color seems to be easiest to brute force so we can try that:
 
 ![](Images/Pasted%20image%2020240221153628.png)
 
+## Username Injection 
+
+at a high level when a user inputs the expected value the reset functionality lets the user change the password or pass the authentication phase   
+sometimes the function to check if a rest token is valid and for the right account is vulnerable 
+
+imagine we created our own account and requested a password reset: 
+
+![](Images/Pasted%20image%2020240221164310.png)
+
+we can try to inject a different username or email looking for a possible hidden input value or guessing any valid input name   
+some apps give precedence to received info against the info stored in a session value 
+
+```php
+<?php
+  if isset($_REQUEST['userid']) {
+	$userid = $_REQUEST['userid'];
+  } else if isset($_SESSION['userid']) {
+	$userid = $_SESSION['userid'];
+  } else {
+	die("unknown userid");
+  }
+```
+
+often the function that changes the password is reused and shares the same codebase for both admins and users   
+
+the app will usually ask for authorization before any change, for example checking if the user has the rights to modify the password for the target user   
+
+we can create an attack by sending a password request while logged in with our user and injecting the target user's email or username through the possible field names   
+you may be able to add parameters such as `userid` to a request to change the password of a different user than our own account
+
+if we have a small number of fields and user/email values to test, you can mount this attack using an intercepting proxy   
+
+https://academy.hackthebox.com/storage/modules/80/scripts/username_injection_php.txt
+https://academy.hackthebox.com/storage/modules/80/scripts/username_injection_py.txt
+
+if we are logged in as a user and try to change our password: 
+
+![](Images/Pasted%20image%2020240221170859.png)
+
+by adding the `userid=htbadmin` parameter to our change password request we can successfully change the password of the admin account: 
+
+![](Images/Pasted%20image%2020240221171552.png)
+
