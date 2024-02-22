@@ -988,4 +988,21 @@ and from here I can confirm that the "support" user account does exist:
 
 ![](Images/Pasted%20image%2020240222115401.png)
 
+from here I can now do two things - I could try to enumerate other usernames by brute forcing the message form and I could also brute force the support account login by using a filtered list like rockyou
+
+first lets try enumerating other usernames in case we can find a potentially even better account such as "admin"
+
+using a few different username lists and looking for the string "Message sent to" I can find a few other accounts: 
+
+![](Images/Pasted%20image%2020240222120551.png)
+
+```shell
+curl 'http://94.237.56.188:50709/messages.php' -X POST -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate' -H 'Content-Type: application/x-www-form-urlencoded' -H 'Origin: http://94.237.56.188:50709' -H 'DNT: 1' -H 'Connection: keep-alive' -H 'Referer: http://94.237.56.188:50709/messages.php' -H 'Cookie: htb_sessid=MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY%3D' -H 'Upgrade-Insecure-Requests: 1' -H 'Sec-GPC: 1' --data-raw 'user=hi&message=hi&submit=submit'
+```
+
+so far the accounts found were: 
+- support
+- guest
+- test
+- 
 
