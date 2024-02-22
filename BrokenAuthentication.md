@@ -869,3 +869,70 @@ we can then modify this to give us super permissions and encode it to replace ou
 
 ![](Images/Pasted%20image%2020240221220652.png)
 
+## Insecure Token Handling 
+
+difference between tokens and cookies are that cookies are used to send and store arbitrary data while tokens are used to send authorization data   
+
+when we do token-based authentication like OpenID or OpenID connect, we receive an `id` token from a trusted authority, this is usually referred to as JWT 
+
+typical use of JWT is continuous authentication for SSO   
+can be used flexibly for any field where compact, signed, and encrypted info needs to be transmitted   
+
+### Token lifetime 
+
+a token should expire after the user has been inactive for a given amount of time, and should expire even if there is activity after the given amount of time   
+if it never expires then it is open to session fixation   
+
+### Session fixation 
+
+one of the most important rules about a cookie token is that its value should change as soon as the access level changes  
+if a guest user gets a code then as soon as they authenticate the token should change   
+the same should happen if the user gets more grants   
+
+session fixation is carried out by phishing a user with a link that has a fixed and unknown by the app session value   
+the web app should redirect the user to the login page because it doesn't know the session value   
+when the user logs the session value remains the same, and the attacker can now reuse it 
+
+a simple example would be a web app that gets the session id from a url parameter: 
+
+`https://brokenauthentication/view.php?SESSIONID=anyrandomvalue`
+
+when a user doesn't have a valid session for the site the web app could set the session id as any random value 
+
+![](Images/Pasted%20image%2020240222105754.png)
+
+if the web app doesn't change the token after successful login by the user, then the attacker can reuse it anytime until it expires 
+
+### Token in the url 
+
+it used to be possible to catch a valid session token by making the user browse away from a site where they had been authenticated, moving to a site controlled by the attacker   
+the `Referer` header carried the full URL of the previous site which would include the domain and parameters containing the session value 
+
+these days this isn't always feasible because by default modern browsers strip the `Referer` header   
+but could still be an issue if the web app suffers from a local file inclusion vulnerability or the `Referer-Policy` header is set in an unsafe manner
+
+if we can read app or web server logs then we might also obtain a high number of valid tokens remotely   
+also possible if we compromise an external analytics or log collection tool used by the web server or app   
+can learn more in file inclusion / directory traversal module 
+
+### Session security 
+
+secure session handling starts from giving the user as little info as possible   
+if a cookie contains only a random sequence, an attacker might have a hard time   
+a web app should only use a cookie as an id to fetch the correct session 
+
+some security libraries also let you encrypt cookie IDs also at the server level   
+encryption comes from taking info from hardcoded values, the request, the IP, or other env variables   
+snuffleupagus PHP module is a good example   
+
+session security should also cover multiple logins for the same user and concurrent usage of the same session token from different endpoints   
+a user should only be allowed to have access to account from one device at a time   
+mobile can be an exception but should use a parallel session check   
+should use a sticky session on a given endpoint to raise the security level 
+
+### Cookie security 
+
+most tokens are sent and received using cookies   
+cookie should be created with the correct path value, be set as `httponly` and `secure`, and have the proper domain scope   
+an unsecured cookie could be stolen and reused easily through XSS or MitM 
+
