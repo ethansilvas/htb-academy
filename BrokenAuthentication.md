@@ -750,3 +750,122 @@ by adding the `userid=htbadmin` parameter to our change password request we can 
 
 ![](Images/Pasted%20image%2020240221171552.png)
 
+## Brute Forcing Cookies
+
+cookies used to store a lot more info about the user, essentially all info that we associate with a session in modern apps   
+now cookies will instead be set as a unique session that when shown to the site the app will check any details by looking at the correct session on the server-side 
+
+sites usually set many cookies but we know that usually one or two are relevant to the session
+
+there are other ways to track users like `HTTP Authentication` or an in-page token like `ViewState`  
+HTTP auth usually isn't common for internet-facing apps but could be a good barrier if we want to protect web app before a user even reaches the login form 
+
+`ViewState` is an in-page security token used by default for .NET apps   
+also a hidden field in HTML forms   
+serialized object containing useful info about the current user/session like where user came form, where they can go, what the user can see or modify   
+can be easily decoded if not encrypted but also could suffer from vulnerability that leads to RCE even if encrypted 
+
+session cookies are similar to password reset tokens vulnerabilities - predictable, broken, forged
+
+### Cookie token tampering 
+
+session tokens can be based on guessable information   
+the most common piece of data we can find in cookies is user grants, for example if the user is an admin, operator, basic user, etc. 
+
+sometimes they are also generated with important info like the userid, grants, time, etc. 
+
+![](Images/Pasted%20image%2020240221201323.png)
+
+if we find a session cookie and decode it to be something like: 
+
+```shell-session
+user:htb;role:user
+```
+
+then we can modify our own session cookie to contain something like `role:admin`
+
+### Remember me token
+
+can consider a `rememberme` token as a session cookie that lasts for a longer time than usual   
+typically last 7 days or even a month  
+
+similar attacks to password reset tokens and generic cookies 
+
+### Encrypted or encoded token 
+
+cookies can also contain the result of the encryption of a sequence of data 
+
+some encodings can be seen by a quick glance and others might be transformed by something like XOR or compression functions before being encoded   
+always look for magic bytes  
+https://en.wikipedia.org/wiki/List_of_file_signatures
+
+if we use cyberchef to look at a base64 string that results in hex bytes: 
+
+![](Images/Pasted%20image%2020240221204237.png)
+
+magic bytes are `1F` and `8b`, searching through the file signatures shows that this could be gzipped text which we can view: 
+
+![](Images/Pasted%20image%2020240221204534.png)
+
+say we find that a cookie is found to be derived from: 
+
+`_user_name:persistentcookie:random_5digit_value_`
+
+then we would need to automate the steps of encoding each brute force value
+
+https://academy.hackthebox.com/storage/modules/80/scripts/automate_cookie_tampering_py.txt
+
+### Weak session token 
+
+even when cookies are generated using strong randomization it could be possible that the token isn't long enough   
+could be a problem if there are many concurrent users   
+
+john the ripper generates non-linear values for brute forcing 
+
+first examine cookie values and find the length of the token and what families the charset contains like lowercase or digits  
+
+```shell
+john --incremental=LowerNum --min-length=6 --max-length=6 --stdout| wfuzz -z stdin -b HTBSESS=FUZZ --ss "Welcome" -u https://brokenauthentication.hackthebox.eu/profile.php 
+```
+
+in the above we feed the john output into wfuzz: 
+- we set john into incremental mode using `LowerNum` charset   
+- specify a password length of 6 chars with min and max  
+- print to `--stdout`
+- wfuzz uses the payload from `-z stdin` and fuzzes the HTBSESS cookie `-b HTBSESS=FUZZ`
+- looks for the welcome string with `--ss`
+
+https://academy.hackthebox.com/storage/modules/80/scripts/bruteforce_cookie_php.txt
+
+in our first target we have a session cookie that we want to tamper with to give ourselves super user access: 
+
+![](Images/Pasted%20image%2020240221211930.png)
+
+this is again encoded with base64 -> hex: 
+
+![](Images/Pasted%20image%2020240221212032.png)
+
+we can then modify the request to give us super permissions and do the encoding to get the flag with our new cookie: 
+
+![](Images/Pasted%20image%2020240221215109.png)
+
+![](Images/Pasted%20image%2020240221215149.png)
+
+our next target has a remember me cookie: 
+
+![](Images/Pasted%20image%2020240221215258.png)
+
+![](Images/Pasted%20image%2020240221215313.png)
+
+from the `HTBPERSISTENT` cookie we can decode the value from base64: 
+
+![](Images/Pasted%20image%2020240221220344.png)
+
+then looking up the magic bytes that we can see that it looks to have produced a zlib output which we can then decode: 
+
+![](Images/Pasted%20image%2020240221220424.png)
+
+we can then modify this to give us super permissions and encode it to replace our cookie with to get the flag after refreshing the page: 
+
+![](Images/Pasted%20image%2020240221220652.png)
+
