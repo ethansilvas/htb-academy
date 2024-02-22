@@ -936,3 +936,56 @@ most tokens are sent and received using cookies
 cookie should be created with the correct path value, be set as `httponly` and `secure`, and have the proper domain scope   
 an unsecured cookie could be stolen and reused easily through XSS or MitM 
 
+## Skill Assessment - Broken Authentication 
+
+want to find authentication vulnerabilities in app   
+use the skills in this module to find flags  
+
+our target has a login page with multiple potential access points such as rememberme, create an account, and forgot password: 
+
+![](Images/Pasted%20image%2020240222112409.png)
+
+there also appears to be a base64 encoded `htb_sessid` cookie in use: 
+
+![](Images/Pasted%20image%2020240222112509.png)
+
+![](Images/Pasted%20image%2020240222113145.png)
+
+at least while logged in the sessionid doesn't seem to give any useful results so for now I can try to register an account and see what types of password policy rules will work 
+
+I start by incrementally modifying passwords: 
+- `test` - invalid "must start with a capital letter"
+- `Test` - invalid "must end with a digit"
+- `1test` and `1Test` - invalid "must start with a capital letter"
+- `TEST1` - invalid "must contain at least one lowercase" 
+- `Ta1` - invalid "must contain at least one special char: $ # @"
+- `Ta!1` and `Ta?1` - invalid "must contain at least one special char: $ # @"
+- `Ta$1` - invalid "the password is shorter than 20 characters" 
+- `Taaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$1` - invalid "the password is longer than 29 characters"
+- `Taaaaaaaaaaaaaaaaaaa$1` - valid 
+
+so now I have a very specific list of password policy rules that I can later use if I encounter other usernames 
+
+lets login to the newly created user and also check out the remember me behavior: 
+
+![](Images/Pasted%20image%2020240222114633.png)
+
+![](Images/Pasted%20image%2020240222114658.png)
+
+![](Images/Pasted%20image%2020240222114714.png)
+
+looking around at the changed site post-login I notice a few things that may be worth checking out
+
+the support page says "we have unified all local account in a global one: support": 
+
+![](Images/Pasted%20image%2020240222115117.png)
+
+in the messages section I can message only valid users: 
+
+![](Images/Pasted%20image%2020240222115411.png)
+
+and from here I can confirm that the "support" user account does exist: 
+
+![](Images/Pasted%20image%2020240222115401.png)
+
+
