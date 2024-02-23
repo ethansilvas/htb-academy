@@ -169,3 +169,86 @@ we can also try other commands to view files on the target web server:
 
 ![](Images/Pasted%20image%2020240223143355.png)
 
+## Verb Tampering Prevention 
+
+insecure configs and coding are usually what introduce HTTP verb tampering  
+
+### Insecure configuration 
+
+verb tampering can occur in most modern web servers like apache, tomcat, and ASP.NET   
+usually happens when we limit a page's authorization to a certain set of HTTP verbs/methods, leaving the other methods unprotected 
+
+here is an example of a vulnerable config for an apache web server which is in the `000-default.conf` or in the `.htaccess` web page config file: 
+
+```xml
+<Directory "/var/www/html/admin">
+    AuthType Basic
+    AuthName "Admin Panel"
+    AuthUserFile /etc/apache2/.htpasswd
+    <Limit GET>
+        Require valid-user
+    </Limit>
+</Directory>
+```
+
+the GET request is the only method that requires a valid user which means that all other methods won't be subject to that filter 
+
+the same vulnerability can be found in a tomcat config in the `web.xml` file: 
+
+```xml
+<security-constraint>
+    <web-resource-collection>
+        <url-pattern>/admin/*</url-pattern>
+        <http-method>GET</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+        <role-name>admin</role-name>
+    </auth-constraint>
+</security-constraint>
+```
+
+and again the same can be found in ASP.NET in the `web.config` file: 
+
+```xml
+<system.web>
+    <authorization>
+        <allow verbs="GET" roles="admin">
+            <deny verbs="GET" users="*">
+        </deny>
+        </allow>
+    </authorization>
+</system.web>
+```
+
+we should always avoid restricting auth to particular methods and always allow/deny all HTTP verbs and methods 
+
+if we want to specify a single method then we can use safe keywords like `LimitExcept` in apache, `http-method-omission` in tomcat, and `add/remove` in ASP.NET 
+
+we should also consider disabling/denying all HEAD requests unless it is required by the app 
+
+### Insecure coding 
+
+patching insecure coding can be much more difficult because we need to find inconsistencies in the use of HTTP parameters across functions   
+
+```php
+if (isset($_REQUEST['filename'])) {
+    if (!preg_match('/[^A-Za-z0-9. _-]/', $_POST['filename'])) {
+        system("touch " . $_REQUEST['filename']);
+    } else {
+        echo "Malicious Request Denied!";
+    }
+}
+```
+
+the error in the above code is that the filter only checks for the POST method while at the same time using `$_REQUEST` which is open to both GET and POST   
+
+in a production app these won't be so obvious because they will be spread across the app and will not be on two consecutive lines like in the example   
+the app instead might have a function for checking for injections and a different function for creating files   
+
+we must be consistent with our use of HTTP methods and ensure that the same method is used for any specific functionality across the web app   
+always advised to test all types of request parameters   
+
+we can test for all parameters with: 
+
+![](Images/Pasted%20image%2020240223144940.png)
+
