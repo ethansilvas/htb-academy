@@ -140,3 +140,32 @@ in our case the OPTIONS request will initiate the reset functionality but we cou
 
 ![](Images/Pasted%20image%2020240223141936.png)
 
+## Bypassing Security Filters 
+
+the other more common way of exploiting HTTP verb tampering is through insecure coding   
+for example, a filter that only checked for injections in POST parameters 
+
+### Identify 
+
+if we use the file upload functionality and try to upload a file with special characters it will get blocked: 
+
+![](Images/Pasted%20image%2020240223142537.png)
+
+any modification of the file name payload will never be accepted, however we can now try a verb tampering attack  to bypass the filter in place altogether  
+
+### Exploit
+
+we can try change the request method by capturing the request: 
+
+![](Images/Pasted%20image%2020240223143005.png)
+
+if we don't get the error message and our file is created, we can test if we bypassed the security filter by attempting to exploit the vulnerability that the filter is protecting - which in this case is command injection   
+
+we can try something like `file; touch file2;` in our request and see that both files get created: 
+
+![](Images/Pasted%20image%2020240223143146.png)
+
+we can also try other commands to view files on the target web server: 
+
+![](Images/Pasted%20image%2020240223143355.png)
+
