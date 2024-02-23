@@ -86,3 +86,57 @@ we can see that the filter is only being tested on the GET parameter but the `$_
 if you supplied something like POST, then the GET parameters would be empty and would result in the pass by the filter 
 
 insecure coding is more common because insecure configs are usually less prone to errors with modern server configs/documentation warnings 
+
+## Bypassing Basic Authentication 
+
+exploiting HTTP verb tampering is straightforward because we just need to try different methods   
+many automated vulnerability scanning tools can find HTTP verb tampering caused by insecure server configs but they will usually miss insecure coding ones   
+this is because insecure configs can easily be identified once we bypass an authentication page while the other needs active testing to see whether we can bypass the security filters 
+
+insecure web config vulnerabilities can allow us to bypass the HTTP basic authentication prompt on certain pages
+
+### Identify 
+
+our target seems to be a file manager app: 
+
+![](Images/Pasted%20image%2020240223140049.png)
+
+when we try to reset all the available files we are prompted with basic HTTP auth: 
+
+![](Images/Pasted%20image%2020240223140031.png)
+
+we don't have credentials so we can check to see if it is open to a verb tampering attack   
+first we need to see which pages are restricted by this authentication   
+
+the page we are on is `/admin/reset.php` so either the whole `/admin` directory is restricted or only the reset page
+
+when we try to visit the admin directory we can see that the full directory is behind authentication: 
+
+![](Images/Pasted%20image%2020240223140351.png)
+
+### Exploit 
+
+we can capture the request to the reset page and see that it is a basic GET request: 
+
+![](Images/Pasted%20image%2020240223140607.png)
+
+so now with the repeater we can change the request method to try POST requests: 
+
+![](Images/Pasted%20image%2020240223140707.png)
+
+however, when we forward this request we also get blocked: 
+
+![](Images/Pasted%20image%2020240223140801.png)
+
+we can still try many other methods like HEAD which even though we might not get any output from, the actual functionality of the reset page will hopefully get executed 
+
+we can first see what methods might be available by sending an OPTIONS request: 
+
+![](Images/Pasted%20image%2020240223141519.png)
+
+![](Images/Pasted%20image%2020240223141654.png)
+
+in our case the OPTIONS request will initiate the reset functionality but we could have also seen what methods were available to us: 
+
+![](Images/Pasted%20image%2020240223141936.png)
+
