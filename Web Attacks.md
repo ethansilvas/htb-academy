@@ -252,3 +252,29 @@ we can test for all parameters with:
 
 ![](Images/Pasted%20image%2020240223144940.png)
 
+## Intro to IDOR
+
+insecure direct object references (IDOR) are among the most common web vulnerabilities   
+occur when a site exposes a direct reference to an object like a file or a database resource  
+
+a solid access control system is hard to make, so IDORs are very pervasive   
+also, automating the process of identifying weaknesses in access control systems is also quite hard  
+if a web app creates a file to download like `download.php?file_id=123` and there is no proper access control system in place then the same user could change the file id in the request to access another file that doesn't belong to them 
+
+### What makes an IDOR vulnerability 
+
+the exposure of a resource is not a vulnerability in itself but it could make it possible to exploit another vulnerability: a weak access control system   
+what would happen if a user had access to pages, functions, and APIs that they weren't supposed to  
+
+many ways to implement a solid access control system for web apps like Role-BAC   
+
+many developers ignore building an access control system, leaving the backend unprotected   
+
+### Impact of IDOR vulnerabilities 
+
+most basic example of IDOR is accessing private files and resources = IDOR information disclosure vulnerabilities   
+this may even lead to the modification or deletion of these resources, which then can lead to complete account takeover 
+
+can also lead to the elevation of user privileges from a standard user to an admin user with IDOR insecure function calls   
+many web apps will expose URL parameters or APIs for admin-only functions in the front-end code   
+if the backend doesn't deny non-admin users from calling these functions then we might be able to perform unauthorized admin operations like changing user credentials or granting users certain roles which could lead to a total takeover of the entire web application 
