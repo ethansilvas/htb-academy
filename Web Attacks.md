@@ -278,3 +278,77 @@ this may even lead to the modification or deletion of these resources, which the
 can also lead to the elevation of user privileges from a standard user to an admin user with IDOR insecure function calls   
 many web apps will expose URL parameters or APIs for admin-only functions in the front-end code   
 if the backend doesn't deny non-admin users from calling these functions then we might be able to perform unauthorized admin operations like changing user credentials or granting users certain roles which could lead to a total takeover of the entire web application 
+
+## Identifying IDORs 
+
+the first step to exploiting IDORs is identifying direct object references   
+when we receive files or resources we need to look at the HTTP request to look for URL parameters or APIs with an object reference like `?uid=1` or `?filename=file_1.pdf`   
+these are mostly found in url parameters or APIs but could also be found in headers like cookies 
+
+in the most basic cases we can try incrementing the values for these references, but we can also use fuzzers to find possible hits 
+
+### AJAX calls
+
+we might also be able to find unused parameters or APIs in the front-end code from JS AJAX calls  
+some web apps might place all functions on the front-end and use the appropriate ones based on the user role   
+
+for example, if we don't have an admin account then we won't be able to use the admin functions but they still might be able to be found in the front-end js code, and we might be able to find AJAX calls to specific end-points or APIs that contain direct object references 
+
+```javascript
+function changeUserPassword() {
+    $.ajax({
+        url:"change_password.php",
+        type: "post",
+        dataType: "json",
+        data: {uid: user.uid, password: user.password, is_admin: is_admin},
+        success:function(result){
+            //
+        }
+    });
+}
+```
+
+the above function might not be called since we aren't an admin but if we are able to find it then we might test different ways to call it, which would indicate that it is vulnerable to IDOR 
+
+### Understand hashing/encoding 
+
+some apps will encode or hash the values for the object references 
+
+even if something is hashed and we think it might not be possible to reproduce, we might be able to find the hashing function in the source code: 
+
+```javascript
+$.ajax({
+    url:"download.php",
+    type: "post",
+    dataType: "json",
+    data: {filename: CryptoJS.MD5('file_1.pdf').toString()},
+    success:function(result){
+        //
+    }
+});
+```
+
+### Compare user roles
+
+if we want to do more advanced IDOR attacks we can register multiple users and compare their HTTP requests and object references   
+from this we can understand how the url parameters and unique identifiers are being calculated 
+
+if we had two users, one of which can view their salary after making the following API call: 
+
+```json
+{
+  "attributes" : 
+    {
+      "type" : "salary",
+      "url" : "/services/data/salaries/users/1"
+    },
+  "Id" : "1",
+  "Name" : "User1"
+
+}
+```
+
+the second user might not have all these API parameters to replicate the call, but we can try to repeat this call with the second user to see if the app returns anything   
+these might work if the web app only requires a valid login session to make the API call and no backend verification of the caller's session and the requested data 
+
+in this case we can either identify the API parameters for other users or we still identify the backend access control vulnerability 
