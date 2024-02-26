@@ -554,3 +554,47 @@ with all of these test we might thing that the application is secure against IDO
 however, in these tests we have only been checking for insecure function calls, but we haven't checked the APIs GET request to look for IDOR information disclosures   
 we can try to get these to read other user's details which might help us with the attacks we have just tried 
 
+## Chaining IDOR Vulnerabilities 
+
+in the previous section we saw that the only form of authorization is the `role=employee` cookie and doesn't contain any other form of user-specific authorization like a JWT token   
+even if the token did exist it would need to be compared to the requested object by the backend access control system, otherwise we would still have access to other user's details 
+
+### Information disclosure 
+
+we can change our request to a GET request to see other user's info: 
+
+![](Images/Pasted%20image%2020240226115448.png)
+
+this is an information disclosure vulnerability which gives us access to to details like the uuid which we couldn't calculate before 
+
+with this employee's uuid we can do the intended application's functionality to change another user's info: 
+
+![](Images/Pasted%20image%2020240226115718.png)
+
+then we can confirm that it worked with another GET request: 
+
+![](Images/Pasted%20image%2020240226115804.png)
+
+with this ability we can perform attacks like changing the user's email address and requesting a password reset link   
+we could also place an XSS payload in the about field which would get executed when the actual user visits the edit profile page  
+
+### Chaining two IDOR vulnerabilities 
+
+now that we can find other user's info we can enumerate the different types of roles: 
+
+![](Images/Pasted%20image%2020240226120326.png)
+
+now that we know that the admin role is "staff_admin" we can change our own user account to have this role: 
+
+![](Images/Pasted%20image%2020240226120603.png)
+
+![](Images/Pasted%20image%2020240226120618.png)
+
+using the staff_admin cookie we can then try to create a new user: 
+
+![](Images/Pasted%20image%2020240226120752.png)
+
+![](Images/Pasted%20image%2020240226120807.png)
+
+as we can see we can use the info we get from info disclosure vulnerabilities to complete insecure function calls   
+on many occasions the info we leak through IDOR vulnerabilities can be utilized in other attacks like IDOR or XSS 
