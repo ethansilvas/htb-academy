@@ -500,4 +500,57 @@ we can also so this in burp with payload processing to base64, hash, or urlencod
 
 ![](Images/Pasted%20image%2020240226112335.png)
 
+## IDOR in Insecure APIs
+
+IDORs may also exist in function calls and APIs, and exploiting them might let us perform various actions as other users   
+`IDOR insecure function calls` enable us to call APIs or execute functions as another user
+
+these functions may be used to change info, reset passwords, or even buy items using another account   
+in many cases we may obtain info through info disclosure IDOR then using that info with IDOR insecure function call vulnerabilities 
+
+### Identifying insecure APIs
+
+in our target we have an update profile function: 
+
+![](Images/Pasted%20image%2020240226113824.png)
+
+![](Images/Pasted%20image%2020240226113803.png)
+
+we can see that we are using a PUT request to update the item details and that their are a few hidden parameters that aren't seen in the UI   
+uid, uuid, and role are parameters that are automatically set by the app  
+it also appears that the app is setting our user access privileges on the front-end with the `role=employee` cookie 
+
+we could potentially change this role to give ourselves different permissions, but at the moment we don't know what types of roles exist 
+
+### Exploiting insecure APIs 
+
+in this example there are a few things we can try: 
+- change our uid to another user's 
+- change another user's details 
+- create new users with arbitrary details or delete existing users 
+- change our role to a more privileged one 
+
+we can see that changing the uid to another users will result in a mismatch error: 
+
+![](Images/Pasted%20image%2020240226114342.png)
+
+now lets also try to change the API endpoint to match the new user's id: 
+
+![](Images/Pasted%20image%2020240226114445.png)
+
+now we instead get a uuid mismatch since the app appears to have controls that compare the requested profile with the uuid   
+
+lets see if we can create a new user by changing the request to a POST request and setting arbitrary user id values: 
+
+![](Images/Pasted%20image%2020240226114639.png)
+
+we can see that we don't have permission to create new employees so now lets try to change our role to admin or administrator: 
+
+![](Images/Pasted%20image%2020240226114753.png)
+
+without knowing the correct role name we will get the invalid role error 
+
+with all of these test we might thing that the application is secure against IDORs  
+however, in these tests we have only been checking for insecure function calls, but we haven't checked the APIs GET request to look for IDOR information disclosures   
+we can try to get these to read other user's details which might help us with the attacks we have just tried 
 
