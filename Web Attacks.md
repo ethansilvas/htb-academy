@@ -598,3 +598,47 @@ using the staff_admin cookie we can then try to create a new user:
 
 as we can see we can use the info we get from info disclosure vulnerabilities to complete insecure function calls   
 on many occasions the info we leak through IDOR vulnerabilities can be utilized in other attacks like IDOR or XSS 
+
+## IDOR Prevention 
+
+IDOR vulnerabilities are mainly caused by improper access control on the backend servers   
+to prevent this we need to build an object-level access control system and then use secure references for our objects when storing and calling them 
+
+### Object-level access control 
+
+the design of an access control system needs to support the segmentation of roles and permissions in a centralized manner   
+
+we must map the RBAC to all objects and resources to avoid the exploitation of IDOR   
+the backend will then be able to allow or deny every request based on the requester's role compared to the resource being requested 
+
+here is an example of how a web app may compare user roles to objects to allow or deny access:
+
+```javascript
+match /api/profile/{userId} {
+    allow read, write: if user.isAuth == true
+    && (user.uid == userId || user.roles == 'admin');
+}
+```
+
+### Object referencing 
+
+having access to direct references to objects (direct object referencing) makes it possible to enumerate and exploit access control vulnerabilities   
+
+even with a solid access control system we should never use object references in clear text or simple patters like `uid=1`  
+instead we should use salted hashes or UUIDs with something like UUID V4  
+
+once we generate a strong id for an element we can map it to the object it is referencing in the backend database, so that whenever the UUID is called the backend will know which object to return 
+
+```php
+$uid = intval($_REQUEST['uid']);
+$query = "SELECT url FROM documents where uid=" . $uid;
+$result = mysqli_query($conn, $query);
+$row = mysqli_fetch_array($result));
+echo "<a href='" . $row['url'] . "' target='_blank'></a>";
+```
+
+we should also never calculate these hashes on the frontend and instead generate them when an object is created and store them in the backend database   
+then we can create database maps to enable quick cross-referencing of objects and references 
+
+one thing to note is that using UUIDs may let IDORs go undetected because it makes it harder to test for IDORs   
+this is why strong object referencing is always the second step after strong access control  
