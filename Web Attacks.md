@@ -866,3 +866,27 @@ another common use of XXE attacks is causing a DoS:
 
 the payload defines `a0` as `DOS`, references it in `a1` multiple times, references `a1` in `a2` and so on until the backend runs out of memory   
 however this no longer works with modern web servers like apache since they protect against entity self-references   
+
+## Advanced File Disclosure 
+
+some file formats may not be readable through basic XXE and the web app might not output any input values so we might have to force it through errors 
+
+### Advanced exfiltration with CDATA 
+
+previously we used PHP filters to read files that otherwise would be blocked by using special characters, but for other types of applications we can use another method like wrapping the content of external file references with a `CDATA` tag (`<![CDATA[ FILE_CONTENT ]]>`)  
+this way the XML parser considers this part raw data which can contain any characters 
+
+one easy way to do this is to define a `begin` internal entity with `<![CDATA[`, and `end` internal entity with `]]>`, and then place our external entity file in between  
+then this should be considered as a `CDATA` element: 
+
+```xml
+<!DOCTYPE email [
+  <!ENTITY begin "<![CDATA[">
+  <!ENTITY file SYSTEM "file:///var/www/html/submitDetails.php">
+  <!ENTITY end "]]>">
+  <!ENTITY joined "&begin;&file;&end;">
+]>
+```
+
+then we can reference the `&joined;` entity that should contain our escaped data   
+but this will not work because XML prevents joining internal and external entities 
