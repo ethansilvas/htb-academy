@@ -642,3 +642,107 @@ then we can create database maps to enable quick cross-referencing of objects an
 
 one thing to note is that using UUIDs may let IDORs go undetected because it makes it harder to test for IDORs   
 this is why strong object referencing is always the second step after strong access control  
+
+## Intro to XXE 
+
+XML external entity (XXE) injection occur when XML data is taken from a user-controlled input without properly sanitizing or parsing it   
+can cause damage like disclosing sensitive files or shutting down the backend server 
+
+### XML 
+
+extensible markup language is a common language like HTML or SGML for flexible transfer of storage of data and documents in various types of apps   
+focused on storing document's data and representing data structures   
+uses element trees where each element is denoted by a tag; first element is the root and others are called child
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<email>
+  <date>01-01-2022</date>
+  <time>10:00 am UTC</time>
+  <sender>john@inlanefreight.com</sender>
+  <recipients>
+    <to>HR@inlanefreight.com</to>
+    <cc>
+        <to>billing@inlanefreight.com</to>
+        <to>payslips@inlanefreight.com</to>
+    </cc>
+  </recipients>
+  <body>
+  Hello,
+      Kindly share with me the invoice for the payment made on January 1, 2022.
+  Regards,
+  John
+  </body> 
+</email>
+```
+
+the above example shows some of the key elements like: 
+- tag - keys of an xml document wrapped in `<>` - `<date>`
+- entity - xml variables usually wrapped in `&` or `;` - `&lt;`
+- element - root element or any of its children, value is stored in between start and end tag - `<date>01-01-2022</date>`
+- attribute - optional specifications for any element that are stored in the tags which may be used by the xml parser - `version="1.0"/encoding="UTF-8"`
+- declaration - usually the first line of the xml document, defines the version and encoding - `<?xml version="1.0" encoding="UTF-8"?>`
+
+some characters are used in the document so will need to be converted to their entity references like `&gt;` if we want to use them somewhere else   
+
+### XML DTD
+
+XML document type definition (DTD) allows the validation of an XML document against a pre-defined document structure   
+pre-defined document structure can be defined in the document itself or in an external file 
+
+```xml
+<!DOCTYPE email [
+  <!ELEMENT email (date, time, sender, recipients, body)>
+  <!ELEMENT recipients (to, cc?)>
+  <!ELEMENT cc (to*)>
+  <!ELEMENT date (#PCDATA)>
+  <!ELEMENT time (#PCDATA)>
+  <!ELEMENT sender (#PCDATA)>
+  <!ELEMENT to  (#PCDATA)>
+  <!ELEMENT body (#PCDATA)>
+]>
+```
+
+the above example will declare the root email element with the `ELEMENT` type declaration and denoting its child elements   
+then each child is declared where some have other children and others have raw data 
+
+this can be placed in the XML document itself right after the XML declaration in the first line, or it can be stored in an external file like `email.dtd` and referenced within the XML document with the `SYSTEM` keyword: 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE email SYSTEM "email.dtd">
+```
+
+can also reference a DTD through a URL: 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE email SYSTEM "http://inlanefreight.com/email.dtd">
+```
+
+### XML entities 
+
+can also define custom entities (XML variables) in XML DTDs to allow refactoring of variables and reduce repetitive data   
+can be done with the use of the `ENTITY` keyword: 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE email [
+  <!ENTITY company "Inlane Freight">
+]>
+```
+
+once we define an entity then we can reference it inbetween an `&` and `;` like with `&company;`   
+we can also reference external XML entities with the SYSTEM keyword: 
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE email [
+  <!ENTITY company SYSTEM "http://localhost/company.txt">
+  <!ENTITY signature SYSTEM "file:///var/www/html/signature.txt">
+]>
+```
+
+note that we can also use the `PUBLIC` keyword instead of `SYSTEM` for loading external resources, which is used with publicly declared entities and standards like the language code `lang="en"` 
+
+when the xml is parsed on the server side then an entity can reference a file stored on the backend which might be disclosed o use when we reference the entity 
