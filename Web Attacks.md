@@ -745,4 +745,46 @@ we can also reference external XML entities with the SYSTEM keyword:
 
 note that we can also use the `PUBLIC` keyword instead of `SYSTEM` for loading external resources, which is used with publicly declared entities and standards like the language code `lang="en"` 
 
-when the xml is parsed on the server side then an entity can reference a file stored on the backend which might be disclosed o use when we reference the entity 
+when the xml is parsed on the server side then an entity can reference a file stored on the backend which might be disclosed to use when we reference the entity 
+
+## Local File Disclosure
+
+when a web app allows unfiltered user input XML data, we might be able to reference an external XML DTD document and define new custom XML entities   
+if we can get these new entities to be displayed on the web page then we should be able to define entities and make them reference a local file which would show us the content of a file from the backend server 
+
+### Identifying 
+
+we first need to find a web page that accepts XML user input: 
+
+![](Images/Pasted%20image%2020240227130811.png)
+
+![](Images/Pasted%20image%2020240227130759.png)
+
+if we send the form request without any modifications we get an email message: 
+
+![](Images/Pasted%20image%2020240227130909.png)
+
+in this response, we can see that the value of the email element is being displayed back to us, this will come in handy if we want to display the contents of a local file   
+
+lets try to define a new entity and use it as a variable in the email element to see if it gets replaced with the value we define: 
+
+```xml
+<!DOCTYPE email [
+  <!ENTITY company "Inlane Freight">
+]>
+```
+
+note that in this example there was no DTD being declared so we added one, but if there was already a `DOCTYPE` defined then we would just add the `ENTITY` element to it 
+
+so now we have defined a new entity and can reference it in the email element: 
+
+![](Images/Pasted%20image%2020240227131354.png)
+
+we can see that it gets reflected in the response: 
+
+![](Images/Pasted%20image%2020240227131415.png)
+
+this confirms that this request is vulnerable to XXE injections because it replaces our injected entity with a value instead of just returning the raw value of `&company;`   
+
+some web apps default to JSON format in HTTP request but may still accept other formats like XML   
+to change the format we can try changing the `Content-Type` header to `application/xml` and convert the JSON data to XML with an online tool like convertjson.com 
