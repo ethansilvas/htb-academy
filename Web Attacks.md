@@ -999,3 +999,105 @@ another thing to look out for is having proper exception handling and preventing
 many people will simply recommend not using XML and instead just use JSON or YAML, which also includes avoiding API standards like SOAP that rely on XML   
 
 finally, using WAFs will also protect against XXE vulnerabilities 
+
+## Web Attacks - Skills Assessment 
+
+testing a social networking app   
+try to use techniques learned in this module to exploit multiple vulnerabilities found in the web app 
+
+our app opens after logging in: 
+
+![](Images/Pasted%20image%2020240227205855.png)
+
+a couple things worth noting is the settings page to change passwords, which could be vulnerable to verb tampering or IDOR: 
+
+![](Images/Pasted%20image%2020240227205946.png)
+
+then looking at the source code we can immediately find a function that tells us how the app fetches the user page: 
+
+![](Images/Pasted%20image%2020240227210007.png)
+
+I will start with this since it seems that it simply uses the API to search based on the `uid` cookie
+
+we can see this fetch call being made in burp: 
+
+![](Images/Pasted%20image%2020240227211144.png)
+
+I start by fuzzing this request to enumerate some accounts while also looking for terms like "admin" or "test": 
+
+![](Images/Pasted%20image%2020240227211742.png)
+
+we can successfully get to the profile page of the admin: 
+
+![](Images/Pasted%20image%2020240227212439.png)
+
+but we can see that we can change the password of our default HTB user account but not the admin account: 
+
+![](Images/Pasted%20image%2020240227212206.png)
+
+![](Images/Pasted%20image%2020240227212415.png)
+
+taking a look at the request we can see that it is a POST request: 
+
+![](Images/Pasted%20image%2020240227212842.png)
+
+looking at the source code for the reset page we can again see an open resetPassword() function: 
+
+![](Images/Pasted%20image%2020240227212926.png)
+
+one thing to note is that it seems like it is using the JSON response from `/api.php/token/...` in the fetch call to the reset page: 
+
+![](Images/Pasted%20image%2020240227213736.png)
+
+we can compare the tokens generated for the default and admin users:
+
+![](Images/Pasted%20image%2020240227213327.png)
+![](Images/Pasted%20image%2020240227213405.png)
+
+for now lets try to use HTTP verb tampering on the reset request to see which methods might work 
+
+simply changing the method from POST to GET will result in a successful password change: 
+
+![](Images/Pasted%20image%2020240227214749.png)
+
+this actually modifies the results we see in our page because now we can see an add event function: 
+
+![](Images/Pasted%20image%2020240227215421.png)
+
+also, it is worth noting that our `PHPSESSID` cookie has changed and this functionality is only available with this cookie: 
+
+![](Images/Pasted%20image%2020240227215507.png)
+
+now we can see another upload form but this time it uploads with XML data that we can likely exploit: 
+
+![](Images/Pasted%20image%2020240227215551.png)
+
+we can also see another open script in the source code: 
+
+![](Images/Pasted%20image%2020240227215610.png)
+
+we can see from the UI that our input is displayed back to us, but it might not be too helpful since it is using the `.val()` function: 
+
+![](Images/Pasted%20image%2020240227215718.png)
+
+but even with a simple XXE injection test we can see that using entities will evaluate our input: 
+
+![](Images/Pasted%20image%2020240227220133.png)
+
+we can also read files: 
+
+![](Images/Pasted%20image%2020240227220410.png)
+
+trying to read the flag.php or index.php does not work so lets try converting it using PHP filters and base64 encoding: 
+
+![](Images/Pasted%20image%2020240227220727.png)
+
+we can get the index file but can't get the flag file
+
+lets try a reverse shell to see if we can get RCE: 
+
+
+
+
+
+n64p97atjs3omegcu9btfi29fn
