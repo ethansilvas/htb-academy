@@ -1088,16 +1088,6 @@ we can also read files:
 
 ![](Images/Pasted%20image%2020240227220410.png)
 
-trying to read the flag.php or index.php does not work so lets try converting it using PHP filters and base64 encoding: 
+looking for the /flag.php file we can get a result and using a base64 decoder we can read the flag: 
 
-![](Images/Pasted%20image%2020240227220727.png)
-
-we can get the index file but can't get the flag file
-
-lets try a reverse shell to see if we can get RCE: 
-
-
-
-
-
-n64p97atjs3omegcu9btfi29fn
+![](Images/Pasted%20image%2020240227225448.png)
