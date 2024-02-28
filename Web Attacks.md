@@ -867,3 +867,47 @@ then this should be considered as a `CDATA` element:
 
 then we can reference the `&joined;` entity that should contain our escaped data   
 but this will not work because XML prevents joining internal and external entities 
+
+to bypass this will will use XML parameter entities which are special entities that start with `%` and can only be used in a DTD  
+parameter entities when referenced from an external source (like our own server) would all be considered as external and can be joined:
+
+![](Images/Pasted%20image%2020240227175925.png)
+
+lets first store the above line in a DTD file xxe.dtd, host it on our machine, and reference it as an external entity: 
+
+![](Images/Pasted%20image%2020240227180428.png)
+
+![](Images/Pasted%20image%2020240227180611.png)
+
+we will then be able to see the print out of the submitDetails.php file: 
+
+![](Images/Pasted%20image%2020240227180849.png)
+
+we might not be able to read some files like index.php because the web server would be preventing a DOS attack caused by file/entity self-references 
+
+### Error based XXE 
+
+often the app will not provide any output so we can't control any of the XML input entities to write its content   
+
+if the app displays runtime errors like PHP errors, and doesn't have proper exception handling for the XML input we can use this to read the output of the XXE exploit: 
+
+![](Images/Pasted%20image%2020240227183758.png)
+
+from the error we can see that it revealed the web server directory which we can use to read other files 
+
+to exploit the errors we can host a DTD file that contains: 
+
+![](Images/Pasted%20image%2020240227184004.png)
+
+this will create the `file` parameter and joins it with an entity that doesn't exist   
+this will output that the nonExistingEntity doesn't exist along with the joined `%file;` as part of the error 
+
+we can then call our external entity and with `&error;`: 
+
+![](Images/Pasted%20image%2020240227184208.png)
+
+![](Images/Pasted%20image%2020240227184312.png)
+
+we can do the same thing to view the source code of files by changing the file name in our DTD script to point to a file we want to read like `"file:///var/www/html/submitDetails.php"`  
+however this isn't as reliable because the app may have length limitations and certain special characters might break it 
+
