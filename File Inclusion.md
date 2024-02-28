@@ -109,3 +109,87 @@ this is significant because executing files may allow us to execute functions an
 
 even just being able to read the source code from an LFI vulnerability may lead to revealing other vulnerabilities or leak info like database keys, admin credentials, or other sensitive info 
 
+## Local File Inclusion (LFI)
+
+### Basic LFI 
+
+we have a target web app that lets you change your language: 
+
+![](Images/Pasted%20image%2020240228110317.png)
+
+changing the language we can see the `language=es.php` parameter being set: 
+
+![](Images/Pasted%20image%2020240228110353.png)
+
+this content could be loaded from a different database table based on the parameter, or it could be loading an entirely different version of the web app, and there are many other ways that the different content is loaded  
+
+remember that loading part of the page using template engines is the easiest and most common method used   
+so if the web app is pulling a file that is now being included in the page, then we might be able to change that file to read different ones   
+two common readable files that are available on most backend servers are `/etc/passwd` on linux and `C:\Windows\boot.ini` on windows   
+
+we can try to change the parameter to see if we can read a local file: 
+
+![](Images/Pasted%20image%2020240228111604.png)
+
+### Path traversal 
+
+in the above example we read a file by specifying its absolute path of `/etc/passwd`, which would work if the whole input is used in the whatever include function is being used like in: 
+
+```php
+include($_GET['language']);
+```
+
+however in many cases developers will concatenate the request parameter into the file strings: 
+
+```php
+include("./languages/" . $_GET['language']);
+```
+
+this would not work because in the above example it would become `./languages//etc/passwd` 
+
+we can bypass this by traversing directories using relative paths by adding `../` before our file name to traverse up  
+
+if we are in the index.php directory then we can move up the chain of `/var/www/html/index.php` and get into `../../../../etc/asswd`: 
+
+![](Images/Pasted%20image%2020240228112625.png)
+
+remember that if we reach the root and use `../` it will simply keep us in the root path so one trick is to use many `../` to try to get there   
+however always try to be efficient and find the minimum number of `../` 
+
+### Filename prefix 
+
+sometimes our parameter will be used to get a filename like: 
+
+```php
+include("lang_" . $_GET['language']);
+```
+
+this would result in `lang_../../../etc/passwd` but we can get around this by prefixing a `/` so that it should consider the prefix as a directory and we should bypass the filename: 
+
+![](Images/Pasted%20image%2020240228113220.png)
+
+this wont always work because the example directory `lang_/` may not exist, also any prefix appended to our input may break some file inclusion techniques 
+
+### Appended extensions 
+
+sometimes extensions will be appended to the parameters we use: 
+
+```php
+include($_GET['language'] . ".php");
+```
+
+there are many ways to get around this which we will discuss in further sections 
+
+### Second-order attacks 
+
+second-order attacks occur because many web apps may be insecurely pulling files from the backend server based on user-controlled parameters 
+
+a web app might allow us to download our avatar through a URL like `/profile/$username/avatar.png`   
+using a malicious username like `../../../etc/passwd` then it could be possible to grab another file than our avatar 
+
+in this example we would poison a db entry with a malicious LFI payload in our username, then another web app functionality would use this entry to perform our attack (download our avatar), this is why it is called a second-order attack 
+
+these vulnerabilities are often overlooked because they may protect against direct user input but it would trust values pulled from the database, so if we managed to poison the database value for our username then this would be possible 
+
+the only difference between these attacks and the previous attacks is we need to find a function that pulls a file based on a value we indirectly control and then try to control that value to exploit this vulnerability 
+
