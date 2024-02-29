@@ -193,3 +193,89 @@ these vulnerabilities are often overlooked because they may protect against dire
 
 the only difference between these attacks and the previous attacks is we need to find a function that pulls a file based on a value we indirectly control and then try to control that value to exploit this vulnerability 
 
+## Basic Bypasses
+
+### Non-recursive path traversal filters 
+
+one of the most basic filters against LFI is a search and replace filter where it simply deletes substrings like `../` to avoid path traversal: 
+
+```php
+$language = str_replace('../', '', $_GET['language']);
+```
+
+this however is not recursive, so it runs a single time and does not apply the filter on the output string   
+if we used `....//` as our payload then the filter will remove `../` and the result will be `../`: 
+
+![](Images/Pasted%20image%2020240228174336.png)
+
+we can so the same with other payloads like `..././` or `....\/`   
+in some other cases, escaping the forward slash character may also avoid path traversal `....\/` or adding forward slashes `....////` 
+
+### Encoding 
+
+some web filters may prevent input filters that include LFI characters like `.` or `/`, but some of these may be bypassed by url encoding our input 
+
+for this to work we need to url encode all characters: 
+
+![](Images/Pasted%20image%2020240228175118.png)
+
+![](Images/Pasted%20image%2020240228175340.png)
+
+another trick is to encode the encoded string to create a double encoded string which might also bypass certain filters 
+
+### Approved paths 
+
+some apps will use regex to ensure that the file being included is under a specific path, for example only paths that are under the `./languages` directory: 
+
+```php
+if(preg_match('/^\.\/languages\/.+$/', $_GET['language'])) {
+    include($_GET['language']);
+} else {
+    echo 'Illegal path specified!';
+}
+```
+
+to find the approved path we can look at the requests sent by the existing forms   
+we can also fuzz for web directories under the same path 
+
+to bypass this we can start our payload with the approved path and use `../` to go back to the root directory: 
+
+![](Images/Pasted%20image%2020240228180016.png)
+
+we can combine this with other techniques like url encoding to get past other filters 
+
+### Appended extension 
+
+modern versions of PHP will not let us bypass the extension restrictions but it is useful to know about them
+
+#### Path truncation 
+
+in some earlier versions of PHP strings had a max length of 4096 chars and if a longer string is passed then it will be truncated and any characters after the max will be ignored   
+it also used to remove trailing slashes and single dots in path names so if you called `/etc/passwd/.` then the `/.` would be removed   
+PHP and linux in general also disregard multiple slashes in the path so `////etc/passwd` is the same as `/etc/passwd`  
+a current directory shortcut in the middle of the path would also be ignored `/etc/./passwd`
+
+we can combine these to create very long strings that evaluate to the correct path   
+if we reach 4096 characters then the appended extension .php would be truncated   
+it is important to note that we would need to start the path with a non-existing directory for this to work 
+
+another example would be: 
+
+![](Images/Pasted%20image%2020240228182014.png)
+
+could automate this with: 
+
+```shell-session
+echo -n "non_existing_directory/../../../etc/passwd/" && for i in {1..2048}; do echo -n "./"; done
+```
+
+we only need to make sure that the extension is truncated and not our payload 
+
+#### Null bytes 
+
+php before 5.5 were vulnerable to null byte injection which means that adding a null byte `%00` at the end of the string would terminate the string and not consider anything after it   
+
+our payload would become something like `/etc/passwd%00` which would truncate any appended extension 
+
+
+
