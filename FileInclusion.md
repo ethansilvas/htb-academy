@@ -482,3 +482,78 @@ then we include our script in the UNC path like `\\<our IP>\share\shell.php` and
 
 this attack is more likely to work if we are on the same network since accessing remote SMB servers over the internet might be disabled by default depending on the windows server config 
 
+## LFI and File Uploads
+
+file upload vulnerabilities will always exist, but for this attack we don't need the file upload form to be vulnerable, we just need it to upload files  
+if the vulnerable function has code execute capabilities then the code within the file will be executed if we include it, regardless of file extension or type   
+
+these functions will allow executing code with file inclusion: 
+
+![](Images/Pasted%20image%2020240229102854.png)
+
+### Image upload 
+
+first we want to create a malicious image containing our shell code   
+we will use an allowed image extension and include the image magic bytes at the beginning of the file content: 
+
+`echo 'GIF8<php shell code>' > shell.gif`
+
+once we use the app to upload our file we can search for the uploaded file path in the source code: 
+
+```html
+<img src="/profile_images/shell.gif" class="profile-image" id="profile-image">
+```
+
+we could also fuzz for the uploads directory and fuzz for our uploaded file but this might not always work if apps properly hide their uploaded files 
+
+now with the uploaded file path all we need to do is include the path in the LFI vulnerable function: 
+
+![](Images/Pasted%20image%2020240229103625.png)
+
+note that we will have to adjust our directory based on the traversal protections 
+
+### Zip upload 
+
+the above technique is reliable and should work in most cases as long as the vulnerable function allows code execution   
+there are a couple other PHP-only techniques that use PHP wrappers to achieve the same goal 
+
+we can use the `zip` wrapper to execute PHP code but it isn't enabled by default so this might not always work 
+
+we can start by creating our shell and zipping it into a zip archive: 
+
+```shell-session
+echo '<shell>' > shell.php && zip shell.jpg shell.php
+```
+
+note that even though we named our file shell.jpg some upload forms may still detect our file as a zip archive through content-type tests and disallow its upload 
+
+we can then include this file with the `zip` wrapper as `zip://shell.jpg` and then refer to any files within it as `#shell.php`: 
+
+![](Images/Pasted%20image%2020240229104104.png)
+
+note that we added the uploads directory `./profile_images/` before the file name because the vulnerable page index.php is in the main directory 
+
+### Phar upload 
+
+we can also use the `phar://` wrapper to achieve a similar result   
+
+first we create the following php code into shell.php: 
+
+![](Images/Pasted%20image%2020240229104306.png)
+
+this can be then compiled into a phar file that when called will write a shell to a shell.txt sub-file which we can interact with   
+
+we compile the script into a phar file and rename it to shell.jpg: 
+
+```shell
+php --define phar.readonly=0 shell.php && mv shell.phar shell.jpg
+```
+
+we can then call the file with `phar://` and then specify the sub-file with `/shell.txt` url encoded: 
+
+![](Images/Pasted%20image%2020240229104514.png)
+
+both zip and phar methods should be considered as alternative methods in case the first method does not work
+
+there are also some upload attacks worth noting if file uploads are enabled in the PHP configs and the `phpinfo()` page is somehow exposed to us but this isn't very common: https://book.hacktricks.xyz/pentesting-web/file-inclusion/lfi2rce-via-phpinfo
+
