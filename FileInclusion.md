@@ -277,5 +277,60 @@ php before 5.5 were vulnerable to null byte injection which means that adding a 
 
 our payload would become something like `/etc/passwd%00` which would truncate any appended extension 
 
+## PHP Filters
 
+we can use PHP wrappers to extend our LFI exploitations to potentially even reach RCE 
+
+wrappers allow us to access I/O streams at the app level like standard I/O, file descriptors, and memory streams   
+we can extend our attacks with these to read PHP source code files or execute commands 
+
+### Input filters 
+
+php filtesr are a type of wrapper where we can pass different types of input and have it filtered by the filter we specify   
+
+to use PHP wrapper streams we use `php://` and can access the php filter with `php://filter/` 
+
+the `filter` wrapper has several parameters but we are focused on `resource` and `read`  
+`resource` is required and it specifies the stream we apply the filter to   
+`read` applies different filters on the input resource 
+
+there are four different types of filters: 
+- string
+- conversion 
+- compression
+- encryption 
+
+the one useful for LFI attacks is `convert.base64-encode` under conversion filters 
+
+### Fuzzing for PHP files 
+
+fist step is to fuzz for available PHP pages: 
+
+```shell-session
+ffuf -w /opt/useful/SecLists/Discovery/Web-Content/directory-list-2.3-small.txt:FUZZ -u http://<SERVER_IP>:<PORT>/FUZZ.php
+```
+
+remember we should be scanning for codes like 301, 302, and 403 as well because we should be able to read their source code as well 
+
+with the results from these we can again scan those files to see which ones they reference so we can get an accurate image of the the app does 
+
+### Standard PHP inclusion 
+
+in our previous examples if we referenced PHP files they would get rendered as HTML to our target web page, however if we choose files like `config.php` we get a blank output: 
+
+![](Images/Pasted%20image%2020240228193750.png)
+
+this may be useful in cases like accessing local files we don't have access to (SSRF), but in most cases we are concerned with reading the source code through LFI 
+
+### Source code disclosure 
+
+to view the source code of the file we can base64 encode the contents and have that printed out to the app: 
+
+```url
+php://filter/read=convert.base64-encode/resource=config
+```
+
+![](Images/Pasted%20image%2020240228194030.png)
+
+remember that in this scenario the extension is automatically added on 
 
