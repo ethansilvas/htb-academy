@@ -557,3 +557,89 @@ both zip and phar methods should be considered as alternative methods in case th
 
 there are also some upload attacks worth noting if file uploads are enabled in the PHP configs and the `phpinfo()` page is somehow exposed to us but this isn't very common: https://book.hacktricks.xyz/pentesting-web/file-inclusion/lfi2rce-via-phpinfo
 
+## Log Poisoning 
+
+we have seen previously that if we include a file that contains PHP code that it will be executed as long as the vulnerable function has execute privileges   
+log poisoning attacks all rely on the same concept, writing PHP code in a field we control that gets logged into a log file, then include that log file to execute the PHP code   
+the PHP web app should have read privileges over the logged files which vary from one server to another 
+
+any of these functions will have execute privileges: 
+
+![](Images/Pasted%20image%2020240229190333.png)
+
+### PHP session poisoning 
+
+most php web apps use `PHPSESSID` cookies which hold specific user-related data on the back-end  
+these details are stored in session files on the backend and saved in `/var/lib/php/sessions/` for linux and `C:\Windows\Temp` for windows   
+the name of the file that contain a user's data matches the name of their `PHPSESSID` cookie with the `sess_` prefix: 
+
+`/var/lib/php/sessions/sess_el4ukv0kqbvoirg7nkp4dncpk3`
+
+first lets get our cookie: 
+
+![](Images/Pasted%20image%2020240229203052.png)
+
+then lets try to include this session file through the LFI vulnerability: 
+
+![](Images/Pasted%20image%2020240229203155.png)
+
+we can see that the session file contains the selected language and preference values  
+the selected language is in our control since it is the page we select, but the preference value seems to be set somewhere out of our control 
+
+lets try setting the selected_language value to a custom value and see if it changes the session file  
+we can do this by visiting the page with a custom language value `?language=session_poisoning`
+
+then we can revisit the session file to see if it changes: 
+
+![](Images/Pasted%20image%2020240229203806.png)
+
+our next step is to perform the poisoning attack by writing php code to the session file   
+we can write and encode a php shell and insert it into the language parameter: 
+
+![](Images/Pasted%20image%2020240229204014.png)
+
+then we can revisit the page with our command: 
+
+![](Images/Pasted%20image%2020240229204352.png)
+
+keep in mind each time we do this we will have to re-poison the session file with the shell 
+
+### Server log poisoning
+
+both apache and nginx contain various log files like `access.log` and `error.log`   
+`access.log` contains info about all requests made to the server, including the User-Agent which we can control to poison the log file   
+
+when the logs are poisoned we need to include the logs through the LFI vulnerability which will require read access over the logs   
+nginx logs are readable by low privileged users by default like www-data, while apache logs are only readable by users with high privileges (rood/adm)   
+in older versions of apache these logs may be readable by low-privilege users 
+
+by default apache logs are in `/var/log/apache2` on linux and in `C:\xampp\apache\logs\` on windows   
+nginx logs are in `/var/log/nginx/` and `C:\nginx\log`   
+logs could be in other locations so we can use an LFI wordlist to fuzz for them: https://github.com/danielmiessler/SecLists/tree/master/Fuzzing/LFI
+
+we can try to include the apache access log: 
+
+![](Images/Pasted%20image%2020240229205235.png)
+
+this contains the remote IP address, request page, response code, and the User-Agent header   
+
+we can modify the user agent to see if it gets reflected in the response: 
+
+![](Images/Pasted%20image%2020240229205533.png)
+
+we can then poison the user agent with our shell or by sending a request through curl with: 
+
+```shell
+curl -s "http://<SERVER_IP>:<PORT>/index.php" -A "<shell>"
+```
+
+the user agent header is also shown on the process files under the linux `/proc/` directory so we can try including the `/proc/self/environ` or `/proc/self/fd/N` files where N is the PID usually between 0-50  
+these files are only readable by privileged users 
+
+there are some other service logs we may be able to read: 
+- `/var/log/sshd.log` 
+- `/var/log/mail` 
+- `/var/log/vsftpd.log` 
+
+we can do things like log into the ssh or ftp services and set the username to php code and upon including them in the logs the PHP code will execute   
+the same goes for the mail servieces where we can send an email containing php code and on log inclusion it will get executed 
