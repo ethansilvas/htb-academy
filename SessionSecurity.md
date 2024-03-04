@@ -53,3 +53,33 @@ IP=ENTER SPAWNED TARGET IP HERE
 printf "%s\t%s\n\n" "$IP" "xss.htb.net csrf.htb.net oredirect.htb.net minilab.htb.net" | sudo tee -a /etc/hosts
 ```
 
+## Session Hijacking 
+
+attackers take advantage of insecure session ids, obtains them, and uses them to authenticate to the server and impersonate the victim 
+
+can obtain sid using the most common methods: 
+- passive traffic sniffing 
+- XSS
+- browser history or log-diving
+- read access to a db containing session info 
+
+an attacker might even be able to brute force if the security level of the sid is low 
+
+### Session hijacking example 
+
+we can login to our target with our example credentials and see: 
+
+![](Images/Pasted%20image%2020240304114342.png)
+
+if we look at our cookies we can see that we have an `auth-session` cookie that we can copy: 
+
+![](Images/Pasted%20image%2020240304114430.png)
+
+we can simulate an attacker using a very basic example of copying this cookie value, opening up the page in an incognito window, and then modifying our new cookie to be the victim's cookie: 
+
+![](Images/Pasted%20image%2020240304114614.png)
+
+![](Images/Pasted%20image%2020240304114629.png)
+
+note that some web apps will use more than one cookie for session tracking 
+
