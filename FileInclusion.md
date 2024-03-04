@@ -149,7 +149,7 @@ this would not work because in the above example it would become `./languages//e
 
 we can bypass this by traversing directories using relative paths by adding `../` before our file name to traverse up  
 
-if we are in the index.php directory then we can move up the chain of `/var/www/html/index.php` and get into `../../../../etc/asswd`: 
+if we are in the index.php directory then we can move up the chain of `/var/www/html/index.php` and get into `../../../../etc/passwd`: 
 
 ![](Images/Pasted%20image%2020240228112625.png)
 
@@ -327,7 +327,7 @@ this may be useful in cases like accessing local files we don't have access to (
 to view the source code of the file we can base64 encode the contents and have that printed out to the app: 
 
 ```url
-php://filter/read=convert.base64-encode/resource=config
+php://filter/read=convert.base64-encode/resource=config 4
 ```
 
 ![](Images/Pasted%20image%2020240228194030.png)
@@ -829,7 +829,15 @@ so before I move on to loading files I want to first try an automated LFI tool s
 ![](Images/Pasted%20image%2020240303182517.png)
 ![](Images/Pasted%20image%2020240303182840.png)
 
-these don't result in any useable payloads so now I will move on to remote file inclusion techniques: 
+these don't result in any useable payloads so now I will move on to remote file inclusion techniques
+
+I start by trying to load a local file and don't see any results: 
+
+![](Images/Pasted%20image%2020240303183046.png)
+
+now I can host a web shell to attempt to load it on the site: 
+
+![](Images/Pasted%20image%2020240303183234.png)
 
 
 
