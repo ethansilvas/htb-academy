@@ -83,3 +83,65 @@ we can simulate an attacker using a very basic example of copying this cookie va
 
 note that some web apps will use more than one cookie for session tracking 
 
+## Session Fixation 
+
+attacker can fixate a valid session id and trick the victim into logging in using the session id, when the victim does then the attacker can perform session hijacking  
+
+these bugs usually occur when session id such as cookies are being accepted from URL query strings or POST data 
+
+### Stage 1: Attacker manages to obtain valid session id 
+
+don't need to authenticate to app to get valid session id, and many apps assign valid session ids to anyone who browses them   
+attacker can be assigned valid session id without needing to authenticate 
+
+### Stage 2: Attacker manages to fixate a valid session id 
+
+state 1 can turn into a session fixation vulnerability if: 
+
+the assigned session id pre-login remains the same post-login AND session ids such as cookies are being accepted from URL query strings or POST data and propagated to the app 
+
+if for example a session related parameter is included in the url and not the cookie header, and any specified value eventually becomes a session id, then an attacker can fixate a session 
+
+### Stage 3: Attacker tricks victim into creating session using fixated session id 
+
+the attacker only needs to craft a URL to lure the the victim into visiting it, if the user does then the app will assign the session id to the victim 
+
+the attacker can then proceed to a session hijacking attack since the session id is already known 
+
+### Session fixation example
+
+our target has a url token parameter that is also the value set for the `PHPSESSID` cookie: 
+
+![](Images/Pasted%20image%2020240304120522.png)
+
+if any value or valid session id specified with the `token` parameter is propagated to the `PHPSESSID` cookie then there is likely a session fixation vulnerability 
+
+we can see that if we create a new session and modify the token parameter to our own custom value that it does get propagated to the session cookie: 
+
+![](Images/Pasted%20image%2020240304120756.png)
+
+the attacker could then send a similar URL to a victim, if the victim then logs into the app the attacker can then hijack their session since the session id is already known 
+
+note that another way of finding this is by blindly putting the session id name and value in the url and refreshing 
+
+for example if we look at `http://insecure.exampleapp.com/login` and the session id is the `PHPSESSID` cookie, then to test for session fixation we could try: 
+
+`http://insecure.exampleapp.com/login?PHPSESSID=AttackerSpecifiedCookieValue`
+
+and see if the specified cookie value is propagated to the app 
+
+the app in this example has the following vulnerable code: 
+
+```php
+<?php
+    if (!isset($_GET["token"])) {
+        session_start();
+        header("Location: /?redirect_uri=/complete.html&token=" . session_id());
+    } else {
+        setcookie("PHPSESSID", $_GET["token"]);
+    }
+?>
+```
+
+if the token parameter isn't defined then start a session and generate a valid session id, otherwise if the token is specified then simply set the session cookie to its value directly   
+
