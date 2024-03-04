@@ -835,9 +835,33 @@ in this page there is a `log` parameter that dynamically changes the page conten
 
 ![](Images/Pasted%20image%2020240303212614.png)
 
-doing a quick auto scan on the parameter reveals many payloads: 
+I first want to check if there are any other parameters: 
+
+![](Images/Pasted%20image%2020240303213505.png)
+
+doing a quick auto scan on the parameter reveals many payloads for the `log` parameter: 
 
 ![](Images/Pasted%20image%2020240303213108.png)
 
 ![](Images/Pasted%20image%2020240303213144.png)
 
+since this admin panel is log related I use the linux wordlist https://raw.githubusercontent.com/DragonJAR/Security-Wordlist/main/LFI-WordList-Linux to fuzz for possible files:
+
+![](Images/Pasted%20image%2020240303213758.png)
+![](Images/Pasted%20image%2020240303213853.png)
+
+I can see that I found the nginx access.log file which I know from the module I can try modify the User-Agent header to insert a payload: 
+
+![](Images/Pasted%20image%2020240303215342.png)
+
+I can successfully read back the output I get from modifying the User-Agent so now lets modify it to include a payload: 
+
+![](Images/Pasted%20image%2020240303221024.png)
+
+it doesn't always upload on the first try so after sending the same request a few times I then retry a normal GET request but now with our command input and successfully see the result from the previously uploaded shell:
+
+![](Images/Pasted%20image%2020240303221012.png)
+
+then finally I can use the shell to look for and read the flag file: 
+
+![](Images/Pasted%20image%2020240303221223.png)
