@@ -327,7 +327,7 @@ this may be useful in cases like accessing local files we don't have access to (
 to view the source code of the file we can base64 encode the contents and have that printed out to the app: 
 
 ```url
-php://filter/read=convert.base64-encode/resource=config 4
+php://filter/read=convert.base64-encode/resource=config
 ```
 
 ![](Images/Pasted%20image%2020240228194030.png)
@@ -819,26 +819,25 @@ I can see from this output that the PHP filter syntax doesn't get blocked by the
 
 ![](Images/Pasted%20image%2020240303180646.png)
 
-I also try to use the `input` and `expect` methods but with no results: 
+in this I can see the filter used for the page parameter: 
 
-`php://input&cmd=id`  
-`expect://id`
+![](Images/Pasted%20image%2020240303210124.png)
 
-so before I move on to loading files I want to first try an automated LFI tool since I am still having trouble finding a way around the parameter filters: 
+you can also see that there is a hidden admin page that is commented out: 
 
-![](Images/Pasted%20image%2020240303182517.png)
-![](Images/Pasted%20image%2020240303182840.png)
+![](Images/Pasted%20image%2020240303212327.png)
 
-these don't result in any useable payloads so now I will move on to remote file inclusion techniques
+this takes us to a brand new page: 
 
-I start by trying to load a local file and don't see any results: 
+![](Images/Pasted%20image%2020240303212427.png)
 
-![](Images/Pasted%20image%2020240303183046.png)
+in this page there is a `log` parameter that dynamically changes the page content: 
 
-now I can host a web shell to attempt to load it on the site: 
+![](Images/Pasted%20image%2020240303212614.png)
 
-![](Images/Pasted%20image%2020240303183234.png)
+doing a quick auto scan on the parameter reveals many payloads: 
 
+![](Images/Pasted%20image%2020240303213108.png)
 
-
+![](Images/Pasted%20image%2020240303213144.png)
 
