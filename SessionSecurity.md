@@ -250,4 +250,35 @@ select * from all_sessions where id=3;
 
 remember that even though our example in this section specified that we were on the same local network, if the app was an intranet app and we had access to the company's VPN we would still have access to packet sniffing as long as any user connected to the VPN could interact with the app 
 
+## Cross-Site Scripting (XSS)
 
+for an xss attack to result in a session cookie leakage the following requirements must be fulfilled: 
+- session cookies should be carried in all HTTP requests
+- session cookies should be accessible by JS code (the HTTPOnly attribute can't be enabled)
+
+lets login to our target: 
+
+![](Images/Pasted%20image%2020240304175548.png)
+
+for this we will prefer to use payloads with `onload`, `onerror`, or `onmouseover`   
+in our payload we will also use `document.domain` to make sure that the JS is being executed on the actual domain and not in a sandbox   
+
+lets use 3 different payloads for each field: 
+
+![](Images/Pasted%20image%2020240304175802.png)
+
+when we hit the save button in the UI we will not see our code get executed, this is because often the code will not be called until another app functionality triggers it 
+
+if we hit the share button we can then see our country payload triggers: 
+
+![](Images/Pasted%20image%2020240304175936.png)
+
+because our profile is saved and publicly accessible, this seems to be a stored XSS vulnerability   
+
+lets now check to see if the HTTPOnly setting is off: 
+
+![](Images/Pasted%20image%2020240304180116.png) 
+
+### Obtaining session cookies through XSS 
+
+lets now create a cookie-logging script in PHP to practice obtaining a victim's session cookie through sharing a vulnerable link to the stored XSS public profile   
