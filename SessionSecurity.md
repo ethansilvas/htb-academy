@@ -518,6 +518,18 @@ remember that this POST request attack doesn't rely on the being in the same loc
 
 also in this scenario even if the site was using secure cookies the attacker would still be able to leak the CSRF token because the connection is what leaks the token 
 
+## XSS and CSRF Chaining 
+
+sometimes even if we bypass the CSRF protections we might not be able to create cross-site requests due to some sort of same origin or same site restriction   
+in this case we can try chaining vulnerabilities to get the same result 
+
+our new target has: 
+- same origin and same site protections as anti-csrf measures 
+- the apps country field is vulnerable to stored XSS attacks like we saw in the previous XSS section 
+
+malicious cross-site requests are out of the question due to the protections but we can still perform CSRF attacks through the stored XSS vulnerability   
+we will leverage the stored XSS vulnerability to issue a state-changing request against the web app   
+a request through XSS will bypass any same origin or same site protection since it will derive from the same domain   
 
 
 
