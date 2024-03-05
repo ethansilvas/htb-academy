@@ -145,3 +145,109 @@ the app in this example has the following vulnerable code:
 
 if the token parameter isn't defined then start a session and generate a valid session id, otherwise if the token is specified then simply set the session cookie to its value directly   
 
+## Obtaining Session Identifiers Without User Interaction 
+
+there are many techniques to get session ids and they can be split into two categories: 
+- without user interaction 
+- requiring user interaction
+
+### Obtaining session identifiers via traffic sniffing
+
+traffic sniffing requires the attacker and victim to be on the same local network; not possible to sniff traffic remotely   
+even if traffic is sniffed, if it is encrypted then it will still likely be impossible to decrypt 
+
+obtaining session identifiers through sniffing requires: 
+- attacker to be positioned on same local network 
+- unencrypted HTTP traffic 
+
+if we go to our target we can see that we have an `auth-session` cookie: 
+
+![](Images/Pasted%20image%2020240304165928.png)
+
+if we start a wireshark packet capture on our `tun0` interface, we can simulate victim behavior by opening up a new session on the site in an incognito window and login: 
+
+![](Images/Pasted%20image%2020240304170301.png)
+
+![](Images/Pasted%20image%2020240304170330.png)
+
+we can now look for the victim's cookie in the traffic by looking for HTTP traffic: 
+
+![](Images/Pasted%20image%2020240304170413.png)
+
+then using the `Edit -> Find Packet` option we can open the search bar and specify `Packet bytes` to look for the `auth-session` string: 
+
+![](Images/Pasted%20image%2020240304170707.png)
+
+because the traffic is HTTP we can see the auth-session cookie being set and we can copy it: 
+
+![](Images/Pasted%20image%2020240304171246.png)
+
+again, just as we did in the previous session hijacking example we can simply use this cookie in our browser session to successfully authenticate as the victim
+
+### Obtaining session identifiers post-exploitation (web server access)
+
+during the post-exploitation phase, session ids and session data can be retrieved from a web server's disk or memory 
+
+#### PHP
+
+the PHP `session-save_path` entry in the PHP.ini file shows where the session data will be stored 
+
+```shell
+locate php.ini
+cat /etc/php/7.4/cli/php.ini | grep 'session.save_path'
+cat /etc/php/7.4/apache2/php.ini | grep 'session.save_path'
+```
+
+![](Images/Pasted%20image%2020240304171550.png)
+
+in the default configuration's case it will be in the `/var/lib/php/sessions`  
+in order to see a victim's session id they will need to be logged in 
+
+the session files have the naming convention of `sess_<sessionID>`
+
+```shell-session
+ls /var/lib/php/sessions
+cat //var/lib/php/sessions/sess_s6kitq8d3071rmlvbfitpim9mm
+```
+
+#### Java
+
+the `Manager` element represents the session manager that is used to create and maintain HTTP sessions   
+
+tomcat has two standard implementations of `Manager`  
+default stores active sessions, and the optional one stores active sessions that have been swapped out (in addition to saving sessions across a server restart) in a storage location that is selected via the use of an appropriate `Store` nested element   
+the filename of the default session data file is `SESSIONS.ser`
+
+http://tomcat.apache.org/tomcat-6.0-doc/config/manager.html
+#### .NET 
+
+session data can be found in: 
+- the app worker process (aspnet_wp.exe) in the InProc Session Mode
+- StateServer (windows service residing on IIS or a separate server) in the OutProc Session Mode
+- SQL server 
+
+https://www.c-sharpcorner.com/UploadFile/225740/introduction-of-session-in-Asp-Net/
+
+### Obtaining session identifiers post-exploitation (database access) 
+
+in cases where you have direct access to a database like in a SQL injection or with credentials, you should always check for stored user sessions
+
+```sql
+show databases;
+use project;
+show tables;
+select * from users;
+```
+
+![](Images/Pasted%20image%2020240304173607.png)
+
+```sql
+select * from all_sessions;
+select * from all_sessions where id=3;
+```
+
+![](Images/Pasted%20image%2020240304173626.png)
+
+remember that even though our example in this section specified that we were on the same local network, if the app was an intranet app and we had access to the company's VPN we would still have access to packet sniffing as long as any user connected to the VPN could interact with the app 
+
+
