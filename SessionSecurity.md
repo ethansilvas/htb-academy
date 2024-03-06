@@ -804,3 +804,98 @@ open redirect vulnerabilities are usually used to create legit-looking phishing 
 
 remember that this attack would have worked against a GET based form as well 
 
+## Remediation Advice 
+
+### Remediating session hijacking 
+
+pretty challenging to counter session hijacking because a valid session id grants access to an app by design   
+user session monitoring and anomaly detection solutions can detect session hijacking   
+the best way to counter session hijacking is by trying to eliminate all other vulnerabilities 
+
+### Remediating session fixation 
+
+session fixation can be remediated by generating a new session identifier upon an authenticated operation   
+invalidating any pre-login session id and generating a new one post-login should be enough 
+
+#### PHP
+
+```php
+session_regenerate_id(bool $delete_old_session = false): bool
+```
+
+the above code will update a current session id with a newly generated one, the current session info is kept 
+
+#### Java
+
+```java
+session.invalidate();
+session = request.getSession(true);
+```
+
+this will invalidate the current session and gets a new session from the request object 
+
+#### .NET
+
+```asp
+Session.Abandon();
+```
+
+`Session.Abandon()` is used for session invalidation purposes but it isn't sufficient for this task   
+microsoft says that when you abandon a session the session id cookie is not removed from the browser of the user   
+so as soon as the session is abandoned any new requests to the same app will use the same session id but will have a new session state instance   
+so to avoid this you would need to overwrite the cookie header or implement more complex cookie-based session management by enriching the info held in a cookie and performing server-side checks 
+
+### Remediating XSS 
+
+validation of user input should be implemented for every input received immediately upon receiving it   
+input validation should be performed on the server-side with a positive approach (whitelist) instead of a negative (blacklist) 
+
+validation principles in order: 
+- verify existence of input, no empty or null values 
+- enforce input size 
+- validate input type 
+- restrict the input range of values 
+- sanitize special characters 
+- ensure logical input compliance 
+
+HTML encoding to user-controlled output should be done in the following cases: 
+- prior to embedding user-controlled input within browser targeted output 
+- prior to documenting user-controlled input into log files 
+
+the following inputs match the user controlled criteria: 
+- dynamic values that originate directly from user input (GET, POST, COOKIE, HEADER, FILE UPLOAD, QUERYSTRING)
+- user controlled data repo values (database, log, files, etc.)
+- session vales originating from user input or user-controlled data repo values 
+- values from external entities 
+- any other value that could have been affected by user 
+- encoding should verify that input matching the given criteria will be processed through a data sanitation component which will replace non-alphanumeric characters in HTML before showing them to the user (every script is presented to the user rather than be executed)
+
+additionally: 
+- don't embed user input in client-side scripts 
+- https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet
+- http://www.degraeve.com/reference/specialcharacters.php
+
+Content-Security-Policy (CSP) headers significantly reduce the risk and impact of XSS attacks in modern browsers by specifying a whitelist in the HTTP response headers 
+
+also, cookies should be marked as HTTPOnly for XSS attacks to not be able to capture them 
+
+### Remediating CSRF 
+
+recommended that whenever a request is made to access each function, a check should be done to ensure the user is authorized to perform that action 
+
+preferred way to reduce CSRF is by modifying session management mechanisms and implement additional, randomly generated, and non-predictable security tokens or responses to each HTTP request 
+
+also can implement referrer header checking to perform verification on the order in which pages are called 
+
+can also explicitly state cookie usage with the SameSite attribute   
+https://web.dev/samesite-cookies-explained/
+
+### Remediating open redirect 
+
+save use of redirects and forwards can be done by: 
+- do not use user-supplied URLs and have methods to strictly validate the url 
+- ensure any user input is valid if needed 
+- recommended that any destination input is mapped to a value rather than the actual url or portion of the url and the server-side code maps this value to the target 
+- create list of trusted URLs 
+- force all redirects to go through a page notifying users that they are being redirected and force them to click a link to confirm (Safe Redirect)
+
