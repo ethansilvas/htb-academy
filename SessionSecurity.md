@@ -692,3 +692,57 @@ obviously if this were a real example our malicious site would be crafted to loo
 
 remember that in this example we use a user-triggered on mouse click event to avoid popup blockers
 
+## Additional CSRF Protection Bypasses
+
+there are some additional CSRF protections that are out of the scope of this module but are still nice to know
+
+### Null value
+
+you can try making the csrf token a null or empty value  
+this may work because sometimes the check is only looking for the header and does not validate the token value
+
+### Random csrf token 
+
+using a randomly generated token of the same length as valid tokens may also work because some protections only check that the token has a value of the correct length 
+
+### Use another session's csrf token 
+
+another method is using the same csrf token across accounts, this may work if the app doesn't validate if the csrf token is tied to a specific account and only checks if it is algorithmically correct 
+
+you can test this by creating two accounts, getting a token from one account, and then changing the second account's token to the first account's token   
+if you can successfully execute requests with another user's token then you can successfully execute CSRF attacks 
+
+### Request method tampering 
+
+can also try changing the request method like from POST to GET because unexpected requests may be served without the need for a csrf token 
+
+### Session fixation > CSRF 
+
+sometimes sites use a double-submit cookie as a defense against csrf which makes the request contain the same random token as a cookie and as a request parameter   
+the server will check if these two values are equal 
+
+if this technique is being used then the app might not keep the valid token on the server-side, meaning it doesn't have a way to know if any token is legit and just checks if the token and cookie are the same 
+
+session fixation can then be used to create our own token value and execute a CSRF attack with a request like: 
+
+```http
+POST /change_password
+Cookie: CSRF-Token=fixed_token;
+POST body:
+new_password=pwned&CSRF-Token=fixed_token
+```
+
+### Anti-csrf protection via the referrer header 
+
+if an app is using the referrer header as anti-csrf then you can try just removing it   
+
+you can add this meta tag to your hosted CSRF page: 
+
+`<meta name="referrer" content="no-referrer"`
+
+### Bypass the regex 
+
+sometimes the referrer has a whitelist regex or a regex that allows one specific domain 
+
+for example if the referrer header is checking for "google.com" then we could try something like "google.com.pwned.m3", "pwned.m3?www.google.com", or "pwned.m3/www.google.com" 
+
