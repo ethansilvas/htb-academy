@@ -610,3 +610,24 @@ function handleResponse(d) {
 
 remember that these attacks can still go through even with the Same Origin policy because our code is executed on the domain   
 
+## Exploiting Weak CSRF Tokens 
+
+often web apps don't use secure or robust token generation algorithms   
+we can see if this is the case if we register an account and look into the requests to find a csrf token, and check if the MD5 hash of the username is equal to the value of the token 
+
+if we look at the requests being sent using the change visibility function and the following confirm function, we can see the csrf token: 
+
+![](Images/Pasted%20image%2020240305183123.png)
+
+lets try to make the MD5 token of the username goldenpeacock467: 
+
+```shell
+echo -n goldenpeacock467 | md5sum
+```
+
+![](Images/Pasted%20image%2020240305183226.png)
+
+we can see that this is the same value as the set csrf token in the requests   
+in other examples we can try different methods like `md5(username`, `sha1(username)`, `md5(current date + username)`, etc.   
+don't spend too much time on this since it can be impossible to guess, but it's worth a shot 
+
