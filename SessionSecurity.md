@@ -531,6 +531,9 @@ malicious cross-site requests are out of the question due to the protections but
 we will leverage the stored XSS vulnerability to issue a state-changing request against the web app   
 a request through XSS will bypass any same origin or same site protection since it will derive from the same domain   
 
+if we use the change visibility button on our new target and capture the requests we can see: 
 
+![](Images/Pasted%20image%2020240305172406.png)
 
+![](Images/Pasted%20image%2020240305172416.png)
 
