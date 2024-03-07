@@ -320,5 +320,53 @@ the found WSDL file uses version 1.1 layout and has many elements:
 - binding - binds the operation to a particular port type. Think of bindings as interfaces. Client calls the relevant port type and uses the details given by the binding to be able to access the operations bound to this port type. Provides web services access details like the message format, operations, messages, and interfaces 
 - service - client makes a call to the web service through the name of the specified service in the service tag. Client identifies the location of the web service 
 
+## Command Injection 
 
+command injections against web services would allow system command execution directly on the back-end server   
+if a web service uses user-controlled input to execute a system command then it is open to malicious payloads to subvert the intended command 
+
+suppose we are assessing a connectivity-checking service on `http://<target>:3003/ping-server.php/ping`  
+
+note that this example is not using the web service designs that we just covered, but rather it is more like a normal web service that provides functionality in a programmatic way 
+
+```php
+<?php
+function ping($host_url_ip, $packets) {
+        if (!in_array($packets, array(1, 2, 3, 4))) {
+                die('Only 1-4 packets!');
+        }
+        $cmd = "ping -c" . $packets . " " . escapeshellarg($host_url);
+        $delimiter = "\n" . str_repeat('-', 50) . "\n";
+        echo $delimiter . implode($delimiter, array("Command:", $cmd, "Returned:", shell_exec($cmd)));
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $prt = explode('/', $_SERVER['PATH_INFO']);
+        call_user_func_array($prt[1], array_slice($prt, 2));
+}
+?>
+```
+
+a function called `ping()` is defined that takes in arguments `host_url_ip` and `packets`  
+the request will look like: `http://<target>:3003/ping-server.php/ping/<VPN/TUN adapter IP>/3`  
+
+you can make sure that this request is sending ping requests by capturing traffic with tcpdump: 
+
+![](Images/Pasted%20image%2020240307150044.png)
+
+![](Images/Pasted%20image%2020240307150053.png)
+
+the code will also check to see if the packet value is more than 4 which if we issue a request for `/3333` we will get an error   
+
+it will then define a `cmd` variable which forms the ping command to be executed   
+the `packets` and `host_url` arguments are parsed and `escapeshellarg()` is used to safely escape the characters in the `host_url`   
+
+the command is then executed with the `shell_exec()` function 
+
+if the request method is GET then an existing function can be called with the help of `call_user_func_array()` which calls an existing PHP function by taking in a function to call followed by its arguments  
+this means that we could use this to instead call our request to something like: 
+
+`http://<target>:3003/ping-server.php/system/ls`
+
+![](Images/Pasted%20image%2020240307152039.png)
 
