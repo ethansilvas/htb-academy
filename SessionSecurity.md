@@ -571,7 +571,7 @@ it will mimic the captured POST request logic by setting the csrf token value an
 
 ![](Images/Pasted%20image%2020240305173919.png)
 
-we now go to the victim's profile and set the country field to our payload: 
+we now go to our profile and set the country field to our payload: 
 
 ![](Images/Pasted%20image%2020240305174132.png)
 
@@ -628,7 +628,7 @@ echo -n goldenpeacock467 | md5sum
 ![](Images/Pasted%20image%2020240305183226.png)
 
 we can see that this is the same value as the set csrf token in the requests   
-in other examples we can try different methods like `md5(username`, `sha1(username)`, `md5(current date + username)`, etc.   
+in other examples we can try different methods like `md5(username)`, `sha1(username)`, `md5(current date + username)`, etc.   
 don't spend too much time on this since it can be impossible to guess, but it's worth a shot 
 
 lets create our malicious HTML:
@@ -898,4 +898,49 @@ save use of redirects and forwards can be done by:
 - recommended that any destination input is mapped to a value rather than the actual url or portion of the url and the server-side code maps this value to the target 
 - create list of trusted URLs 
 - force all redirects to go through a page notifying users that they are being redirected and force them to click a link to confirm (Safe Redirect)
+
+## Session Security - Skills Assessment 
+
+participating in a bug bounty program with only URL in scope is `minilab.htb.net`   
+attacking end-users through client-side attacks is in scope  
+have also already found endpoint `minilab.htb.net/submit-solution`
+
+find a way to hijack an admin's session 
+
+### Read the flag residing in the admin's public profile
+
+when we log into our test account we can see: 
+
+![](Images/Pasted%20image%2020240306162819.png)
+
+I can see from that we have been assigned an auth session cookie: 
+
+![](Images/Pasted%20image%2020240306162928.png)
+
+I want to see if this cookie changes after login or not so I open a new incognito window and see: 
+
+![](Images/Pasted%20image%2020240306163101.png)
+`s%3Ab4Qs6dz17oMew9qn-H_7Z4Xz0jdkq0II.z6HkpU%2FETtKw%2Bb9JyLZLyh5FC1iQ9fHD01SK7%2BLDHJM`
+
+then after logging in again to our test account I get: 
+
+`s%3Ab4Qs6dz17oMew9qn-H_7Z4Xz0jdkq0II.z6HkpU%2FETtKw%2Bb9JyLZLyh5FC1iQ9fHD01SK7%2BLDHJM`
+
+so the cookie does in fact stay the same after login 
+
+first lets see which fields in the public profile might be XSS vulnerable by using three payloads: 
+
+![](Images/Pasted%20image%2020240306164906.png)
+
+the XSS payload is executed after using the "share" functionality with our stored XSS code being executed from the country field 
+
+taking a look at the `/submit-solution` page we can see that we get the result: 
+
+![](Images/Pasted%20image%2020240306192254.png)
+
+it appears that I need to enter a url in the `url` parameter so I link the public profile: 
+
+![](Images/Pasted%20image%2020240306192421.png)
+
+it looks like this page is where I need to be submitting my malicious links so lets 
 
