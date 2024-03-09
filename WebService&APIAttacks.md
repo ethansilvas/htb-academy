@@ -565,3 +565,30 @@ SQLi can affect APIs as well, in our example we can try submitting classic SQLi 
 
 ![](Images/Pasted%20image%2020240308163033.png)
 
+## Arbitrary File Upload
+
+### PHP file upload via API to RCE 
+
+our target will be on `http://<target>:3001`
+
+we can see an anonymous file upload form: 
+
+![](Images/Pasted%20image%2020240308170324.png)
+
+lets try uploading a php backdoor file: 
+
+![](Images/Pasted%20image%2020240308170342.png)
+
+![](Images/Pasted%20image%2020240308170427.png)
+
+this should allow us to use the `cmd` parameter in our request to execute code but this is only if we can determine where our uploaded file is located and if the file will be rendered successfully without any PHP function restrictions 
+
+![](Images/Pasted%20image%2020240308170956.png)
+
+the captured request shows us that the file was uploaded via a POST request to `api/upload`  
+the content type was auto set to `application/x-php` which means there is no protection in place (would usually be set to `application/octet-stream` or `text/plain` if there were protections)  
+
+we can then visit our uploaded file to execute our commands via the `cmd` parameter: 
+
+![](Images/Pasted%20image%2020240308171435.png)
+
