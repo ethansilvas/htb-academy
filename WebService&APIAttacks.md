@@ -612,3 +612,15 @@ we can see that it wants a file input but we don't currently know any files that
 
 ![](Images/Pasted%20image%2020240308174035.png)
 
+## Cross-Site Scripting (XSS)
+
+lets again look at `http://<target>:3000/api/download`
+
+![](Images/Pasted%20image%2020240308181527.png)
+
+we can see that our input to the download API is reflected in the response so lets see what happens if we enter a URL encoded XSS payload: 
+
+![](Images/Pasted%20image%2020240308181728.png)
+
+
+
