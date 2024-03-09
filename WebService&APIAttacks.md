@@ -592,3 +592,23 @@ we can then visit our uploaded file to execute our commands via the `cmd` parame
 
 ![](Images/Pasted%20image%2020240308171435.png)
 
+## Local File Inclusion (LFI) 
+
+our target is on `http://<target>:3000/api`  
+
+lets first send a curl request to see the response: 
+
+![](Images/Pasted%20image%2020240308173714.png)
+
+now lets perform some API endpoint fuzzing using SecLists `common-api-endpoints-mazen160.txt` list: 
+
+![](Images/Pasted%20image%2020240308173842.png)
+
+we've found the `download` endpoint so now lets send a request to that: 
+
+![](Images/Pasted%20image%2020240308173914.png)
+
+we can see that it wants a file input but we don't currently know any files that we might look for, so lets try to mount an LFI attack: 
+
+![](Images/Pasted%20image%2020240308174035.png)
+
