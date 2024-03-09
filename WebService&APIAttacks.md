@@ -622,5 +622,22 @@ we can see that our input to the download API is reflected in the response so le
 
 ![](Images/Pasted%20image%2020240308181728.png)
 
+## Server-Side Request Forgery (SSRF)
+
+our target will be `http://<target>:3000/api/userinfo`
+
+sending a curl request we can see that we want to provide an `id` parameter: 
+
+![](Images/Pasted%20image%2020240308182151.png)
+
+since we are concerned with SSRF we can start a netcat listener with `nc -nlvp 4444` and specify the id parameter as our IP and port: 
+
+![](Images/Pasted%20image%2020240308182325.png)
+
+we get an error and no response in our listener, but dome APIs expect some form of encoding or formatting so lets try again but with base64 encoding: 
+
+![](Images/Pasted%20image%2020240308182505.png)
+
+![](Images/Pasted%20image%2020240308182517.png)
 
 
