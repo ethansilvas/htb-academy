@@ -640,4 +640,23 @@ we get an error and no response in our listener, but dome APIs expect some form 
 
 ![](Images/Pasted%20image%2020240308182517.png)
 
+## Regular Expression Denial of Service (ReDoS)
+
+if we have a user that submits normal input to an API, a dev could match any input on the server side against a regex  
+the response times will be usually constant, but an attacker could upload a payload that causes delays by exploiting some particularities/inefficiencies of the regex matching engine   
+the longer the payload is the longer the time the API will take to respond, resulting in a ReDoS 
+
+our target is `http://<target>:3000/api/check-email` and accepts an `email` parameter: 
+
+![](Images/Pasted%20image%2020240309141837.png)
+
+we can check the displayed regex on `regex101` or `jex.im/regulex` to get an idea of what it looks for 
+
+![](Images/Pasted%20image%2020240309141926.png)
+
+the second and third groups are doing bad iterative checks, which means that if we use the below payload we will notice a significant increase in response time: 
+
+```shell
+curl "http://<TARGET IP>:3000/api/check-email?email=jjjjjjjjjjjjjjjjjjjjjjjjjjjj@ccccccccccccccccccccccccccccc.55555555555555555555555555555555555555555555555555555555."
+```
 
