@@ -660,3 +660,23 @@ the second and third groups are doing bad iterative checks, which means that if 
 curl "http://<TARGET IP>:3000/api/check-email?email=jjjjjjjjjjjjjjjjjjjjjjjjjjjj@ccccccccccccccccccccccccccccc.55555555555555555555555555555555555555555555555555555555."
 ```
 
+## XML External Entity (XXE) Injection 
+
+our target is on `http://<target>:3001`: 
+
+![](Images/Pasted%20image%2020240309143025.png)
+
+if we capture the login we can see that it sends the post data in XML and that an API is handling the authentication: 
+
+![](Images/Pasted%20image%2020240309143052.png)
+
+we can try to craft a payload with an external DTD: 
+
+![](Images/Pasted%20image%2020240309143151.png)
+
+we have defined a DTD `pwn` with an `ENTITY` that will reference our hosted netcat listener: 
+
+![](Images/Pasted%20image%2020240309151942.png)
+
+![](Images/Pasted%20image%2020240309151951.png)
+
