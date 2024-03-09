@@ -497,3 +497,71 @@ Content-Length: 293
 </methodCall>
 ```
 
+## Information Disclosure (With a Twist of SQLi)
+
+security related inefficiencies or misconfigs in a web service can result in info disclosure   
+wen assessing a web service or an API we should spend a good amount of time fuzzing 
+
+### Information disclosure through fuzzing 
+
+suppose our target has an api on `http://<target>:3003`
+
+we can first check to see if there are any parameters that might reveal the API's functionality   
+lets try some parameter fuzzing: 
+
+![](Images/Pasted%20image%2020240308154630.png)
+
+we can see that the `id` parameter seems to be valid so lets check to see what the response is with a test value: 
+
+![](Images/Pasted%20image%2020240308154723.png)
+
+we can then use a python script to automate getting all the info that the API returns: 
+
+```python
+import requests, sys
+
+def brute():
+    try:
+        value = range(10000)
+        for val in value:
+            url = sys.argv[1]
+            r = requests.get(url + '/?id='+str(val))
+            if "position" in r.text:
+                print("Number found!", val)
+                print(r.text)
+    except IndexError:
+        print("Enter a URL E.g.: http://<TARGET IP>:3003/")
+
+brute()
+```
+
+this will try to brute force a range of 10000 id values to see which ones we get responses from  
+
+note that if there is a rate limit set by the app we could always try to bypass it with headers like `X-Forwarded-For` and `X-Forwarded-IP`, etc. or use proxies 
+
+these headers will need to be compared with an IP most of the time: 
+
+```php
+<?php
+$whitelist = array("127.0.0.1", "1.3.3.7");
+if(!(in_array($_SERVER['HTTP_X_FORWARDED_FOR'], $whitelist)))
+{
+    header("HTTP/1.1 401 Unauthorized");
+}
+else
+{
+  print("Hello Developer team! As you know, we are working on building a way for users to see website pages in real pages but behind our own Proxies!");
+}
+```
+
+the issue in the above code is that it compares the `HTTP_X_FORWARDED_FOR` header to a possible whitelist but if it isn't set or is set without of the the IPs it will give a 401  
+a bypass could be to set the header and the value to one of the IPs from the array 
+
+### Information disclosure through SQL injection 
+
+SQLi can affect APIs as well, in our example we can try submitting classic SQLi payloads in our parameter to see if we can find anything:
+
+![](Images/Pasted%20image%2020240308163012.png)
+
+![](Images/Pasted%20image%2020240308163033.png)
+
