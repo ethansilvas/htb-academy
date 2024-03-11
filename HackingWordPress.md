@@ -118,3 +118,33 @@ links to CSS and JS can also provide hints about the version number
 
 in older versions of wordpress another way to find the version info is in the `readme.html` file in the root directory 
 
+## Plugins and Themes Enumeration 
+
+can also find info about the installed plugins by looking at the source code or curl+grep 
+
+```shell
+curl -s -X GET http://blog.inlanefreight.com | sed 's/href=/\n/g' | sed 's/src=/\n/g' | grep 'wp-content/plugins/*' | cut -d"'" -f2
+```
+
+![](Images/Pasted%20image%2020240311140101.png)
+
+```shell
+curl -s -X GET http://blog.inlanefreight.com | sed 's/href=/\n/g' | sed 's/src=/\n/g' | grep 'themes' | cut -d"'" -f2
+```
+
+![](Images/Pasted%20image%2020240311140136.png)
+
+the response headers may also contain version numbers for specific plugins 
+
+not all installed plugins and themes can be discovered passively, and we will need to send requests to the server actively to enumerate them   
+we can send GET requests that point to a directory or file that may exist on the server; if it does exist then we can gain access to it or receive a redirect indicating that the content does exist but we will not have direct access to it 
+
+```shell
+curl -I -X GET http://blog.inlanefreight.com/wp-content/plugins/mail-masta
+```
+
+```shell
+curl -I -X GET http://blog.inlanefreight.com/wp-content/plugins/someplugin
+```
+
+to speed up enumeration we could also write a bash script or use a tool like wfuzz or WPScan 
