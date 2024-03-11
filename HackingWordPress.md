@@ -148,3 +148,32 @@ curl -I -X GET http://blog.inlanefreight.com/wp-content/plugins/someplugin
 ```
 
 to speed up enumeration we could also write a bash script or use a tool like wfuzz or WPScan 
+
+## Directory Indexing 
+
+active plugins should not be our only focus because even deactivated plugins may still be accessible which would give us access to its associated scripts and functions   
+deactivating a vulnerable plugin does not improve security and it is best practice to either remove them or keep them up to date 
+
+if we have a disabled plugin: 
+
+![](Images/Pasted%20image%2020240311141255.png)
+
+we can still have access to it by browsing to the plugins directory:
+
+![](Images/Pasted%20image%2020240311141421.png)
+
+we can also view the directory listing using a curl command and convert the HTML output to a readable format with html2text: 
+
+```shell
+curl -s -X GET http://blog.inlanefreight.com/wp-content/plugins/mail-masta/ | html2text
+```
+
+![](Images/Pasted%20image%2020240311141642.png)
+
+this is called directory indexing and allows us to navigate the folder and access files that may contain sensitive info or vulnerable code   
+best practice to disable directory indexing on web servers so potential attackers can't gain direct access to any files or folders other than those necessary for the site to function properly 
+
+we can start enumeration by sending a curl request to the page and then looking for any plugins or themes: 
+
+![](Images/Pasted%20image%2020240311143226.png)
+
