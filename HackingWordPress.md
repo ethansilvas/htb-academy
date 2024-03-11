@@ -1,4 +1,4 @@
-# Hacking Wordpress
+# Hacking WordPress
 
 ## Intro 
 
@@ -46,7 +46,7 @@ the login file can also be renamed which will make it more difficult to find the
 
 `xmlrpc.php` is a file representing a feature that enables data to be transmitted with HTTP acting as the transport mechanism and XML as the encoding mechanism, this type of communication can be replaced by the wordpress REST API 
 
-### Wordpress configuration file 
+### WordPress configuration file 
 
 `wp-config.php` file contains info required by wordpress to connect to the database like the database name, database host, username and password, authentication keys and salts, and database table prefix    
 can also be used to activate DEBUG mode which is useful for troubleshooting 
@@ -69,4 +69,15 @@ core files are stored here such as certificates, fonts, JS, and widgets
 `tree -L 1 /var/www/html/wp-includes` 
 
 ![](Images/Pasted%20image%2020240311130412.png)
+
+## WordPress User Roles 
+
+there are five types of users in standard wordpress installation: 
+- `Administrator` - the user has access to admin features within the site, this includes adding and deleting users and posts as well as editing source code 
+- `Editor` - can publish and manage posts, including the posts of other users 
+- `Author` - can publish and manage their own posts 
+- `Contributor` - can write and manage their own posts but cannot publish them 
+- `Subscriber` - normal users who can browse posts and edit their profiles 
+
+gaining admin access is usually needed to obtain code execution on the server but editors and authors might have access to certain vulnerable plugins that normal users dont 
 
