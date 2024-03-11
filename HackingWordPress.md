@@ -81,3 +81,40 @@ there are five types of users in standard wordpress installation:
 
 gaining admin access is usually needed to obtain code execution on the server but editors and authors might have access to certain vulnerable plugins that normal users dont 
 
+## WordPress Core Version Enumeration 
+
+important part of the enumeration phase is finding the software version number   
+this can be helpful for looking for common misconfigs like default passwords for certain versions of an app and searching for known vulnerabilities for a particular version number 
+
+many ways to find the version number, first and easiest way is the look at the page source code; we can do this simply by right clicking and looking at the source   
+we can search for the `meta generator` tag either with ctrl+F or make a curl request with grep 
+
+```html
+<link rel='https://api.w.org/' href='http://blog.inlanefreight.com/index.php/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.inlanefreight.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.inlanefreight.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 5.3.3" />
+```
+
+`curl -s -X GET http://blog.inlanefreight.com | grep '<meta name=generator"'`
+
+the source code may also contain comments that may be useful  
+links to CSS and JS can also provide hints about the version number 
+
+```html
+<link rel='stylesheet' id='bootstrap-css'  href='http://blog.inlanefreight.com/wp-content/themes/ben_theme/css/bootstrap.css?ver=5.3.3' type='text/css' media='all' />
+<link rel='stylesheet' id='transportex-style-css'  href='http://blog.inlanefreight.com/wp-content/themes/ben_theme/style.css?ver=5.3.3' type='text/css' media='all' />
+<link rel='stylesheet' id='transportex_color-css'  href='http://blog.inlanefreight.com/wp-content/themes/ben_theme/css/colors/default.css?ver=5.3.3' type='text/css' media='all' />
+<link rel='stylesheet' id='smartmenus-css'  href='http://blog.inlanefreight.com/wp-content/themes/ben_theme/css/jquery.smartmenus.bootstrap.css?ver=5.3.3' type='text/css' media='all' />
+```
+
+```html
+<script type='text/javascript' src='http://blog.inlanefreight.com/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp'></script>
+<script type='text/javascript' src='http://blog.inlanefreight.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<script type='text/javascript' src='http://blog.inlanefreight.com/wp-content/plugins/mail-masta/lib/subscriber.js?ver=5.3.3'></script>
+<script type='text/javascript' src='http://blog.inlanefreight.com/wp-content/plugins/mail-masta/lib/jquery.validationEngine-en.js?ver=5.3.3'></script>
+<script type='text/javascript' src='http://blog.inlanefreight.com/wp-content/plugins/mail-masta/lib/jquery.validationEngine.js?ver=5.3.3'></script>
+```
+
+in older versions of wordpress another way to find the version info is in the `readme.html` file in the root directory 
+
