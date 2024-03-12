@@ -177,3 +177,7 @@ we can start enumeration by sending a curl request to the page and then looking 
 
 ![](Images/Pasted%20image%2020240311143226.png)
 
+looking through each of these plugin folders you can enumerate and find the flag file: 
+
+![](Images/Pasted%20image%2020240311170026.png)
+
