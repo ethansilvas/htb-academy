@@ -272,3 +272,27 @@ wpscan --url http://blog.inlanefreight.com --enumerate --api-token Kffr4fdJzy9qV
 
 remember that wpscan will use various passive and active methods to determine versions and vulnerabilities 
 
+## Exploiting a Vulnerable Plugin 
+
+with the use of an API key we can see things like if the site uses an older version of wordpress, outdated themes, vulnerable plugins, etc.   
+
+![](Images/Pasted%20image%2020240312165414.png)
+
+we can see that the version of mail masta is vulnerable to SQLi and LFI so lets try to exploit it using the method shown: 
+
+![](Images/Pasted%20image%2020240312165508.png)
+
+we can look at the provided references like in exploit-db to see proof of concepts: 
+
+![](Images/Pasted%20image%2020240312165628.png)
+
+which we can replicate in our app: 
+
+```shell
+curl http://blog.inlanefreight.com/wp-content/plugins/mail-masta/inc/campaign/count_of_send.php?pl=/etc/passwd
+```
+
+![](Images/Pasted%20image%2020240312165722.png)
+
+
+
