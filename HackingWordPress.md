@@ -243,4 +243,16 @@ we can see how many method calls we can use on our target by using the `system.l
 
 ![](Images/Pasted%20image%2020240312161825.png)
 
+## WPScan Overview 
+
+wpscan is an automated wordpress scanner and enumeration tool that determines if the themes and plugins used by wordpress are outdated and vulnerable   
+
+can be installed with `gem install wpscan`
+
+there are various enumeration options that can be specified like vulnerable plugins, all plugins, user enumeration, etc.   
+
+it can pull vulnerability info from external sources to enhance our scans   
+we can get an API token from WPVulnDB which is used by wpscan to look for vulnerability and exploit proof of concepts and reports   
+after creating an account you can supply the token using `--api-token`; up to 50 free requests per day   
+
 
