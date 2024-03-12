@@ -255,4 +255,20 @@ it can pull vulnerability info from external sources to enhance our scans
 we can get an API token from WPVulnDB which is used by wpscan to look for vulnerability and exploit proof of concepts and reports   
 after creating an account you can supply the token using `--api-token`; up to 50 free requests per day   
 
+## WPScan Enumeration 
+
+the `--enumerate` flag enumerates various components like plugins, themes, and users   
+by default it will enumerate plugins, themes, users, media, and backups but arguments can be used to restrict enumeration to specific components 
+
+can enumerate all plugins with `--enumerate ap` 
+
+default number of threads is 5 but can be changed with `-t` 
+
+```shell
+wpscan --url http://blog.inlanefreight.com --enumerate --api-token Kffr4fdJzy9qVcTk<SNIP>
+```
+
+![](Images/Pasted%20image%2020240312163828.png)
+
+remember that wpscan will use various passive and active methods to determine versions and vulnerabilities 
 
