@@ -181,3 +181,42 @@ looking through each of these plugin folders you can enumerate and find the flag
 
 ![](Images/Pasted%20image%2020240311170026.png)
 
+## User Enumeration 
+
+a critical phase of wordpress security assessments is enumerating a list of valid users   
+with this list we might be able to guess default credentials or perform a brute force password attack   
+if successful we might be able to login as an author or even an admin which can be leveraged to modify the site or interact with the underlying web server 
+
+there are two methods for performing manual username enumeration 
+
+### First method 
+
+we can review posts to uncover the ID assigned to the user and their corresponding username   
+
+if you hover over the link to the post author you can see the link to the user's account: 
+
+![](Images/Pasted%20image%2020240311184926.png)
+
+admins user IDs are usually `1` and we can confirm this by using the user ID for the `author` parameter in the url: 
+
+`http://blog.inlanefrieight.com/?author=1`
+
+if we use the following curl command we can look for the `Location` header to verify that the user ID does belong to a user
+
+```shell
+curl -s -I -X GET http://blog.inlanefreight.com/?author=1
+```
+
+![](Images/Pasted%20image%2020240311185115.png)
+
+### Second method
+
+the second method requires an interaction with the JSON endpoint that lets us obtain a list of users  
+this has changed after wordpress core version 4.7.1 and later versions only show whether a user is configured or not  
+
+```shell
+curl http://blog.inlanefreight.com/wp-json/wp/v2/users | jq
+```
+
+![](Images/Pasted%20image%2020240311185532.png)
+
