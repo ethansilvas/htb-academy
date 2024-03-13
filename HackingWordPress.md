@@ -420,3 +420,10 @@ some configs can increase the overall security posture:
 - limit login attempts to prevent brute forcing 
 - rename `wp-admin.php` login page or relocate it to make it not accessible to the internet or only accessible by certain IP addresses
 
+## Skills Assessment - WordPress 
+
+you have been contracted to perform an external pen test against the company INLANEFREIGHT that is hosting one of their main public-facing sites on wordpress 
+
+enumerate the target thoroughly using skills in this module to find a variety of flags  
+obtain shell access to webserver to find final flag 
+
