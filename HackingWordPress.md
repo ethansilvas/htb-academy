@@ -356,3 +356,67 @@ each module offers different settings options that we can use to assign specific
 
 ![](Images/Pasted%20image%2020240313134826.png)
 
+## WordPress Hardening 
+
+### Perform regular updates 
+
+make sure that the wordpress core and all installed plugins and themes are up to date   
+some hosting providers will even perform continuous automatic updates of wordpress core   
+we can also modify the `wp-config.php` file to enable auto updates with the following lines: 
+
+```php
+define( 'WP_AUTO_UPDATE_CORE', true );
+```
+
+```php
+add_filter( 'auto_update_plugin', '__return_true' );
+```
+
+```php
+add_filter( 'auto_update_theme', '__return_true' );
+```
+
+### Plugin and theme management 
+
+only install trusted themes and plugins from the wordpress.org website   
+routinely audit your site and remove any unused themes and plugins 
+
+### Enhance wordpress security 
+
+there are several security plugins that can be used to enhance the site's security   
+these plugins can be used as a WAF, malware scanner, monitoring, activity auditing, brute force attack prevention, and strong password enforcement 
+
+some examples are: 
+- sucuri security 
+	- security activity auditing 
+	- file integrity monitoring
+	- remote malware scanning
+	- blacklist monitoring
+- iThemes security 
+	- 2FA
+	- wordpress salts and security keys
+	- google recaptcha 
+	- user action logging 
+- wordfence security 
+	- WAF
+	- premium version provides real-time firewall rule and malware signature updates 
+	- premium also enables IP blacklisting 
+
+### User management 
+
+users are often targeted because they are seen as the weakest link in an org 
+
+some user best practices are: 
+- disable standard `admin` user and create accounts with difficult to guess usernames 
+- enforce strong passwords 
+- enable and enforce 2FA 
+- restrict users access based on the concept of least privilege 
+- periodically audit user rights and access; remove any unused accounts or revoke access 
+
+### Configuration management 
+
+some configs can increase the overall security posture: 
+- install a plugin that disallows user enumeration 
+- limit login attempts to prevent brute forcing 
+- rename `wp-admin.php` login page or relocate it to make it not accessible to the internet or only accessible by certain IP addresses
+
