@@ -304,3 +304,37 @@ the `xml-rpc` method is preferred because it is faster
 wpscan --password-attack xmlrpc -t 20 -U admin, david -P passwords.txt --url http://blog.inlanefreight.com
 ```
 
+## Remote Code Execution (RCE) Via the Theme Editor 
+
+with admin access to wordpress we can modify the PHP source code to execute system commands   
+
+when we login with admin credentials we can get access to the admin panel where we can edit the appearance using the theme editor: 
+
+![](Images/Pasted%20image%2020240313131517.png)
+
+this lets us edit the PHP source code directly but we should choose and inactive theme in order to avoid corrupting the main theme 
+
+we can see that the theme is transportex so we can select an unused theme like twenty seventeen: 
+
+![](Images/Pasted%20image%2020240313131710.png)
+
+![](Images/Pasted%20image%2020240313131744.png)
+
+we can then choose a non-critical theme file like the 404 page to upload a web shell: 
+
+![](Images/Pasted%20image%2020240313131921.png)
+
+![](Images/Pasted%20image%2020240313132005.png)
+
+then after uploading the file we can send a request to it with our `cmd` parameter to execute our commands:
+
+```shell
+curl -X GET "http://<target>/wp-content/themes/twentyseventeen/404.php?cmd=id"
+```
+
+![](Images/Pasted%20image%2020240313132130.png)
+
+![](Images/Pasted%20image%2020240313132620.png)
+
+## Attacking WordPress With Metasploit
+
