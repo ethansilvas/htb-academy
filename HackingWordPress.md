@@ -338,3 +338,21 @@ curl -X GET "http://<target>/wp-content/themes/twentyseventeen/404.php?cmd=id"
 
 ## Attacking WordPress With Metasploit
 
+we can use metasploit framework to obtain a reverse shell automatically but this will require valid credentials for an account that has the rights to create files on the webserver 
+
+we can start the console with `msfconsole` and use the `wp_admin_shell_upload` module which we can search for with `search wp_admin`: 
+
+![](Images/Pasted%20image%2020240313133535.png)
+
+the `0` is the ID of the module which we can specify to use: 
+
+`use 0`
+
+![](Images/Pasted%20image%2020240313133957.png)
+
+each module offers different settings options that we can use to assign specifications to ensure the attack's success: 
+
+![](Images/Pasted%20image%2020240313134345.png)
+
+![](Images/Pasted%20image%2020240313134826.png)
+
