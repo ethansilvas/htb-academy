@@ -306,7 +306,7 @@ wpscan --password-attack xmlrpc -t 20 -U admin, david -P passwords.txt --url htt
 
 ## Remote Code Execution (RCE) Via the Theme Editor 
 
-with admin access to wordpress we can modify the PHP source code to execute system commands   
+with admin access to wordpress we can modify the PHP source code to execute system commands 
 
 when we login with admin credentials we can get access to the admin panel where we can edit the appearance using the theme editor: 
 
@@ -576,3 +576,20 @@ then with `view-source:http://blog.inlanefreight.local/wp-content/plugins/site-e
 
 ![](Images/Pasted%20image%2020240313202354.png)
 
+### Obtain a shell on the system and submit the contents of the flag in the /home/erika directory
+
+from the previous steps I am already logged in to the erika account so I navigate to the theme editor and swap to an unused theme:  
+
+![](Images/Pasted%20image%2020240313202622.png)
+
+now I add my shell to an unimportant page like the 404 page: 
+
+![](Images/Pasted%20image%2020240313202743.png)
+
+then using the shell I can use directory traversal to find the flag in the home directory of the erika user: 
+
+```shell
+curl -X GET "http://blog.inlanefreight.local/wp-content/themes/twentyseventeen/404.php?cmd=ls+-la+../../../../../../../home/erika"
+```
+
+![](Images/Pasted%20image%2020240313202955.png)
