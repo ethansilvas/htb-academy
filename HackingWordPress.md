@@ -476,3 +476,27 @@ curl -s -X GET http://blog.inlanefreight.local | sed 's/href=/\n/g' | sed 's/src
 
 ![](Images/Pasted%20image%2020240313184457.png)
 
+### Submit the contents of the flag file in the directory with directory listing enabled
+
+first I send some requests to common directories like `wp-content` and `wp-admin`: 
+
+![](Images/Pasted%20image%2020240313184933.png)
+
+![](Images/Pasted%20image%2020240313184944.png)
+
+then I find that the `wp-includes` has directory listing enabled: 
+
+![](Images/Pasted%20image%2020240313185024.png)
+
+I also can use another curl command to enumerate individual plugins: 
+
+![](Images/Pasted%20image%2020240313190058.png)
+
+after looking through a few of the plugins and includes directories with simple commands like:
+
+`curl -i -s http://blog.inlanefreight.local/wp-content/plugins/email/subscribers/ | html2text`
+
+I don't notice any flag files but then immediately in the `wp-content/uploads/` directory I can see a flag file: 
+
+![](Images/Pasted%20image%2020240313190449.png)
+
