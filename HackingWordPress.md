@@ -540,3 +540,29 @@ only IDs 1-3 are valid and I can see that ID 3 is a user named Charlie Wiggins a
 
 ![](Images/Pasted%20image%2020240313200852.png)
 
+### Use a vulnerable plugin to download a file containing a flag value via an unauthenticated file download
+
+for this I will start with a wpscan to find vulnerabilities with my API token: 
+
+`wpscan --url http://blog.inlanefreight.local --api-token <my-api-token>`
+
+in the `email-subscribers` plugin results I can see that there are many vulnerabilities: 
+
+![](Images/Pasted%20image%2020240313201709.png)
+
+when looking up these results I can see that these first vulnerabilities are for file downloads: 
+
+![](Images/Pasted%20image%2020240313201744.png)
+
+so now with a proof of concept from https://cxsecurity.com/issue/WLB-2020080034/ I can try to exploit this vulnerability: 
+
+![](Images/Pasted%20image%2020240313201821.png)
+
+
+
+### What is the version number of the plugin vulnerable to an LFI?
+
+this is also viewable from the previous wpscan results: 
+
+![](Images/Pasted%20image%2020240313201425.png)
+
