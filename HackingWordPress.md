@@ -427,3 +427,5 @@ you have been contracted to perform an external pen test against the company INL
 enumerate the target thoroughly using skills in this module to find a variety of flags  
 obtain shell access to webserver to find final flag 
 
+### Identify the wordpress version number 
+
