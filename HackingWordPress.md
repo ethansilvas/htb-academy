@@ -429,3 +429,50 @@ obtain shell access to webserver to find final flag
 
 ### Identify the wordpress version number 
 
+we can first try to look for the meta tag with name generator: 
+
+`curl -s -X GET http://10.129.2.37 | grep '<meta name="generator"'`
+
+however this doesn't result in any output so we will have to look through the themes and plugins to get an idea of what version we are working with 
+
+unfortunately both curl requests for plugins and themes do not result in any output either: 
+
+![](Images/Pasted%20image%2020240313182058.png)
+
+I then try to do an automated scan with wpscan `--enumerate` and my API token but get an error: 
+
+![](Images/Pasted%20image%2020240313183651.png)
+
+the error said that the site isn't even running wordpress so I then noticed that this might not be the target site, and that I should instead focus on some of the links I could see in the source code: 
+
+![](Images/Pasted%20image%2020240313183754.png)
+![](Images/Pasted%20image%2020240313183805.png)
+
+neither of these links I could visit so I then added both of them to my `/etc/hosts` file: 
+
+![](Images/Pasted%20image%2020240313183920.png)
+
+this resulted in both becoming viewable: 
+
+![](Images/Pasted%20image%2020240313183952.png)
+
+![](Images/Pasted%20image%2020240313184042.png)
+
+the normal `inlanefreight.local` site appears to just be the same page that I was viewing earlier, but the `blog.inlanefreight.local` site appears to be an employee portal: 
+
+![](Images/Pasted%20image%2020240313184129.png)
+
+now I restart my enumeration process and can find the wordpress version with a simple curl request and looking at the meta tags: 
+
+![](Images/Pasted%20image%2020240313184257.png)
+
+### Identify the wordpress version in use 
+
+using another curl command to look for the themes I can see that the theme in use is `twentynineteen`: 
+
+```shell
+curl -s -X GET http://blog.inlanefreight.local | sed 's/href=/\n/g' | sed 's/src=/\n/g' | grep 'themes' | cut -d"'" -f2
+```
+
+![](Images/Pasted%20image%2020240313184457.png)
+
