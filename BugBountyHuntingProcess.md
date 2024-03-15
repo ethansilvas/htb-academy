@@ -184,3 +184,34 @@ in the case, proceed as follows:
 - explain your rationale for choosing this severity score and guide the team through each metric value you used in the calculator 
 - go over the bug bounty programs policy and scope and make sure your submission complies with both, and make sure the bounty amount resembles the policy of the program 
 - if none of the above works then contact mediation 
+
+## Example 1: Reporting Stored XSS 
+
+**Note**: Real reports should not used shortened language or brief summaries as the below examples will use
+
+Title - stored XSS in X admin panel 
+
+CWE - https://cwe.mitre.org/data/definitions/79.html
+
+CVSS 3.1 Score - 5.5. (Medium) 
+
+Description - found that the web app was vulnerable to stored cross site scripting attacks due to inadequate sanitation. The file uploading mechanism utilizes user input unsanitized which is reflected back to the user's browser and stored in the web app database. This results in the app being vulnerable to XSS because JS code can be entered in the filename field 
+
+Impact - cross site scripting issues occur when an app uses untrusted input data without sufficient prior validation or escaping. Attackers can use XSS to execute scripts in a legitimate user's browser leading to user credentials theft, session hijacking, site defacement, or redirection to malicious sites. Anyone that can send data to the system, including admins are possible candidates for performing XSS attacks against. 
+
+POC: 
+
+Step 1: A malicious admin could leverage the fact that the filename is reflected back to perform XSS attacks against other admins. This is feasible because admins can view all uploaded files regardless of the uploader. For example: 
+
+![](Images/Pasted%20image%2020240315140027.png)
+
+![](Images/Pasted%20image%2020240315140038.png)
+
+Step 2: When another admin clicks the view button to the uploaded file the JS code will execute on the browser: 
+
+![](Images/Pasted%20image%2020240315140117.png)
+
+### CVSS score breakdown 
+
+![](Images/Pasted%20image%2020240315140203.png)
+
