@@ -113,5 +113,57 @@ the level of privileges the attacker must have to exploit the vulnerability succ
 
 #### User interaction 
 
-if attackers can exploit the vulnerability on their own or with user interaction
+if attackers can exploit the vulnerability on their own or with user interaction  
+
+- `None (N)` - can exploit independently 
+- `Required (R)` - take some action before the attackers can successfully exploit the vulnerability 
+
+#### Scope 
+
+shows if successful exploitation can affect other components than the one targeted 
+
+- `Unchanged (U)` - only affects the vulnerable component or affects resources managed by the same security authority 
+- `Changed (C)` - can affect other components or resources beyond the scope of the affected components security authority 
+
+#### Confidentiality 
+
+how much the vulnerable component's confidentiality is affected upon successfully exploiting the vulnerability   
+confidentiality limits info access and disclosure to authorized users only and prevents unauthorized users from accessing info 
+
+- `None (N)` - confidentiality of vulnerable component does not get impacted 
+- `Low (L)` - will experience some loss of confidentiality; attackers do not have control over what info is obtained 
+- `High (H)` - total or serious loss of confidentiality; attackers have total or some control over what info is obtained 
+
+#### Integrity 
+
+how much the vulnerable component's integrity is affected   
+integrity is the trustworthiness of the info 
+
+- `None (N)` - integrity does not get impacted 
+- `Low (L)` - can modify data in a limited manner on the vulnerable component; attackers do not have control over the consequence of a modification, and vulnerable component does not get seriously affected in this case 
+- `High (H)` - attackers can modify all or critical data on the vulnerable component and do have control over the consequence of a modification; vulnerable component will suffer total loss of integrity 
+
+#### Availability 
+
+how much the availability is affected   
+availability is the accessibility of info resources in terms of network bandwidth, disk space, processor cycles, etc. 
+
+- `None (N)` - does not get impacted 
+- `Low (L)` - experience some loss of availability; attacker does not have complete control over the vulnerable component's availability and cannot deny the service to users, but performance is reduced 
+- `High (H)` - vulnerable component will experience total or severe availability loss; attacker has complete or significant control over the vulnerable component's availability and can deny the service to users, performance is significantly reduced 
+
+### Examples 
+
+![](Images/Pasted%20image%2020240315131156.png)
+
+![](Images/Pasted%20image%2020240315131206.png)
+
+### Good report examples
+
+- [SSRF in Exchange leads to ROOT access in all instances](https://hackerone.com/reports/341876)
+- [Remote Code Execution in Slack desktop apps + bonus](https://hackerone.com/reports/783877)
+- [Full name of other accounts exposed through NR API Explorer (another workaround of #476958)](https://hackerone.com/reports/520518)
+- [A staff member with no permissions can edit Store Customer Email](https://hackerone.com/reports/980511)
+- [XSS while logging in using Google](https://hackerone.com/reports/691611)
+- [Cross-site Scripting (XSS) on HackerOne careers page](https://hackerone.com/reports/474656)
 
