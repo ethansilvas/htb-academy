@@ -167,3 +167,20 @@ availability is the accessibility of info resources in terms of network bandwidt
 - [XSS while logging in using Google](https://hackerone.com/reports/691611)
 - [Cross-site Scripting (XSS) on HackerOne careers page](https://hackerone.com/reports/474656)
 
+## Interacting with Organizations/BBP Hosts
+
+after submitting a bug report, how should you interact with the security/triage team after that? 
+
+first allow them time to process your report, validate your finding, and maybe ask questions   
+some programs include vendor response SLAs or response efficiency metrics which give you an idea of how long it will take to get a response 
+
+you could also contact mediation: https://docs.hackerone.com/en/articles/8466617-hacker-mediation if the org is not responding in a timely manner
+
+once the team gets back to you, take note of the team member's username and tag them in future communications since they will likely continue to deal with the submission   
+do not interact outside any unofficial communication channel 
+
+during your interaction with the security team there could be disagreements about the severity of the bug or bounty, which may impact the reward from the bounty      
+in the case, proceed as follows: 
+- explain your rationale for choosing this severity score and guide the team through each metric value you used in the calculator 
+- go over the bug bounty programs policy and scope and make sure your submission complies with both, and make sure the bounty amount resembles the policy of the program 
+- if none of the above works then contact mediation 
