@@ -58,3 +58,60 @@ https://hackerone.com/directory/programs
 
 the directory can be used to find orgs that have programs and contact info to report vulnerabilities you have ethically found 
 
+## Writing a Good Report 
+
+bug reports should be clear and concise while including info on how exploitation of each vulnerability can be reproduced step-by-step 
+
+when reporting to less mature companies we might have to translate technical security issues into more understandable/business terms for them to understand the actual impact of each vulnerability 
+
+the essential elements of a good report are: 
+- `vulnerability title` - includes vulnerability type, affected domain/parameter/endpoint, impact, etc.
+- `CWE & CVSS score` - communicates the characteristics and severity of the vulnerability 
+- `vulnerability description` - better understanding of the vulnerability cause
+- `proof of concept (POC)` - steps to reproduce 
+- `impact` - elaborate more on what an attacker can achieve by fully exploiting the vulnerability; include business impact and maximum damage 
+- `remediation` - optional but good to have 
+
+### Why CWE & CVSS
+
+MITRE describes common weaknesses enumeration (CWE) as a community developed list of software and hardware weakness types   
+serves as a common language and as a baseline for weakness identification, mitigation, and prevention efforts   
+in the case of a vulnerability chain, use the CWE used for the initial vulnerability 
+
+the common vulnerability scoring system (CVSS) should be used to communicating the severity of an identified vulnerability  
+
+### Using CVSS calculator 
+
+https://www.first.org/cvss/calculator/3.1
+
+we will focus on the base score area only: 
+
+![](Images/Pasted%20image%2020240315115609.png)
+
+#### Attack vector 
+
+how the vulnerability can be exploited: 
+- `Network (N)` - can only exploit through the network layer (remotely exploitable) 
+- `Adjacent (A)` - can only exploit if they reside in the same physical or logical network (secure VPN included)
+- `Local (L)` - only by accessing the target system locally (keyboard, terminal, etc.) or remotely (SSH) or through user interaction 
+- `Physical (P)` - can exploit through physical interaction/manipulation 
+
+#### Attack complexity 
+
+depicts conditions outside the attacker's control and must be present to exploit the vulnerability repeatedly without any issue 
+
+- `Low (L)` - no special preparations should take place to exploit the vulnerability successfully; attackers can exploit the vulnerability repeatedly without any issue 
+- `High (H)` - special preparations and info gathering should take place to exploit the vulnerability successfully 
+
+#### Privileges required 
+
+the level of privileges the attacker must have to exploit the vulnerability successfully 
+
+- `None (N)` - no special access related to settings or files is required to exploit the vulnerability successfully; can be exploited from unauthorized perspective 
+- `Low (L)` - attackers should possess standard user privileges to exploit the vulnerability; usually affects files and settings owned by a user or non-sensitive assets 
+- `High (H)` - should possess admin-level privileges to exploit the vulnerability successfully; exploitation usually affects the entire vulnerable system 
+
+#### User interaction 
+
+if attackers can exploit the vulnerability on their own or with user interaction
+
