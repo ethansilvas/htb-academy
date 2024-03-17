@@ -215,3 +215,35 @@ Step 2: When another admin clicks the view button to the uploaded file the JS co
 
 ![](Images/Pasted%20image%2020240315140203.png)
 
+## Example 2: Reporting CSRF 
+
+Title - CSRF in consumer registration 
+
+CWE - https://cwe.mitre.org/data/definitions/352.html
+
+CVSS 3.1 Score - 5.4 (Medium)
+
+Description - We have identified a we page responsible for consumer registration that is vulnerable to CSRF attacks. CSRF is an attack where the attacker tricks the victim into loading a page that contains a malicious request. It will use the identity and privileges of the authenticated victim to perform undesired actions like changing their email address, home address, password, etc. CSRF attacks generally target functions that cause a state change on the server but can also be used to access sensitive data. 
+
+Impact - impact of CSRF depends on the nature of the vulnerable functionality. Attacker could effectively perform any operations as the victim. CSRF limited only by the permissions of the victim. 
+
+POC: 
+
+Step 1: Using a proxy we captured a request to create a new fintech app, and there were no anti-CSRF tokens in place
+
+![](Images/Pasted%20image%2020240316174256.png)
+
+Step 2: We then use the request to craft a malicious HTML page that when visited by an authenticated victim with a valid session will result in an advertent creation of an attacker-specific fintech app. 
+
+![](Images/Pasted%20image%2020240316174359.png)
+
+Step 3: To complete the attack we send our malicious web page to the victim 
+
+Step 4: The result would be the inadvertent creation of a new app by the victim. Important to note that this attack could have taken place in the background if combined with the finding 6.1.1 <-- 6.1.1 was an XSS vulnerability 
+
+![](Images/Pasted%20image%2020240316174549.png)
+
+### CVSS score breakdown 
+
+![](Images/Pasted%20image%2020240316174607.png)
+
