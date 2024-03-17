@@ -247,3 +247,33 @@ Step 4: The result would be the inadvertent creation of a new app by the victim.
 
 ![](Images/Pasted%20image%2020240316174607.png)
 
+## Example 3: Reporting RCE 
+
+Title - IBM websphere java object deserialization RCE 
+
+CWE - https://cwe.mitre.org/data/definitions/502.html
+
+CVSS 3.1 Score - 9.8 (Critical)
+
+Description - We have identified that the remote websphere app server contains a vulnerability related to insecure java object deserialization allowing remote attackers to execute arbitrary commands. By issuing a request to the remote websphere server over HTTPS on port 8880 we identified the existence of raw, serialized java objects that were base64-encoded. It is possible to identify these objects by the "rO0" header. We were able to craft a SOAP request containing a serialized Java object that can exploit the vulnerability in the Apache Commons Collections (ACC) library used by the websphere app server. The crafted object contains the `ping` command to be executed by the affected system. 
+
+Impact - Command injection vulnerabilities typically occur when data enters the app from an untrusted source like a terminal or a network socket, without authenticating the source, or the data is in a string that is executed as a command by the application. Without validating the input against a predefined list of allowed commands like a whitelist thne the app executed the provided command. If the app is executed as a privileged user then it can potentially allow a complete takeover of the affected system. 
+
+POC: 
+
+Step 1: We identified that the app was using serialized data objects by capturing and decoding a request to port 8880 of the server. 
+
+![](Images/Pasted%20image%2020240316181207.png)
+
+Step 2: We then crafted a SOAP request containing a command to be executed by the remote server. The command would send ping messages from the affected server to our host
+
+![](Images/Pasted%20image%2020240316181301.png)
+
+Step 3: Using wireshark we can observe the resulting ping requests
+
+![](Images/Pasted%20image%2020240316181337.png)
+
+### CVSS score breakdown 
+
+![](Images/Pasted%20image%2020240316181359.png)
+
